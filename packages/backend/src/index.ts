@@ -5,6 +5,7 @@ import FilesystemSubsystem from "./subsystems/filesystem.js";
 import NotificationsSubsystem from "./subsystems/notifications.js";
 import UsersSubsystem from "./subsystems/users.js";
 import ConsoleCommandsSubsytem from "./subsystems/consoleCommands.js";
+import DatabaseSubsystem from "./subsystems/database.js";
 
 export enum InstanceStatus {
     Online,
@@ -27,7 +28,8 @@ class Instance {
             filesystem: new FilesystemSubsystem(this),
             notifications: new NotificationsSubsystem(this),
             users: new UsersSubsystem(this),
-            consoleCommands: new ConsoleCommandsSubsytem(this)
+            consoleCommands: new ConsoleCommandsSubsytem(this),
+            database: new DatabaseSubsystem(this)
         }
 
         this.status = InstanceStatus.Offline
@@ -35,16 +37,19 @@ class Instance {
         return this;
     }
 
-    startup() {
+    async startup() {
         if (this.status !== InstanceStatus.Offline) {
             this.log.system.info("Cannot stop")
             return this;
         }
 
         for (const sys of Object.values(this.subSystems)) {
-            sys.log.info("Starting up...")
-            sys.startup()
-            sys.log.success("Startup Complete...")
+            let subSystemState = await sys.startup()
+            if (subSystemState === true) {
+                sys.log.success("Startup Complete...")
+            } else {
+                sys.log.error("Startup Failed!")
+            }
         }
 
         this.log.system.info("Startup complete")

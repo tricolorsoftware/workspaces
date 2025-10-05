@@ -21,13 +21,13 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
         return this;
     }
 
-    override startup() {
+    override async startup() {
         if (
             !this.instance.subSystems.configuration.hasFeature(
                 "slash_commands"
             )
         )
-            return this;
+            return true;
 
         fs.readdir(
             path.join(this.instance.subSystems.filesystem.SRC_ROOT, "/subsystems/consoleCommands/commands/")
@@ -106,7 +106,7 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             }
         })();
 
-        return this;
+        return true;
     }
 
     close() {

@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import {YourDashFeatureFlags} from "../.temp/types/configuration.js";
 import {Instance} from "./index.js";
 
 export enum LogType {
@@ -136,9 +135,7 @@ class Logger {
 
     _internal_writePrompt() {
         if (
-            !this.log.instance?.subSystems.configuration?.hasFeature(
-                YourDashFeatureFlags.SlashCommands
-            )
+            !this.log.instance?.subSystems.configuration?.hasFeature("slash_commands")
         )
             return this;
 
@@ -162,7 +159,7 @@ class Logger {
                                     () => {
                                         // write the branding to the stdout
                                         process.stdout.write(
-                                            `   YourDash Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis(
+                                            `   Workspaces Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis(
                                                 "DEV Mode")}] ` : ""}`,
                                             () => {
                                                 // move the cursor to the metaLen+6th column of the 2nd from the bottom row
@@ -171,9 +168,7 @@ class Logger {
                                                     this._internal_getWindowSize()[ 1 ] - 2,
                                                     () => {
                                                         if (
-                                                            this.log.instance.subSystems.configuration?.hasFeature(
-                                                                YourDashFeatureFlags.SlashCommands
-                                                            )
+                                                            this.log.instance.subSystems.configuration?.hasFeature("slash_commands")
                                                         ) {
                                                             // write the prompt indicator to the stdout
                                                             process.stdout.write(
@@ -197,7 +192,7 @@ class Logger {
     }
 
     private writeMessage(typeString: string, ...message: any[]) {
-        if (!this.log.instance.subSystems.configuration?.hasFeature(YourDashFeatureFlags.SlashCommands)) {
+        if (!this.log.instance.subSystems.configuration?.hasFeature("slash_commands")) {
             // @ts-ignore
             globalThis._internal_console.log(
                 typeString,
