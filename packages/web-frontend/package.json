@@ -1,0 +1,18 @@
+{
+  "name": "@tricolor/workspaces-web-frontend",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun --bun exec vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tricoloruk/workspaces"
+  },
+  "private": true,
+  "dependencies": {
+    "vite": "^7.1.2"
+  }
+}
