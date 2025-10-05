@@ -1,10 +1,10 @@
 import type { Component } from "solid-js";
 import { page } from "./UserSelect.css.ts";
-import UKCard from "@tricolor/uikit-mv3-solid/src/components/card/UKCard.tsx";
-import UKButton from "@tricolor/uikit-mv3-solid/src/components/button/UKButton.tsx";
-import UKButtonGroup from "@tricolor/uikit-mv3-solid/src/components/buttonGroup/UKButtonGroup.tsx";
-import UKDivider from "@tricolor/uikit-mv3-solid/src/components/divider/UKDivider.tsx";
-import { DividerDirection } from "@tricolor/uikit-mv3-solid/src/components/divider/lib/direction.ts";
+import UKCard from "@tricolor/uikit-solid/src/components/card/UKCard.tsx";
+import UKButton from "@tricolor/uikit-solid/src/components/button/UKButton.tsx";
+import UKButtonGroup from "@tricolor/uikit-solid/src/components/buttonGroup/UKButtonGroup.tsx";
+import UKDivider from "@tricolor/uikit-solid/src/components/divider/UKDivider.tsx";
+import { DividerDirection } from "@tricolor/uikit-solid/src/components/divider/lib/direction.ts";
 
 const UserSelectPage: Component = () => {
     return (

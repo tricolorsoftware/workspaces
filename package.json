@@ -11,7 +11,8 @@
     },
     "scripts": {
         "web": "bun run --cwd packages/web-frontend dev",
-        "backend": "bun run --cwd packages/backend dev"
+        "backend": "bun run --cwd packages/backend dev",
+        "uikit": "bun run --cwd packages/uikit-solid dev"
     },
     "private": true,
     "dependencies": {

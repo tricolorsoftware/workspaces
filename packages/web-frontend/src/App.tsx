@@ -1,6 +1,6 @@
 import { type Component, lazy } from "solid-js";
 import { Route, Router } from "@solidjs/router";
-import { UIKitRoot } from "@tricolor/uikit-mv3-solid/src/index.tsx";
+import { UIKitRoot } from "@tricolor/uikit-solid/src/index.tsx";
 
 const App: Component = () => {
     return <Router>
