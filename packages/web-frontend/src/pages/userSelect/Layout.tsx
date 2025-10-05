@@ -13,7 +13,7 @@ const UserSelectLayout: Component<RouteSectionProps<unknown>> = (props) => {
                     Tricolor Workspaces Pre-Alpha
                 </UKText>
                 <UKText role={"body"} size={"s"} emphasized={true}>
-                    © Copyright Tricolor 2025
+                    © Copyright Tricolor Software 2025
                 </UKText>
             </UKCard>
         </div>

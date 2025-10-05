@@ -11,13 +11,16 @@ import clsx from "clsx";
 import UKAvatar from "@tricolor/uikit-solid/src/components/avatar/UKAvatar.tsx";
 
 enum UserSelectStage {
-    Username,
-    Email,
-    VerifyEmail,
-    Password,
-    TwoFactorAuthentication,
-    VerifyTwoFactorAuthentication,
-    Profile,
+    Username, // set username
+    Email, // set email
+    VerifyEmail, // verify they own the email
+    Password, // set password
+    TwoFactorAuthentication, // set 2FA
+    VerifyTwoFactorAuthentication, // verify they setup 2FA correctly
+    Profile, // set profile information
+    TermsOfUse, // accept the terms of use for this instance
+    GuidePrompt, // prompt the user for if they want to see the introductory guide
+    Guide, // guide the new user through the basics
 }
 
 const UserSelectPage: Component = () => {
@@ -26,7 +29,9 @@ const UserSelectPage: Component = () => {
 
     const [username, setUsername] = createSignal<string>("");
     const [password, setPassword] = createSignal<string>("");
+    const [confirmedPassword, setConfirmedPassword] = createSignal<string>("");
     const [emailAddress, setEmailAddress] = createSignal<`${string}@${string}.${string}` | "">("");
+    const [emailCode, setEmailCode] = createSignal<string>("");
     const [displayName, setDisplayName] = createSignal<string>("");
     const [gender, setGender] = createSignal<"female" | "male" | "other" | undefined>(undefined);
     const [bio, setBio] = createSignal<string>("");
@@ -77,7 +82,7 @@ const UserSelectPage: Component = () => {
             <Match when={stage() === UserSelectStage.Email}>
                 <UKCard color={"filled"} class={styles.modal}>
                     <UKText role={"title"} size={"l"} emphasized={true}>
-                        Email
+                        Set Email
                     </UKText>
                     <UKDivider direction={DividerDirection.horizontal} />
                     <UKTextField
@@ -100,7 +105,7 @@ const UserSelectPage: Component = () => {
                         <UKButton
                             disabled={emailAddress() === ""}
                             onClick={() => {
-                                setStage(UserSelectStage.Password);
+                                setStage(UserSelectStage.VerifyEmail);
                             }}
                             color={"filled"}
                         >
@@ -109,18 +114,18 @@ const UserSelectPage: Component = () => {
                     </div>
                 </UKCard>
             </Match>
-            <Match when={stage() === UserSelectStage.Password}>
+            <Match when={stage() === UserSelectStage.VerifyEmail}>
                 <UKCard color={"filled"} class={styles.modal}>
                     <UKText role={"title"} size={"l"} emphasized={true}>
-                        Password
+                        Verify Email
                     </UKText>
                     <UKDivider direction={DividerDirection.horizontal} />
                     <UKTextField
-                        shouldMask={true}
                         color={"outlined"}
-                        label={"Password*"}
-                        defaultValue={password()}
-                        getValue={setPassword}
+                        label={"Email Verification Code*"}
+                        defaultValue={emailCode()}
+                        getValue={setEmailCode}
+                        maximumCharacterCount={12} // this is arbitrary
                         supportingText={"*required"}
                     />
                     <div class={styles.stageButtons}>
@@ -133,7 +138,54 @@ const UserSelectPage: Component = () => {
                             Back
                         </UKButton>
                         <UKButton
-                            disabled={password() === ""}
+                            disabled={emailCode() === ""}
+                            onClick={() => {
+                                alert("CHECK THE EMAIL CODE AGAINST THE SERVER BEFORE CONTINUING");
+
+                                setStage(UserSelectStage.Password);
+                            }}
+                            color={"filled"}
+                        >
+                            Continue
+                        </UKButton>
+                    </div>
+                </UKCard>
+            </Match>
+            <Match when={stage() === UserSelectStage.Password}>
+                <UKCard color={"filled"} class={styles.modal}>
+                    <UKText role={"title"} size={"l"} emphasized={true}>
+                        Set Password
+                    </UKText>
+                    <UKDivider direction={DividerDirection.horizontal} />
+                    <UKTextField
+                        shouldMask={true}
+                        color={"outlined"}
+                        label={"Password*"}
+                        defaultValue={password()}
+                        getValue={setPassword}
+                        supportingText={"*required"}
+                        error={password() !== confirmedPassword()}
+                    />
+                    <UKTextField
+                        shouldMask={true}
+                        color={"outlined"}
+                        label={"Confirm Password*"}
+                        defaultValue={confirmedPassword()}
+                        getValue={setConfirmedPassword}
+                        supportingText={"*required"}
+                        error={password() !== confirmedPassword()}
+                    />
+                    <div class={styles.stageButtons}>
+                        <UKButton
+                            onClick={() => {
+                                setStage(UserSelectStage.VerifyEmail);
+                            }}
+                            color={"tonal"}
+                        >
+                            Back
+                        </UKButton>
+                        <UKButton
+                            disabled={password() !== confirmedPassword() || password() === ""}
                             onClick={() => {
                                 setStage(UserSelectStage.TwoFactorAuthentication);
                             }}
@@ -193,6 +245,7 @@ const UserSelectPage: Component = () => {
                         defaultValue={twoFactorTestCode()}
                         getValue={setTwoFactorTestCode}
                         supportingText={"*required"}
+                        maximumCharacterCount={6}
                     />
                     <div class={styles.stageButtons}>
                         <UKButton
@@ -228,21 +281,19 @@ const UserSelectPage: Component = () => {
                     </UKText>
                     <UKTextField color={"outlined"} label={"Display Name"} defaultValue={displayName()} getValue={setDisplayName} />
                     <UKTextField color={"outlined"} label={"Gender (make me a dropdown)"} defaultValue={gender()} getValue={setGender} />
-                    <UKTextField color={"outlined"} label={"Bio"} as={"textarea"} defaultValue={gender()} getValue={setGender} />
+                    <UKTextField color={"outlined"} label={"Bio"} as={"textarea"} defaultValue={bio()} getValue={setBio} />
                     <div class={styles.stageButtons}>
                         <UKButton
                             onClick={() => {
-                                setStage(UserSelectStage.Password);
+                                setStage(UserSelectStage.TwoFactorAuthentication);
                             }}
                             color={"tonal"}
                         >
                             Back
                         </UKButton>
                         <UKButton
-                            disabled={twoFactorTestCode() === ""}
                             onClick={() => {
-                                alert("FIXME: THIS BUTTON SHOULD DISABLE IF THE CODE IS INCORRECT!");
-                                setStage(UserSelectStage.Profile);
+                                setStage(UserSelectStage.TermsOfUse);
                             }}
                             color={"filled"}
                         >
@@ -251,6 +302,7 @@ const UserSelectPage: Component = () => {
                     </div>
                 </UKCard>
             </Match>
+            <Match when={stage() === UserSelectStage.TermsOfUse}>[TERMS OF USE HERE]</Match>
         </Switch>
     );
 };
