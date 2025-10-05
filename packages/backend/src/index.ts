@@ -1,5 +1,10 @@
-import SubSystem, {SubSystems} from "./subSystems.js";
+import {SubSystems} from "./subSystems.js";
 import Log from "./log.js";
+import ConfigurationSubsystem from "./subsystems/configuration.js";
+import FilesystemSubsystem from "./subsystems/filesystem.js";
+import NotificationsSubsystem from "./subsystems/notifications.js";
+import UsersSubsystem from "./subsystems/users.js";
+import ConsoleCommandsSubsytem from "./subsystems/consoleCommands.js";
 
 export enum InstanceStatus {
     Online,
@@ -9,34 +14,40 @@ export enum InstanceStatus {
 }
 
 class Instance {
-    subSystems: { [key in SubSystems]: SubSystem }
+    subSystems: SubSystems
     log: Log;
     status: InstanceStatus;
 
     constructor() {
         this.log = new Log(this)
-        // @ts-ignore
-        this.subSystems = {}
+
+        // @ts-ignore Don't know how to fix this
+        this.subSystems = {
+            configuration: new ConfigurationSubsystem(this),
+            filesystem: new FilesystemSubsystem(this),
+            notifications: new NotificationsSubsystem(this),
+            users: new UsersSubsystem(this),
+            consoleCommands: new ConsoleCommandsSubsytem(this)
+        }
+
         this.status = InstanceStatus.Offline
-
-        return this;
-    }
-
-    initialiseSubSystems() {
-        const SUB_SYSTEMS_TO_INITIALISE: SubSystems[] = [
-            "users",
-            "filesystem",
-            "notifications"
-        ]
 
         return this;
     }
 
     startup() {
         if (this.status !== InstanceStatus.Offline) {
-            this.log.global.info("Cannot stop")
+            this.log.system.info("Cannot stop")
             return this;
         }
+
+        for (const sys of Object.values(this.subSystems)) {
+            sys.log.info("Starting up...")
+            sys.startup()
+            sys.log.success("Startup Complete...")
+        }
+
+        this.log.system.info("Startup complete")
 
         return this;
     }

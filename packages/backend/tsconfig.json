@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": ["ESNext", "Decorators"],
     "esModuleInterop": true,

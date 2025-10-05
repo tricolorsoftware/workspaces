@@ -1,6 +1,6 @@
 import chalk from "chalk";
-import { YourDashFeatureFlags } from "../.temp/types/configuration.js";
-import { Instance } from "./index.js";
+import {YourDashFeatureFlags} from "../.temp/types/configuration.js";
+import {Instance} from "./index.js";
 
 export enum LogType {
     INFO,
@@ -18,7 +18,6 @@ class Logger {
     }[] = [];
     private log: Log;
     private level: string;
-    private metaLength = 28;
 
     constructor(level: string, log: Log) {
         this.level = level;
@@ -27,20 +26,12 @@ class Logger {
         return this;
     }
 
-    info(level: string, ...message: (string | Uint8Array)[]) {
-        if (level.length === 0) {
-            throw new Error("log level is empty");
-        }
-
-        if (message.length === 0) {
-            throw new Error("log message is empty");
-        }
-
-        return this.logMessage(LogType.INFO, level, ...message);
+    emphasis(...message: (string | Uint8Array)[]) {
+        return chalk.bold.magenta(message);
     }
 
-    success(level: string, ...message: (string | Uint8Array)[]) {
-        if (level.length === 0) {
+    info(...message: (string | Uint8Array)[]) {
+        if (this.level.length === 0) {
             throw new Error("log level is empty");
         }
 
@@ -48,11 +39,11 @@ class Logger {
             throw new Error("log message is empty");
         }
 
-        return this.logMessage(LogType.SUCCESS, level, ...message);
+        return this.logMessage(LogType.INFO, ...message);
     }
 
-    warning(level: string, ...message: (string | Uint8Array)[]) {
-        if (level.length === 0) {
+    success(...message: (string | Uint8Array)[]) {
+        if (this.level.length === 0) {
             throw new Error("log level is empty");
         }
 
@@ -60,26 +51,38 @@ class Logger {
             throw new Error("log message is empty");
         }
 
-        return this.logMessage(LogType.WARNING, level, ...message);
+        return this.logMessage(LogType.SUCCESS, ...message);
+    }
+
+    warning(...message: (string | Uint8Array)[]) {
+        if (this.level.length === 0) {
+            throw new Error("log level is empty");
+        }
+
+        if (message.length === 0) {
+            throw new Error("log message is empty");
+        }
+
+        return this.logMessage(LogType.WARNING, ...message);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    error(level: string, ...message: any[]) {
+    error(...message: any[]) {
         if (message.length === 0) {
             this.logMessage(LogType.ERROR, "log", new Error("log message is empty").stack);
         }
 
-        this.logMessage(LogType.ERROR, level, ...message);
+        this.logMessage(LogType.ERROR, ...message);
 
         return this;
     }
 
-    debug(level: string, ...message: (string | Uint8Array)[]) {
+    debug(...message: (string | Uint8Array)[]) {
         // if (!this.log.instance.configurationManager.config.isDevMode) {
         //     return this;
         // }
 
-        if (level.length === 0) {
+        if (this.level.length === 0) {
             throw new Error("log level is empty");
         }
 
@@ -87,12 +90,12 @@ class Logger {
             throw new Error("log message is empty");
         }
 
-        return this.logMessage(LogType.DEBUG, level, ...message);
+        return this.logMessage(LogType.DEBUG, ...message);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private logMessage(type: LogType, level: string, ...message: any[]): this {
-        this.logHistory.push({ type: type, level: level, message: message });
+    private logMessage(type: LogType, ...message: any[]): this {
+        this.logHistory.push({type: type, level: this.level, message: message});
 
         let typeString = "";
 
@@ -114,15 +117,15 @@ class Logger {
                 break;
         }
 
-        this.writeMessage(typeString, level, ...message);
+        this.writeMessage(typeString, ...message);
 
         return this;
     }
 
-    _internal_getWindowSize(): [number, number] {
+    _internal_getWindowSize(): [ number, number ] {
         let size = process?.stdout?.getWindowSize?.();
 
-        return [size?.[0] || 120, size?.[1] || 60];
+        return [ size?.[ 0 ] || 120, size?.[ 1 ] || 60 ];
     }
 
     _internal_cursorTo(x: number, y: number, cb: () => void) {
@@ -131,25 +134,86 @@ class Logger {
         return this;
     }
 
-    private writeMessage(typeString: string, level: string, ...message: any[]) {
-        if (!this.log.instance.configurationManager?.hasFeature(YourDashFeatureFlags.SlashCommands)) {
+    _internal_writePrompt() {
+        if (
+            !this.log.instance?.subSystems.configuration?.hasFeature(
+                YourDashFeatureFlags.SlashCommands
+            )
+        )
+            return this;
+
+        // move cursor to the last row, 1st column
+        this._internal_cursorTo(0, this._internal_getWindowSize()[ 1 ], () => {
+            // scroll view down 1 row
+            process.stdout.write("\n", () => {
+                // move the cursor to the 3rd last row, 1st column
+                this._internal_cursorTo(
+                    0,
+                    this._internal_getWindowSize()[ 1 ] - 3,
+                    () => {
+                        // write the separator line to the stdout
+                        process.stdout.write(
+                            "-".repeat(this._internal_getWindowSize()[ 0 ]),
+                            () => {
+                                // move the cursor to the 2nd last row, 1st column
+                                this._internal_cursorTo(
+                                    0,
+                                    this._internal_getWindowSize()[ 1 ] - 2,
+                                    () => {
+                                        // write the branding to the stdout
+                                        process.stdout.write(
+                                            `   YourDash Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis(
+                                                "DEV Mode")}] ` : ""}`,
+                                            () => {
+                                                // move the cursor to the metaLen+6th column of the 2nd from the bottom row
+                                                this._internal_cursorTo(
+                                                    this.log.META_LENGTH + 6,
+                                                    this._internal_getWindowSize()[ 1 ] - 2,
+                                                    () => {
+                                                        if (
+                                                            this.log.instance.subSystems.configuration?.hasFeature(
+                                                                YourDashFeatureFlags.SlashCommands
+                                                            )
+                                                        ) {
+                                                            // write the prompt indicator to the stdout
+                                                            process.stdout.write(
+                                                                `> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`
+                                                            );
+                                                        } else {
+                                                            process.stdout.write("  ");
+                                                        }
+                                                    }
+                                                );
+                                            }
+                                        );
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            });
+        });
+    }
+
+    private writeMessage(typeString: string, ...message: any[]) {
+        if (!this.log.instance.subSystems.configuration?.hasFeature(YourDashFeatureFlags.SlashCommands)) {
             // @ts-ignore
             globalThis._internal_console.log(
                 typeString,
-                chalk.bold(`${chalk.yellow(level.toUpperCase().slice(0, this.metaLength).padEnd(this.metaLength))} `),
+                chalk.bold(`${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))} `),
                 ...message,
             );
 
             return this;
         }
 
-        this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 3, () => {
+        this._internal_cursorTo(0, this._internal_getWindowSize()[ 1 ] - 3, () => {
             process.stdout.clearLine(1, () => {
-                // @ts-ignore
-                globalThis._internal_console.log(
+                console.log(
                     typeString,
-                    chalk.bold(`${chalk.yellow(level.toUpperCase().slice(0, this.metaLength).padEnd(this.metaLength))} `),
-                    ...message.map((msg) => msg.split("\n").join("\n" + " ".repeat(this.metaLength + 6))),
+                    chalk.bold(`${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))} `),
+                    ...message.map((msg) => msg.split("\n").join("\n" + " ".repeat(this.log.META_LENGTH + 6))),
                 );
 
                 this._internal_writePrompt();
@@ -158,23 +222,26 @@ class Logger {
     }
 }
 
+export type {Logger}
+
 export default class Log {
     allLogHistory: {
         type: LogType;
         level: string;
         message: (string | Uint8Array<ArrayBufferLike>)[];
     }[] = [];
-    global: Logger;
+    system: Logger;
     instance: Instance;
+    readonly META_LENGTH = 28;
 
     constructor(instance: Instance) {
         this.instance = instance;
-        this.global = this.createLogger("global");
+        this.system = this.createLogger("system");
 
         return this;
     }
 
-    createLogger(prefix: string) {
+    createLogger(prefix: string): Logger {
         return new Logger(prefix, this);
     }
 }
