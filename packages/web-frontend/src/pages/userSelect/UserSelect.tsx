@@ -10,15 +10,20 @@ const UserSelectPage: Component = () => {
     return (
         <div class={page}>
             <UKCard color={"filled"}>
+                <p class={"sampletest"}>Sign in</p>
                 <UKDivider direction={DividerDirection.horizontal} />
                 <UKButtonGroup size={"s"}>
-                    <UKButton onClick={() => 0} color={"tonal"}>
-                        Signup
+                    <UKButton onClick={() => 0} color={"standard"}>
+                        Forgot password?
                     </UKButton>
                     <UKButton onClick={() => 0} color={"filled"}>
                         Login
                     </UKButton>
                 </UKButtonGroup>
+                <p>Don't have an account?</p>
+                <UKButton onClick={() => 0} color={"tonal"}>
+                    Signup
+                </UKButton>
             </UKCard>
             <UKCard color={"elevated"}>
                 <UKDivider direction={DividerDirection.horizontal} />
