@@ -1,4 +1,6 @@
 import chalk from "chalk";
+import { YourDashFeatureFlags } from "../.temp/types/configuration.js";
+import { Instance } from "./index.js";
 
 export enum LogType {
     INFO,
@@ -16,6 +18,7 @@ class Logger {
     }[] = [];
     private log: Log;
     private level: string;
+    private metaLength = 28;
 
     constructor(level: string, log: Log) {
         this.level = level;
@@ -95,35 +98,63 @@ class Logger {
 
         switch (type) {
             case LogType.INFO:
-                typeString = chalk.bold(
-                    `${chalk.white("[")}${chalk.blue("INF")}${chalk.white("]")}`
-                );
+                typeString = chalk.bold(`${chalk.white("[")}${chalk.blue("INF")}${chalk.white("]")}`);
                 break;
             case LogType.WARNING:
-                typeString = chalk.bold(
-                    `${chalk.white("[")}${chalk.yellow("WAR")}${chalk.white("]")}`
-                );
+                typeString = chalk.bold(`${chalk.white("[")}${chalk.yellow("WAR")}${chalk.white("]")}`);
                 break;
             case LogType.ERROR:
-                typeString = chalk.bold(
-                    `${chalk.white("[")}${chalk.red("ERR")}${chalk.white("]")}`
-                );
+                typeString = chalk.bold(`${chalk.white("[")}${chalk.red("ERR")}${chalk.white("]")}`);
                 break;
             case LogType.SUCCESS:
-                typeString = chalk.bold(
-                    `${chalk.white("[")}${chalk.green("SUC")}${chalk.white("]")}`
-                );
+                typeString = chalk.bold(`${chalk.white("[")}${chalk.green("SUC")}${chalk.white("]")}`);
                 break;
             case LogType.DEBUG:
-                typeString = chalk.bold(
-                    `${chalk.white("[")}${chalk.magenta("DBG")}${chalk.white("]")}`
-                );
+                typeString = chalk.bold(`${chalk.white("[")}${chalk.magenta("DBG")}${chalk.white("]")}`);
                 break;
         }
 
-        logTheMessage(typeString, level, ...message);
+        this.writeMessage(typeString, level, ...message);
 
         return this;
+    }
+
+    _internal_getWindowSize(): [number, number] {
+        let size = process?.stdout?.getWindowSize?.();
+
+        return [size?.[0] || 120, size?.[1] || 60];
+    }
+
+    _internal_cursorTo(x: number, y: number, cb: () => void) {
+        process?.stdout?.cursorTo?.(x, y, cb);
+
+        return this;
+    }
+
+    private writeMessage(typeString: string, level: string, ...message: any[]) {
+        if (!this.log.instance.configurationManager?.hasFeature(YourDashFeatureFlags.SlashCommands)) {
+            // @ts-ignore
+            globalThis._internal_console.log(
+                typeString,
+                chalk.bold(`${chalk.yellow(level.toUpperCase().slice(0, this.metaLength).padEnd(this.metaLength))} `),
+                ...message,
+            );
+
+            return this;
+        }
+
+        this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 3, () => {
+            process.stdout.clearLine(1, () => {
+                // @ts-ignore
+                globalThis._internal_console.log(
+                    typeString,
+                    chalk.bold(`${chalk.yellow(level.toUpperCase().slice(0, this.metaLength).padEnd(this.metaLength))} `),
+                    ...message.map((msg) => msg.split("\n").join("\n" + " ".repeat(this.metaLength + 6))),
+                );
+
+                this._internal_writePrompt();
+            });
+        });
     }
 }
 
@@ -134,14 +165,16 @@ export default class Log {
         message: (string | Uint8Array<ArrayBufferLike>)[];
     }[] = [];
     global: Logger;
+    instance: Instance;
 
-    constructor() {
-        this.global = this.createLogger("global", this)
+    constructor(instance: Instance) {
+        this.instance = instance;
+        this.global = this.createLogger("global");
 
         return this;
     }
 
-    createLogger() {
-        return this;
+    createLogger(prefix: string) {
+        return new Logger(prefix, this);
     }
 }

@@ -14,7 +14,7 @@ class Instance {
     status: InstanceStatus;
 
     constructor() {
-        this.log = new Log()
+        this.log = new Log(this)
         // @ts-ignore
         this.subSystems = {}
         this.status = InstanceStatus.Offline
@@ -34,7 +34,7 @@ class Instance {
 
     startup() {
         if (this.status !== InstanceStatus.Offline) {
-            this.log.info("Cannot stop")
+            this.log.global.info("Cannot stop")
             return this;
         }
 
