@@ -1,5 +1,5 @@
 enum DividerDirection {
-    vertical = "vertical",
+    Vertical = "Vertical",
     horizontal = "horizontal",
 }
 

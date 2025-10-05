@@ -6,7 +6,7 @@ const UKDivider: Component<{
     direction: DividerDirection;
     width?: "inset" | "middle-inset" | "full";
 }> = (props) => {
-    if (props.width === "inset" && props.direction === DividerDirection.vertical) {
+    if (props.width === "inset" && props.direction === DividerDirection.Vertical) {
         console.warn("A divider cannot be both vertical and inset");
     }
 

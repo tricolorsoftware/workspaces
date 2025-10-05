@@ -33,13 +33,13 @@
             padding-bottom: 15px;
         }
 
-        &:focus-within {
+        &:focus-within, &[data-force-focus="true"] {
             outline-color: rgb(var(--uk-sys-color-primary));
             outline-width: 3px;
             outline-offset: -1px;
         }
 
-        &[data-populated="true"], &:focus-within {
+        &[data-populated="true"], &:focus-within, &[data-force-focus="true"] {
             & > .labelText {
                 font-family: var(--uk-sys-typescale-body-small-font), sans-serif;
                 font-weight: var(--uk-sys-typescale-body-small-weight);
@@ -157,6 +157,15 @@ textarea.input {
         background-color: rgb(var(--uk-sys-color-surface-variant));
         background-image: url(resizeHeightLight.svg);
         background-size: 0.75rem;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        border-top-left-radius: var(--uk-sys-shape-corner-extra-small);
+        border-bottom-right-radius: var(--uk-sys-shape-corner-extra-small);
+        outline-style: solid;
+        outline-width: 1px;
+        outline-offset: 0;
+        outline-color: rgb(var(--uk-sys-color-outline));
     }
 }
 
