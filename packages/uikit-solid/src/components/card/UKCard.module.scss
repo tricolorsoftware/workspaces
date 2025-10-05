@@ -1,0 +1,35 @@
+.root {
+    --card-padding: 16px;
+    padding: var(--card-padding);
+
+    &[data-color="filled"] {
+        background-color: rgb(var(--uk-sys-color-surface-container-highest));
+        color: rgb(var(--uk-sys-color-primary));
+        box-shadow: 0 0 1px rgb(var(--uk-sys-color-shadow));
+        border-radius: var(--uk-sys-shape-corner-medium);
+        z-index: 0;
+
+        &[data-disabled="true"] {
+            background-color: rgb(var(--uk-sys-color-surface-variant), 0.38);
+        }
+    }
+
+    &[data-color="elevated"] {
+        background-color: rgb(var(--uk-sys-color-surface-container-low));
+        color: rgb(var(--uk-sys-color-primary));
+        box-shadow: 0 0 1px rgb(var(--uk-sys-color-shadow));
+        border-radius: var(--uk-sys-shape-corner-medium);
+        z-index: 1;
+    }
+
+    &[data-color="outlined"] {
+        background-color: rgb(var(--uk-sys-color-surface));
+        color: rgb(var(--uk-sys-color-primary));
+        box-shadow: 0 0 1px rgb(var(--uk-sys-color-shadow));
+        border-radius: var(--uk-sys-shape-corner-medium);
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgb(var(--uk-sys-color-outline-variant));
+        z-index: 0;
+    }
+}

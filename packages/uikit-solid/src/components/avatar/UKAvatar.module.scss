@@ -1,0 +1,27 @@
+.root {
+    width: var(--size);
+    height: var(--size);
+    border-radius: 100rem;
+    user-select: none;
+    -webkit-user-drag: none;
+
+    &[data-size="xs"] {
+        --size: 1rem;
+    }
+
+    &[data-size="s"] {
+        --size: 2rem;
+    }
+
+    &[data-size="m"] {
+        --size: 4rem;
+    }
+
+    &[data-size="l"] {
+        --size: 8rem;
+    }
+
+    &[data-size="xl"] {
+        --size: 16rem;
+    }
+}

@@ -21,7 +21,7 @@ const UserSelectPage: Component = () => {
             </UKText>
             <UKDivider direction={DividerDirection.horizontal} />
             <UKTextField color={"outlined"} label={"Username"} getValue={setUsername} />
-            <UKTextField color={"outlined"} label={"Password"} getValue={setPassword} />
+            <UKTextField shouldMask={true} color={"outlined"} label={"Password"} getValue={setPassword} />
             <div class={styles.loginButtons}>
                 <UKButton onClick={() => 0} disabled={username() === ""} color={"standard"}>
                     Forgot password?

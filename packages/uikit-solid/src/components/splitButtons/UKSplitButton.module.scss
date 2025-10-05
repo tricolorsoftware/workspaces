@@ -1,0 +1,13 @@
+.root {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+}
+
+.textButton {
+    border-top-right-radius: 0;
+}
+
+.iconButton {
+    background: red;
+}
