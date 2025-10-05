@@ -12,6 +12,7 @@ import UKAvatar from "@tricolor/uikit-solid/src/components/avatar/UKAvatar.tsx";
 import UKSearchableDropdownMenu from "@tricolor/uikit-solid/src/components/searchableDropdownMenu/UKSearchableDropdownMenu.tsx";
 import { SearchableDropdownMenuItemType } from "@tricolor/uikit-solid/src/components/searchableDropdownMenu/lib/items.ts";
 import isEmail from "@tricolor/uikit-solid/src/core/validation/isEmail.ts";
+import UKIndeterminateSpinner from "@tricolor/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.tsx";
 
 enum UserSelectStage {
     Username, // set username
@@ -42,7 +43,7 @@ const UserSelectPage: Component = () => {
     const [twoFactorTestCode, setTwoFactorTestCode] = createSignal<string>("");
 
     return (
-        <Switch>
+        <Switch fallback={<UKIndeterminateSpinner />}>
             <Match when={stage() === UserSelectStage.Username}>
                 <UKCard color={"filled"} class={clsx(styles.modal, styles.usernameStage)}>
                     <UKText role={"title"} size={"l"} emphasized={true}>

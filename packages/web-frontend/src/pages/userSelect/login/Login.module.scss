@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     width: max-content;
+    min-width: min(20rem, calc(100% - 2rem));
 
     > .loginButtons {
         display: flex;
