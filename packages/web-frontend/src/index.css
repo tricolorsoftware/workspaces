@@ -1,4 +1,11 @@
-body, html {
+body, html, #root {
+    width: 100%;
+    min-height: 100vh;
     padding: 0;
     margin: 0;
+    overflow-y: auto;
+}
+
+* {
+  box-sizing: border-box;
 }
