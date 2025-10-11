@@ -1,4 +1,4 @@
-import type { Component } from "solid-js";
+import { Match, Switch, type Component } from "solid-js";
 import styles from "./UKText.module.scss";
 import clsx from "clsx";
 
@@ -9,17 +9,34 @@ const UKText: Component<{
     align?: "start" | "center" | "end";
     children: string;
     class?: string;
+    href?: string;
 }> = (props) => {
     return (
-        <div
-            class={clsx(styles.root, props.class)}
-            data-size={props.size || "s"}
-            data-role={props.role || "body"}
-            data-emphasized={props.emphasized || false}
-            data-align={props.align || "start"}
-        >
-            {props.children}
-        </div>
+        <Switch>
+            <Match when={props.href}>
+                <a
+                    class={clsx(styles.root, props.class)}
+                    data-size={props.size || "s"}
+                    data-role={props.role || "body"}
+                    data-emphasized={props.emphasized || false}
+                    data-align={props.align || "start"}
+                    href={props.href}
+                >
+                    {props.children}
+                </a>
+            </Match>
+            <Match when={props.href === undefined}>
+                <div
+                    class={clsx(styles.root, props.class)}
+                    data-size={props.size || "s"}
+                    data-role={props.role || "body"}
+                    data-emphasized={props.emphasized || false}
+                    data-align={props.align || "start"}
+                >
+                    {props.children}
+                </div>
+            </Match>
+        </Switch>
     );
 };
 
