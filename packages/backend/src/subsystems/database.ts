@@ -10,6 +10,7 @@ export default class DatabaseSubsystem extends SubSystem {
         super("database", instance);
 
         this.databaseConnections = {};
+        this.instance.subSystems.filesystem.createDirectoryIfNotExists(path.join(this.instance.subSystems.filesystem.FS_ROOT, "databases"));
 
         return this;
     }
@@ -28,7 +29,6 @@ export default class DatabaseSubsystem extends SubSystem {
         let con = new SQL({
             // NOTE: use SQLite for now, in the future we should switch to postgres / a better alternative
             adapter: "sqlite",
-            readonly: false,
             readwrite: true,
             create: true,
             filename: conPath,
