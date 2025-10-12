@@ -148,7 +148,8 @@ export default class UsersSubsystem extends SubSystem {
         // storage_quota - the user's storage quota in MB (number)
         // email - the user's chosen contact email (string)
         // socials - the user's chosen social media links in the format '[name]:-:[url]' as such, the string ':-:' must not be in either [name] or [url] (string[])
-        await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, socials TEXT[])`;
+        // hashed_password - the user's password after it has been hashed by bun (string)
+        await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, socials TEXT[], hashed_password TEXT)`;
 
         let administratorUserId = await this.createUser("admin");
 

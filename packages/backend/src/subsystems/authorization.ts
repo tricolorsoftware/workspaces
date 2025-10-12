@@ -1,11 +1,12 @@
-import type {Instance} from "../index.js";
+import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
+import { USERS_DATABASE_CONNECTION_ID } from "./users.js";
 
 export const AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID = "databases/authorization_sessions";
 
 export default class AuthorizationSubsystem extends SubSystem {
     constructor(instance: Instance) {
-        super("authorization", instance)
+        super("authorization", instance);
         return this;
     }
 
@@ -14,7 +15,33 @@ export default class AuthorizationSubsystem extends SubSystem {
 
         if ((await db`SELECT token FROM Users WHERE id = ${userId} AND token = ${sessionToken}`).count !== 0) return false;
 
-        return false
+        return false;
+    }
+
+    // TODO: unimplemented
+    // Creates a new session for a user
+    // @returns {string} the new session's sessionToken
+    async createSession(userId: number, password: string): Promise<string> {
+        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        return "Implement me!";
+    }
+
+    // Sets a user's password to password
+    // @returns {true} successful
+    // @returns {false} failed
+    async setPassword(userId: number, password: string): Promise<boolean> {
+        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        if (!(await this.instance.subSystems.users.doesUserExist(userId))) {
+            return false;
+        }
+
+        const hashedPassword = await Bun.password.hash(password);
+
+        await db`UPDATE Users SET hashed_password = ${hashedPassword} WHERE id = ${userId}`;
+
+        return true;
     }
 
     async startup() {
