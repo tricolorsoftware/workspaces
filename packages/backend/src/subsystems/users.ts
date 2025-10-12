@@ -129,21 +129,35 @@ export default class UsersSubsystem extends SubSystem {
     constructor(instance: Instance) {
         super("users", instance);
 
+        return this;
+    }
+
+    async startup(): Promise<boolean> {
+        await super.startup();
+
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
         // init the users database
-        (async () => {
-            await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, )`;
+        //
+        // id - permanent unique user id number (number)
+        // username - the user's changable username (string)
+        // forename - the user's chosen forename (string)
+        // surname - the user's chosen surname (string)
+        // gender - the user's chosen gender ("female" | "male" | "other")
+        // bio - the user's chosen bio (string)
+        // storage_quota - the user's storage quota in MB (number)
+        // email - the user's chosen contact email (string)
+        // socials - the user's chosen social media links in the format '[name]:-:[url]' as such, the string ':-:' must not be in either [name] or [url] (string[])
+        await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, socials TEXT[])`;
 
-            let administratorUserId = await this.createUser("admin");
+        let administratorUserId = await this.createUser("admin");
 
-            // if the account is newly-created
-            if (administratorUserId !== undefined) {
-                this.getUser(administratorUserId);
-            }
-        })();
+        // if the account is newly-created
+        if (administratorUserId !== undefined) {
+            this.getUser(administratorUserId);
+        }
 
-        return this;
+        return true;
     }
 
     // Create a new Workspaces User
