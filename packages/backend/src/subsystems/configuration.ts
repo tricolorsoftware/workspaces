@@ -1,19 +1,19 @@
-import type {Instance} from "../index.js";
+import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 
 export default class ConfigurationSubsystem extends SubSystem {
     isDevmode: boolean = true;
 
     constructor(instance: Instance) {
-        super("configuration", instance)
+        super("configuration", instance);
 
         return this;
     }
 
-    // TODO: implement this :3
+    // TODO: IMPLEMENT THIS
     hasFeature(feature: string): boolean {
-        if (feature === "slash_commands") return true
+        if (feature === "slash_commands") return true;
 
-        return false
+        return false;
     }
 }

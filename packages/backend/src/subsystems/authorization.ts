@@ -21,8 +21,13 @@ export default class AuthorizationSubsystem extends SubSystem {
     // TODO: unimplemented
     // Creates a new session for a user
     // @returns {string} the new session's sessionToken
-    async createSession(userId: number, password: string): Promise<string> {
+    async createSession(userId: number, password: string, deviceId: string): Promise<string> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        // TODO: this
+        const sessionToken = "[GENERATE ME!!!]";
+
+        await db`INSERT INTO Sessions (user_id, session_token, device_id) VALUES (${userId}, ${sessionToken}, ${deviceId})`;
 
         return "Implement me!";
     }
