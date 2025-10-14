@@ -25,11 +25,11 @@ export default class AuthorizationSubsystem extends SubSystem {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
         // TODO: this
-        const sessionToken = "[GENERATE ME!!!]";
+        const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
 
         await db`INSERT INTO Sessions (user_id, session_token, device_id) VALUES (${userId}, ${sessionToken}, ${deviceId})`;
 
-        return "Implement me!";
+        return sessionToken;
     }
 
     // Sets a user's password to password
@@ -52,6 +52,6 @@ export default class AuthorizationSubsystem extends SubSystem {
     async startup() {
         // loop through all users, check for any session tokens which are expired and remove them from the user's valud sessions pool
 
-        return false;
+        return true;
     }
 }

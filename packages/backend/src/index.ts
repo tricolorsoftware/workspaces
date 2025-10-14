@@ -6,6 +6,7 @@ import NotificationsSubsystem from "./subsystems/notifications.js";
 import UsersSubsystem from "./subsystems/users.js";
 import ConsoleCommandsSubsytem from "./subsystems/consoleCommands.js";
 import DatabaseSubsystem from "./subsystems/database.js";
+import AuthorizationSubsystem from "./subsystems/authorization.js";
 
 export enum InstanceStatus {
     Online,
@@ -31,6 +32,7 @@ class Instance {
         this.subSystems.consoleCommands = new ConsoleCommandsSubsytem(this);
         this.subSystems.database = new DatabaseSubsystem(this);
         this.subSystems.users = new UsersSubsystem(this);
+        this.subSystems.authorization = new AuthorizationSubsystem(this);
 
         this.status = InstanceStatus.Offline;
 
