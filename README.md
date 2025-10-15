@@ -5,8 +5,7 @@ A working environment for professionals and Home-Lab users.
 
 ### Links
 - Discord -> https://discord.gg/jcJeGEAYhY
-- GitHub -> https://github.com/tcswuk/workspaces
-- Forgejo -> https://git.tcsw.uk/workspaces
+- Git -> https://git.tcsw.uk/workspaces
 
 ## Installation Guide for Production Environments
 ---

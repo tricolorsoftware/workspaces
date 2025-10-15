@@ -7,6 +7,9 @@ import UsersSubsystem from "./subsystems/users.js";
 import ConsoleCommandsSubsytem from "./subsystems/consoleCommands.js";
 import DatabaseSubsystem from "./subsystems/database.js";
 import AuthorizationSubsystem from "./subsystems/authorization.js";
+import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
+import { workspacesRouter } from "./subsystems/trpc.js";
+import { AnyRouter } from "@trpc/server";
 
 export enum InstanceStatus {
     Online,
@@ -18,6 +21,7 @@ export enum InstanceStatus {
 class Instance {
     subSystems: SubSystems;
     log: Log;
+    webServer!: Bun.Server<BunWSClientCtx<AnyRouter>>;
     status: InstanceStatus;
 
     constructor() {
@@ -54,6 +58,38 @@ class Instance {
                 sys.log.error("Startup Failed!");
             }
         }
+
+        this.webServer = Bun.serve(
+            createBunServeHandler(
+                {
+                    router: workspacesRouter,
+                    endpoint: "/trpc",
+                    onError: (...p: any[]) => {
+                        console.error(...p);
+                        this.log.system.error("^");
+                    },
+                    responseMeta() {
+                        return {
+                            status: 200,
+                            headers: {
+                                "Access-Control-Allow-Origin": "*",
+                                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                            },
+                        };
+                    },
+                    batching: { enabled: true },
+                },
+                {
+                    port: 3563,
+                    fetch(request, server) {
+                        // will be executed if it's not a TRPC request
+                        return new Response("Hello world");
+                    },
+                },
+            ),
+        );
+        this.log.system.success(`Listening for requests on port ${3563}`);
 
         this.log.system.info("Startup complete");
 
