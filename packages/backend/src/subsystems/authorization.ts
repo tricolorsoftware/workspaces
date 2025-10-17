@@ -21,10 +21,14 @@ export default class AuthorizationSubsystem extends SubSystem {
     // TODO: unimplemented
     // Creates a new session for a user
     // @returns {string} the new session's sessionToken
-    async createSession(userId: number, password: string, deviceId: string): Promise<string> {
+    async createSession(userId: number, password: string, deviceId: string): Promise<string | undefined> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        // TODO: this
+        if (!(await Bun.password.verify(password, (await db`SELECT hashed_password FROM Users WHERE id = ${userId}`)?.hashed_password)))
+            return undefined;
+
+        this.log.info("Password entered matched the hashed password.");
+
         const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
 
         await db`INSERT INTO Sessions (user_id, session_token, device_id) VALUES (${userId}, ${sessionToken}, ${deviceId})`;
