@@ -8,8 +8,8 @@ import ConsoleCommandsSubsytem from "./subsystems/consoleCommands.js";
 import DatabaseSubsystem from "./subsystems/database.js";
 import AuthorizationSubsystem from "./subsystems/authorization.js";
 import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
-import { workspacesRouter } from "./subsystems/trpc.js";
 import { AnyRouter } from "@trpc/server";
+import { workspacesRouter } from "./subsystems/trpc.js";
 
 export enum InstanceStatus {
     Online,
@@ -62,9 +62,12 @@ class Instance {
         this.webServer = Bun.serve(
             createBunServeHandler(
                 {
-                    router: workspacesRouter,
+                    router: workspacesRouter(this),
                     endpoint: "/trpc",
                     onError: (...p: any[]) => {
+                        // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
+                        if (p["0"]["type"] === "unknown") return;
+
                         console.error(...p);
                         this.log.system.error("^");
                     },

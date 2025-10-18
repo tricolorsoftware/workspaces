@@ -7,7 +7,6 @@ import UKText from "@tricolor/uikit-solid/src/components/text/UKText.tsx";
 import styles from "./Login.module.scss";
 import UKTextField from "@tricolor/uikit-solid/src/components/textField/UKTextField.tsx";
 import { useNavigate } from "@solidjs/router";
-import trpc from "../../../lib/trpc";
 
 const UserSelectPage: Component = () => {
     const navigate = useNavigate();
@@ -31,8 +30,6 @@ const UserSelectPage: Component = () => {
                     disabled={username() === "" || password() === ""}
                     onClick={() => {
                         console.log("Requesting login for", username(), password());
-
-                        trpc.internals.test.query();
                     }}
                     color={"filled"}
                 >

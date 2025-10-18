@@ -110,7 +110,7 @@ export class WorkspacesUser {
     async setQuota(quota: number): Promise<boolean> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        await db`UPDATE Users SET storage_quote = ${quota} WHERE id = ${this.userId}`;
+        await db`UPDATE Users SET storage_quota = ${quota} WHERE id = ${this.userId}`;
 
         return true;
     }
@@ -122,6 +122,26 @@ export class WorkspacesUser {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
         return (await db`SELECT storage_quota FROM Users WHERE id = ${this.userId}`)?.[0].storage_quota || undefined;
+    }
+
+    // Sets the user's bio to bio
+    // @returns {false} failed to change the bio
+    // @returns {true} successfully changed the bio
+    async setBio(bio: string): Promise<boolean> {
+        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        await db`UPDATE Users SET bio = ${bio} WHERE id = ${this.userId}`;
+
+        return true;
+    }
+
+    // Get the user's bio
+    // @returns {string} the users bio
+    // @returns {undefined} could not get the user's bio
+    async getBio(): Promise<string | undefined> {
+        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        return (await db`SELECT bio FROM Users WHERE id = ${this.userId}`)?.[0].surname || undefined;
     }
 }
 
@@ -175,7 +195,7 @@ export default class UsersSubsystem extends SubSystem {
             surname: "Doe",
         };
 
-        let id = (await db`INSERT INTO Users ${sql(user)} RETURNING id`).id;
+        let id = (await db`INSERT INTO Users ${sql(user)} RETURNING id`)[0].id;
 
         return id;
     }

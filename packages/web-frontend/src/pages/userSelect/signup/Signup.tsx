@@ -13,6 +13,7 @@ import UKSearchableDropdownMenu from "@tricolor/uikit-solid/src/components/searc
 import { SearchableDropdownMenuItemType } from "@tricolor/uikit-solid/src/components/searchableDropdownMenu/lib/items.ts";
 import isEmail from "@tricolor/uikit-solid/src/core/validation/isEmail.ts";
 import UKIndeterminateSpinner from "@tricolor/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.tsx";
+import trpc from "../../../lib/trpc";
 
 enum UserSelectStage {
     Username, // set username
@@ -356,11 +357,22 @@ const UserSelectPage: Component = () => {
                             Deny
                         </UKButton>
                         <UKButton
-                            onClick={() => {
-                                // HERE WE CALL THE API TO CREATE THE USER
-                                alert("Here we should create the user");
+                            onClick={async () => {
+                                // create the user
+                                let resp = await trpc.authorization.signup.mutate({
+                                    username: username(),
+                                    bio: bio(),
+                                    displayName: displayName(),
+                                    emailAddress: emailAddress(),
+                                    emailCode: emailCode(),
+                                    gender: gender(),
+                                    password: password(),
+                                });
 
-                                setStage(UserSelectStage.GuidePrompt);
+                                if (resp.type === "success") setStage(UserSelectStage.GuidePrompt);
+
+                                // TODO: add an error toast here instead of a console message (When implemented in UIKit of course)
+                                console.error(resp);
                             }}
                             color={"filled"}
                         >

@@ -1,39 +1,63 @@
+import z from "zod";
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
+import { publicProcedure } from "./trpc.js";
 import { USERS_DATABASE_CONNECTION_ID } from "./users.js";
 
 export const AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID = "databases/authorization_sessions";
 
+export enum AuthorizedDeviceType {
+    Desktop,
+    Mobile,
+    UnknownBrowser,
+}
+
 export default class AuthorizationSubsystem extends SubSystem {
     constructor(instance: Instance) {
         super("authorization", instance);
+
         return this;
     }
 
-    async isAuthorized(userId: string, sessionToken: string): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
-
-        if ((await db`SELECT token FROM Users WHERE id = ${userId} AND token = ${sessionToken}`).count !== 0) return false;
-
-        return false;
-    }
-
-    // TODO: unimplemented
     // Creates a new session for a user
     // @returns {string} the new session's sessionToken
-    async createSession(userId: number, password: string, deviceId: string): Promise<string | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+    async createSession(userId: number, password: string, deviceId: AuthorizedDeviceType): Promise<string | undefined> {
+        const usersDb = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        if (!(await Bun.password.verify(password, (await db`SELECT hashed_password FROM Users WHERE id = ${userId}`)?.hashed_password)))
+        if (
+            !(await Bun.password.verify(
+                password,
+                (await usersDb`SELECT hashed_password FROM Users WHERE id = ${userId}`)[0]?.hashed_password,
+            ))
+        )
             return undefined;
+
+        const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
 
         this.log.info("Password entered matched the hashed password.");
 
         const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
 
-        await db`INSERT INTO Sessions (user_id, session_token, device_id) VALUES (${userId}, ${sessionToken}, ${deviceId})`;
+        await sessionsDb`INSERT INTO Sessions (user_id, session_token, device_id) VALUES (${userId}, ${sessionToken}, ${deviceId})`;
 
-        return sessionToken;
+        return `workspaces_session:${userId}:${sessionToken}`;
+    }
+
+    // Verifies that a sessionToken exists and is vaild
+    // @returns {number} the userId of the session
+    // @returns {undefined} the session is invalid
+    async verifySession(sessionToken: string): Promise<number | undefined> {
+        const [_, userId, token] = sessionToken.split(":");
+
+        const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
+
+        const sessionId = (
+            await sessionsDb`SELECT session_id FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`
+        )[0].session_id;
+
+        if (sessionId !== undefined) return Number(userId);
+
+        return undefined;
     }
 
     // Sets a user's password to password
@@ -55,6 +79,16 @@ export default class AuthorizationSubsystem extends SubSystem {
 
     async startup() {
         // loop through all users, check for any session tokens which are expired and remove them from the user's valud sessions pool
+
+        const db = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
+
+        // init the sessions database
+        //
+        // session_id - the id of the session (number)
+        // user_id - the id of the user (number)
+        // session_token - the session's access token in the format 'workspaces_session:[user_id]:[token]' (string)
+        // device_id - the session's device type (AuthorizedDeviceType)
+        await db`CREATE TABLE IF NOT EXISTS Sessions (session_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, session_token TEXT, device_id INTEGER)`;
 
         return true;
     }

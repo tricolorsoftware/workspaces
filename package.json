@@ -10,14 +10,13 @@
         "url": "https://github.com/tricoloruk/workspaces"
     },
     "scripts": {
-        "web": "yarn --cwd packages/web-frontend run dev",
-        "backend": "yarn --cwd packages/backend run dev",
-        "uikit": "yarn --cwd packages/uikit-solid run dev"
+        "web": "bun run --cwd packages/web-frontend dev",
+        "backend": "bun run --cwd packages/backend dev",
+        "uikit": "bun run --cwd packages/uikit-solid dev"
     },
     "private": true,
     "dependencies": {
         "@typescript/native-preview": "^7.0.0-dev.20250814.1",
         "prettier": "^3.6.2"
-    },
-    "packageManager": "yarn@1.22.22"
+    }
 }
