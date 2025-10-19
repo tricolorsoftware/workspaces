@@ -9,7 +9,8 @@ import DatabaseSubsystem from "./subsystems/database.js";
 import AuthorizationSubsystem from "./subsystems/authorization.js";
 import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
 import { AnyRouter } from "@trpc/server";
-import { workspacesRouter } from "./subsystems/trpc.js";
+import { createTRPCContext, workspacesRouter } from "./subsystems/trpc.js";
+import { BunRequest } from "bun";
 
 export enum InstanceStatus {
     Online,
@@ -59,29 +60,37 @@ class Instance {
             }
         }
 
+        const self = this;
+
         this.webServer = Bun.serve(
             createBunServeHandler(
                 {
-                    router: workspacesRouter(this),
+                    router: workspacesRouter,
                     endpoint: "/trpc",
                     onError: (...p: any[]) => {
                         // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
-                        if (p["0"]["type"] === "unknown") return;
+                        if (p[0].type === "unknown") return;
+                        if (p[0].error.code === "UNAUTHORIZED") return;
 
                         console.error(...p);
                         this.log.system.error("^");
+                    },
+                    createContext(opt: { req: BunRequest; resHeaders: Headers }) {
+                        return createTRPCContext({ rawRequest: { req: opt.req, resHeaders: opt.resHeaders }, instance: self });
                     },
                     responseMeta() {
                         return {
                             status: 200,
                             headers: {
-                                "Access-Control-Allow-Origin": "*",
+                                "Access-Control-Allow-Origin": "http://localhost:5173", // TODO: change this according to a config file
                                 "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
                                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                                "Access-Control-Allow-Credentials": "true",
                             },
                         };
                     },
                     batching: { enabled: true },
+                    emitWsUpgrades: false,
                 },
                 {
                     port: 3563,

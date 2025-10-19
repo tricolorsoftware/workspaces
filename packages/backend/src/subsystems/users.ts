@@ -42,7 +42,7 @@ export class WorkspacesUser {
     async getUsername(): Promise<string | undefined> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        return (await db`SELECT username FROM Users WHERE id = ${this.userId}`)?.[0].username || undefined;
+        return (await db`SELECT username FROM Users WHERE id = ${this.userId}`)?.[0]?.username || undefined;
     }
 
     // Sets the user's forename to forename
@@ -62,7 +62,7 @@ export class WorkspacesUser {
     async getForename(): Promise<string | undefined> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        return (await db`SELECT forename FROM Users WHERE id = ${this.userId}`)?.[0].forename || undefined;
+        return (await db`SELECT forename FROM Users WHERE id = ${this.userId}`)?.[0]?.forename || undefined;
     }
 
     // Sets the user's surname to surname
@@ -82,7 +82,7 @@ export class WorkspacesUser {
     async getSurname(): Promise<string | undefined> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        return (await db`SELECT surname FROM Users WHERE id = ${this.userId}`)?.[0].surname || undefined;
+        return (await db`SELECT surname FROM Users WHERE id = ${this.userId}`)?.[0]?.surname || undefined;
     }
 
     // Sets the user's forename and surname to the provided forename and surname
@@ -121,7 +121,7 @@ export class WorkspacesUser {
     async getQuota(): Promise<number | undefined> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        return (await db`SELECT storage_quota FROM Users WHERE id = ${this.userId}`)?.[0].storage_quota || undefined;
+        return (await db`SELECT storage_quota FROM Users WHERE id = ${this.userId}`)?.[0]?.storage_quota || undefined;
     }
 
     // Sets the user's bio to bio
@@ -141,7 +141,7 @@ export class WorkspacesUser {
     async getBio(): Promise<string | undefined> {
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        return (await db`SELECT bio FROM Users WHERE id = ${this.userId}`)?.[0].surname || undefined;
+        return (await db`SELECT bio FROM Users WHERE id = ${this.userId}`)?.[0]?.surname || undefined;
     }
 }
 
@@ -175,7 +175,7 @@ export default class UsersSubsystem extends SubSystem {
 
         // if the account is newly-created
         if (administratorUserId !== undefined) {
-            this.getUser(administratorUserId);
+            this.getUserById(administratorUserId);
         }
 
         return true;
@@ -195,7 +195,7 @@ export default class UsersSubsystem extends SubSystem {
             surname: "Doe",
         };
 
-        let id = (await db`INSERT INTO Users ${sql(user)} RETURNING id`)[0].id;
+        let id = (await db`INSERT INTO Users ${sql(user)} RETURNING id`)?.[0]?.id;
 
         return id;
     }
@@ -211,8 +211,18 @@ export default class UsersSubsystem extends SubSystem {
         return false;
     }
 
-    async getUser(userId: number): Promise<WorkspacesUser> {
-        this.doesUserExist(userId);
+    async getUserById(userId: number): Promise<WorkspacesUser | undefined> {
+        if (this.doesUserExist(userId) === undefined) return undefined;
+
+        return new WorkspacesUser(this.instance, userId);
+    }
+
+    async getUserByUsername(username: string): Promise<WorkspacesUser | undefined> {
+        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        const userId = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0]?.id;
+
+        if (this.doesUserExist(userId) === undefined) return undefined;
 
         return new WorkspacesUser(this.instance, userId);
     }

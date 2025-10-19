@@ -5,11 +5,8 @@ const trpc = createTRPCClient<WorkspacesTRPCRouter>({
     links: [
         httpBatchLink({
             url: "http://localhost:3563/trpc",
-            // You can pass any HTTP headers you wish here
-            async headers() {
-                return {
-                    authorization: "Nothing for now TM",
-                };
+            fetch(input, init) {
+                return fetch(input, { credentials: "include", ...init });
             },
         }),
     ],

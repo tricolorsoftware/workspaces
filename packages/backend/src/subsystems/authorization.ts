@@ -27,7 +27,7 @@ export default class AuthorizationSubsystem extends SubSystem {
         if (
             !(await Bun.password.verify(
                 password,
-                (await usersDb`SELECT hashed_password FROM Users WHERE id = ${userId}`)[0]?.hashed_password,
+                (await usersDb`SELECT hashed_password FROM Users WHERE id = ${userId}`)?.[0]?.hashed_password,
             ))
         )
             return undefined;
@@ -38,7 +38,8 @@ export default class AuthorizationSubsystem extends SubSystem {
 
         const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
 
-        await sessionsDb`INSERT INTO Sessions (user_id, session_token, device_id) VALUES (${userId}, ${sessionToken}, ${deviceId})`;
+        // valid for 7 days?
+        await sessionsDb`INSERT INTO Sessions (user_id, session_token, device_id, valid_until) VALUES (${userId}, ${sessionToken}, ${deviceId}, ${Date.now() + 7 * 24 * 60 * 60 * 1000})`;
 
         return `workspaces_session:${userId}:${sessionToken}`;
     }
@@ -53,7 +54,7 @@ export default class AuthorizationSubsystem extends SubSystem {
 
         const sessionId = (
             await sessionsDb`SELECT session_id FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`
-        )[0].session_id;
+        )?.[0]?.session_id;
 
         if (sessionId !== undefined) return Number(userId);
 
@@ -88,7 +89,8 @@ export default class AuthorizationSubsystem extends SubSystem {
         // user_id - the id of the user (number)
         // session_token - the session's access token in the format 'workspaces_session:[user_id]:[token]' (string)
         // device_id - the session's device type (AuthorizedDeviceType)
-        await db`CREATE TABLE IF NOT EXISTS Sessions (session_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, session_token TEXT, device_id INTEGER)`;
+        // valid_until - the epoch time which when reached, the session will be invalid (number)
+        await db`CREATE TABLE IF NOT EXISTS Sessions (session_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, session_token TEXT, device_id INTEGER, valid_until BIGINT)`;
 
         return true;
     }

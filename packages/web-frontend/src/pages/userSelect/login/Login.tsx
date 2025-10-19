@@ -7,6 +7,7 @@ import UKText from "@tricolor/uikit-solid/src/components/text/UKText.tsx";
 import styles from "./Login.module.scss";
 import UKTextField from "@tricolor/uikit-solid/src/components/textField/UKTextField.tsx";
 import { useNavigate } from "@solidjs/router";
+import trpc from "../../../lib/trpc";
 
 const UserSelectPage: Component = () => {
     const navigate = useNavigate();
@@ -28,8 +29,18 @@ const UserSelectPage: Component = () => {
                 </UKButton>
                 <UKButton
                     disabled={username() === "" || password() === ""}
-                    onClick={() => {
-                        console.log("Requesting login for", username(), password());
+                    onClick={async () => {
+                        const resp = await trpc.authorization.signin.mutate({
+                            username: username(),
+                            password: password(),
+                        });
+
+                        if (resp.type === "success") {
+                            window.location.href = "/app";
+                        }
+
+                        // TODO: change to a toast when support is included in UIKit
+                        console.error("Failed to login");
                     }}
                     color={"filled"}
                 >

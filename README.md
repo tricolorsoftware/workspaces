@@ -67,7 +67,6 @@ A working environment for professionals and Home-Lab users.
 	- filesystem
 	- users
 	- teams
-	-
 	- docker containers (& management)
 		- applications
 			- frontends

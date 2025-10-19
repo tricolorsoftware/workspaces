@@ -10,9 +10,16 @@ export default class DatabaseSubsystem extends SubSystem {
         super("database", instance);
 
         this.databaseConnections = {};
-        this.instance.subSystems.filesystem.createDirectoryIfNotExists(path.join(this.instance.subSystems.filesystem.FS_ROOT, "databases"));
 
         return this;
+    }
+
+    async startup(): Promise<boolean> {
+        await this.instance.subSystems.filesystem.createDirectoryIfNotExists(
+            path.join(this.instance.subSystems.filesystem.FS_ROOT, "databases"),
+        );
+
+        return true;
     }
 
     getConnection(connectionId: string) {
