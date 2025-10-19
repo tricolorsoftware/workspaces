@@ -4,7 +4,7 @@ import clsx from "clsx";
 import UKIcon from "../icon/UKIcon.tsx";
 import type { ButtonShape } from "./lib/shape.ts";
 import type { ButtonColor } from "./lib/color.ts";
-import styles from "./UKButton.module.scss"
+import styles from "./UKButton.module.scss";
 
 const UKButton: Component<{
     children: JSX.Element;
@@ -40,10 +40,8 @@ const UKButton: Component<{
                     props.onClick(e);
                 }
             }}
-            class={clsx(
-                styles.root,
-                props.class,
-            )}
+            class={clsx(styles.root, props.class)}
+            type="button"
         >
             {props.leadingIcon && <UKIcon class={styles.iconClass}>{props.leadingIcon}</UKIcon>}
             {props.children || "No Label Provided"}

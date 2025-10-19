@@ -2287,9 +2287,9 @@ function applyTheme(theme: UKDesignTheme, element: HTMLDivElement, mode: "light"
     tokens.raw.ref.palette = { ...tokens.raw.ref.palette, ...theme.ref.palette };
     tokens.raw.ref.typeface = { ...tokens.raw.ref.typeface, ...theme.ref.typeface };
 
-    let cssVars: [string, string][] = []
+    let cssVars: [string, string][] = [];
 
-    const randomClassName = "uk" + crypto.randomUUID()
+    const randomClassName = "uk" + crypto.randomUUID();
 
     function applyProperty(key: string, value: () => string) {
         cssVars.push([key.slice(4, -1), value()]);
@@ -2535,151 +2535,301 @@ function applyTheme(theme: UKDesignTheme, element: HTMLDivElement, mode: "light"
     applyProperty(uk.sys.typescale["display-large"].weight, uk.raw.sys.typescale["display-large"].weight);
     applyProperty(uk.sys.typescale["display-large"].font, uk.raw.sys.typescale["display-large"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["label-small"]["text-transform"], uk.raw.sys.typescale.emphasized["label-small"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["label-small"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["label-small"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["label-small"]["axis-value"], uk.raw.sys.typescale.emphasized["label-small"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["label-small"]["font-style"], uk.raw.sys.typescale.emphasized["label-small"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["label-small"]["text-decoration"], uk.raw.sys.typescale.emphasized["label-small"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["label-small"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["label-small"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["label-small"]["line-height"], uk.raw.sys.typescale.emphasized["label-small"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["label-small"].tracking, uk.raw.sys.typescale.emphasized["label-small"].tracking);
     applyProperty(uk.sys.typescale.emphasized["label-small"].size, uk.raw.sys.typescale.emphasized["label-small"].size);
     applyProperty(uk.sys.typescale.emphasized["label-small"].weight, uk.raw.sys.typescale.emphasized["label-small"].weight);
     applyProperty(uk.sys.typescale.emphasized["label-small"].font, uk.raw.sys.typescale.emphasized["label-small"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["label-medium"]["text-transform"], uk.raw.sys.typescale.emphasized["label-medium"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["label-medium"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["label-medium"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["label-medium"]["axis-value"], uk.raw.sys.typescale.emphasized["label-medium"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["label-medium"]["font-style"], uk.raw.sys.typescale.emphasized["label-medium"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["label-medium"]["text-decoration"], uk.raw.sys.typescale.emphasized["label-medium"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["label-medium"]["line-height"], uk.raw.sys.typescale.emphasized["label-medium"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["label-medium"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["label-medium"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["label-medium"]["line-height"],
+        uk.raw.sys.typescale.emphasized["label-medium"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["label-medium"].tracking, uk.raw.sys.typescale.emphasized["label-medium"].tracking);
     applyProperty(uk.sys.typescale.emphasized["label-medium"].size, uk.raw.sys.typescale.emphasized["label-medium"].size);
     applyProperty(uk.sys.typescale.emphasized["label-medium"].weight, uk.raw.sys.typescale.emphasized["label-medium"].weight);
     applyProperty(uk.sys.typescale.emphasized["label-medium"].font, uk.raw.sys.typescale.emphasized["label-medium"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["label-large"]["text-transform"], uk.raw.sys.typescale.emphasized["label-large"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["label-large"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["label-large"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["label-large"]["axis-value"], uk.raw.sys.typescale.emphasized["label-large"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["label-large"]["font-style"], uk.raw.sys.typescale.emphasized["label-large"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["label-large"]["text-decoration"], uk.raw.sys.typescale.emphasized["label-large"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["label-large"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["label-large"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["label-large"]["line-height"], uk.raw.sys.typescale.emphasized["label-large"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["label-large"].tracking, uk.raw.sys.typescale.emphasized["label-large"].tracking);
     applyProperty(uk.sys.typescale.emphasized["label-large"].size, uk.raw.sys.typescale.emphasized["label-large"].size);
     applyProperty(uk.sys.typescale.emphasized["label-large"].weight, uk.raw.sys.typescale.emphasized["label-large"].weight);
     applyProperty(uk.sys.typescale.emphasized["label-large"].font, uk.raw.sys.typescale.emphasized["label-large"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["body-small"]["text-transform"], uk.raw.sys.typescale.emphasized["body-small"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["body-small"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["body-small"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["body-small"]["axis-value"], uk.raw.sys.typescale.emphasized["body-small"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["body-small"]["font-style"], uk.raw.sys.typescale.emphasized["body-small"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["body-small"]["text-decoration"], uk.raw.sys.typescale.emphasized["body-small"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["body-small"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["body-small"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["body-small"]["line-height"], uk.raw.sys.typescale.emphasized["body-small"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["body-small"].tracking, uk.raw.sys.typescale.emphasized["body-small"].tracking);
     applyProperty(uk.sys.typescale.emphasized["body-small"].size, uk.raw.sys.typescale.emphasized["body-small"].size);
     applyProperty(uk.sys.typescale.emphasized["body-small"].weight, uk.raw.sys.typescale.emphasized["body-small"].weight);
     applyProperty(uk.sys.typescale.emphasized["body-small"].font, uk.raw.sys.typescale.emphasized["body-small"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["body-medium"]["text-transform"], uk.raw.sys.typescale.emphasized["body-medium"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["body-medium"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["body-medium"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["body-medium"]["axis-value"], uk.raw.sys.typescale.emphasized["body-medium"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["body-medium"]["font-style"], uk.raw.sys.typescale.emphasized["body-medium"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["body-medium"]["text-decoration"], uk.raw.sys.typescale.emphasized["body-medium"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["body-medium"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["body-medium"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["body-medium"]["line-height"], uk.raw.sys.typescale.emphasized["body-medium"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["body-medium"].tracking, uk.raw.sys.typescale.emphasized["body-medium"].tracking);
     applyProperty(uk.sys.typescale.emphasized["body-medium"].size, uk.raw.sys.typescale.emphasized["body-medium"].size);
     applyProperty(uk.sys.typescale.emphasized["body-medium"].weight, uk.raw.sys.typescale.emphasized["body-medium"].weight);
     applyProperty(uk.sys.typescale.emphasized["body-medium"].font, uk.raw.sys.typescale.emphasized["body-medium"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["body-large"]["text-transform"], uk.raw.sys.typescale.emphasized["body-large"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["body-large"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["body-large"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["body-large"]["axis-value"], uk.raw.sys.typescale.emphasized["body-large"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["body-large"]["font-style"], uk.raw.sys.typescale.emphasized["body-large"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["body-large"]["text-decoration"], uk.raw.sys.typescale.emphasized["body-large"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["body-large"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["body-large"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["body-large"]["line-height"], uk.raw.sys.typescale.emphasized["body-large"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["body-large"].tracking, uk.raw.sys.typescale.emphasized["body-large"].tracking);
     applyProperty(uk.sys.typescale.emphasized["body-large"].size, uk.raw.sys.typescale.emphasized["body-large"].size);
     applyProperty(uk.sys.typescale.emphasized["body-large"].weight, uk.raw.sys.typescale.emphasized["body-large"].weight);
     applyProperty(uk.sys.typescale.emphasized["body-large"].font, uk.raw.sys.typescale.emphasized["body-large"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["title-small"]["text-transform"], uk.raw.sys.typescale.emphasized["title-small"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["title-small"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["title-small"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["title-small"]["axis-value"], uk.raw.sys.typescale.emphasized["title-small"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["title-small"]["font-style"], uk.raw.sys.typescale.emphasized["title-small"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["title-small"]["text-decoration"], uk.raw.sys.typescale.emphasized["title-small"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["title-small"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["title-small"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["title-small"]["line-height"], uk.raw.sys.typescale.emphasized["title-small"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["title-small"].tracking, uk.raw.sys.typescale.emphasized["title-small"].tracking);
     applyProperty(uk.sys.typescale.emphasized["title-small"].size, uk.raw.sys.typescale.emphasized["title-small"].size);
     applyProperty(uk.sys.typescale.emphasized["title-small"].weight, uk.raw.sys.typescale.emphasized["title-small"].weight);
     applyProperty(uk.sys.typescale.emphasized["title-small"].font, uk.raw.sys.typescale.emphasized["title-small"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["title-medium"]["text-transform"], uk.raw.sys.typescale.emphasized["title-medium"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["title-medium"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["title-medium"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["title-medium"]["axis-value"], uk.raw.sys.typescale.emphasized["title-medium"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["title-medium"]["font-style"], uk.raw.sys.typescale.emphasized["title-medium"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["title-medium"]["text-decoration"], uk.raw.sys.typescale.emphasized["title-medium"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["title-medium"]["line-height"], uk.raw.sys.typescale.emphasized["title-medium"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["title-medium"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["title-medium"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["title-medium"]["line-height"],
+        uk.raw.sys.typescale.emphasized["title-medium"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["title-medium"].tracking, uk.raw.sys.typescale.emphasized["title-medium"].tracking);
     applyProperty(uk.sys.typescale.emphasized["title-medium"].size, uk.raw.sys.typescale.emphasized["title-medium"].size);
     applyProperty(uk.sys.typescale.emphasized["title-medium"].weight, uk.raw.sys.typescale.emphasized["title-medium"].weight);
     applyProperty(uk.sys.typescale.emphasized["title-medium"].font, uk.raw.sys.typescale.emphasized["title-medium"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["title-large"]["text-transform"], uk.raw.sys.typescale.emphasized["title-large"]["text-transform"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["title-large"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["title-large"]["text-transform"],
+    );
     applyProperty(uk.sys.typescale.emphasized["title-large"]["axis-value"], uk.raw.sys.typescale.emphasized["title-large"]["axis-value"]);
     applyProperty(uk.sys.typescale.emphasized["title-large"]["font-style"], uk.raw.sys.typescale.emphasized["title-large"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["title-large"]["text-decoration"], uk.raw.sys.typescale.emphasized["title-large"]["text-decoration"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["title-large"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["title-large"]["text-decoration"],
+    );
     applyProperty(uk.sys.typescale.emphasized["title-large"]["line-height"], uk.raw.sys.typescale.emphasized["title-large"]["line-height"]);
     applyProperty(uk.sys.typescale.emphasized["title-large"].tracking, uk.raw.sys.typescale.emphasized["title-large"].tracking);
     applyProperty(uk.sys.typescale.emphasized["title-large"].size, uk.raw.sys.typescale.emphasized["title-large"].size);
     applyProperty(uk.sys.typescale.emphasized["title-large"].weight, uk.raw.sys.typescale.emphasized["title-large"].weight);
     applyProperty(uk.sys.typescale.emphasized["title-large"].font, uk.raw.sys.typescale.emphasized["title-large"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["headline-small"]["text-transform"], uk.raw.sys.typescale.emphasized["headline-small"]["text-transform"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-small"]["axis-value"], uk.raw.sys.typescale.emphasized["headline-small"]["axis-value"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-small"]["font-style"], uk.raw.sys.typescale.emphasized["headline-small"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-small"]["text-decoration"], uk.raw.sys.typescale.emphasized["headline-small"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-small"]["line-height"], uk.raw.sys.typescale.emphasized["headline-small"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-small"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["headline-small"]["text-transform"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-small"]["axis-value"],
+        uk.raw.sys.typescale.emphasized["headline-small"]["axis-value"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-small"]["font-style"],
+        uk.raw.sys.typescale.emphasized["headline-small"]["font-style"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-small"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["headline-small"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-small"]["line-height"],
+        uk.raw.sys.typescale.emphasized["headline-small"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["headline-small"].tracking, uk.raw.sys.typescale.emphasized["headline-small"].tracking);
     applyProperty(uk.sys.typescale.emphasized["headline-small"].size, uk.raw.sys.typescale.emphasized["headline-small"].size);
     applyProperty(uk.sys.typescale.emphasized["headline-small"].weight, uk.raw.sys.typescale.emphasized["headline-small"].weight);
     applyProperty(uk.sys.typescale.emphasized["headline-small"].font, uk.raw.sys.typescale.emphasized["headline-small"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["headline-medium"]["text-transform"], uk.raw.sys.typescale.emphasized["headline-medium"]["text-transform"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-medium"]["axis-value"], uk.raw.sys.typescale.emphasized["headline-medium"]["axis-value"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-medium"]["font-style"], uk.raw.sys.typescale.emphasized["headline-medium"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-medium"]["text-decoration"], uk.raw.sys.typescale.emphasized["headline-medium"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-medium"]["line-height"], uk.raw.sys.typescale.emphasized["headline-medium"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-medium"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["headline-medium"]["text-transform"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-medium"]["axis-value"],
+        uk.raw.sys.typescale.emphasized["headline-medium"]["axis-value"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-medium"]["font-style"],
+        uk.raw.sys.typescale.emphasized["headline-medium"]["font-style"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-medium"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["headline-medium"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-medium"]["line-height"],
+        uk.raw.sys.typescale.emphasized["headline-medium"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["headline-medium"].tracking, uk.raw.sys.typescale.emphasized["headline-medium"].tracking);
     applyProperty(uk.sys.typescale.emphasized["headline-medium"].size, uk.raw.sys.typescale.emphasized["headline-medium"].size);
     applyProperty(uk.sys.typescale.emphasized["headline-medium"].weight, uk.raw.sys.typescale.emphasized["headline-medium"].weight);
     applyProperty(uk.sys.typescale.emphasized["headline-medium"].font, uk.raw.sys.typescale.emphasized["headline-medium"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["headline-large"]["text-transform"], uk.raw.sys.typescale.emphasized["headline-large"]["text-transform"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-large"]["axis-value"], uk.raw.sys.typescale.emphasized["headline-large"]["axis-value"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-large"]["font-style"], uk.raw.sys.typescale.emphasized["headline-large"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-large"]["text-decoration"], uk.raw.sys.typescale.emphasized["headline-large"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["headline-large"]["line-height"], uk.raw.sys.typescale.emphasized["headline-large"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-large"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["headline-large"]["text-transform"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-large"]["axis-value"],
+        uk.raw.sys.typescale.emphasized["headline-large"]["axis-value"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-large"]["font-style"],
+        uk.raw.sys.typescale.emphasized["headline-large"]["font-style"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-large"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["headline-large"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["headline-large"]["line-height"],
+        uk.raw.sys.typescale.emphasized["headline-large"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["headline-large"].tracking, uk.raw.sys.typescale.emphasized["headline-large"].tracking);
     applyProperty(uk.sys.typescale.emphasized["headline-large"].size, uk.raw.sys.typescale.emphasized["headline-large"].size);
     applyProperty(uk.sys.typescale.emphasized["headline-large"].weight, uk.raw.sys.typescale.emphasized["headline-large"].weight);
     applyProperty(uk.sys.typescale.emphasized["headline-large"].font, uk.raw.sys.typescale.emphasized["headline-large"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["display-small"]["text-transform"], uk.raw.sys.typescale.emphasized["display-small"]["text-transform"]);
-    applyProperty(uk.sys.typescale.emphasized["display-small"]["axis-value"], uk.raw.sys.typescale.emphasized["display-small"]["axis-value"]);
-    applyProperty(uk.sys.typescale.emphasized["display-small"]["font-style"], uk.raw.sys.typescale.emphasized["display-small"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["display-small"]["text-decoration"], uk.raw.sys.typescale.emphasized["display-small"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["display-small"]["line-height"], uk.raw.sys.typescale.emphasized["display-small"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["display-small"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["display-small"]["text-transform"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-small"]["axis-value"],
+        uk.raw.sys.typescale.emphasized["display-small"]["axis-value"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-small"]["font-style"],
+        uk.raw.sys.typescale.emphasized["display-small"]["font-style"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-small"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["display-small"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-small"]["line-height"],
+        uk.raw.sys.typescale.emphasized["display-small"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["display-small"].tracking, uk.raw.sys.typescale.emphasized["display-small"].tracking);
     applyProperty(uk.sys.typescale.emphasized["display-small"].size, uk.raw.sys.typescale.emphasized["display-small"].size);
     applyProperty(uk.sys.typescale.emphasized["display-small"].weight, uk.raw.sys.typescale.emphasized["display-small"].weight);
     applyProperty(uk.sys.typescale.emphasized["display-small"].font, uk.raw.sys.typescale.emphasized["display-small"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["display-medium"]["text-transform"], uk.raw.sys.typescale.emphasized["display-medium"]["text-transform"]);
-    applyProperty(uk.sys.typescale.emphasized["display-medium"]["axis-value"], uk.raw.sys.typescale.emphasized["display-medium"]["axis-value"]);
-    applyProperty(uk.sys.typescale.emphasized["display-medium"]["font-style"], uk.raw.sys.typescale.emphasized["display-medium"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["display-medium"]["text-decoration"], uk.raw.sys.typescale.emphasized["display-medium"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["display-medium"]["line-height"], uk.raw.sys.typescale.emphasized["display-medium"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["display-medium"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["display-medium"]["text-transform"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-medium"]["axis-value"],
+        uk.raw.sys.typescale.emphasized["display-medium"]["axis-value"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-medium"]["font-style"],
+        uk.raw.sys.typescale.emphasized["display-medium"]["font-style"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-medium"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["display-medium"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-medium"]["line-height"],
+        uk.raw.sys.typescale.emphasized["display-medium"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["display-medium"].tracking, uk.raw.sys.typescale.emphasized["display-medium"].tracking);
     applyProperty(uk.sys.typescale.emphasized["display-medium"].size, uk.raw.sys.typescale.emphasized["display-medium"].size);
     applyProperty(uk.sys.typescale.emphasized["display-medium"].weight, uk.raw.sys.typescale.emphasized["display-medium"].weight);
     applyProperty(uk.sys.typescale.emphasized["display-medium"].font, uk.raw.sys.typescale.emphasized["display-medium"].font);
 
-    applyProperty(uk.sys.typescale.emphasized["display-large"]["text-transform"], uk.raw.sys.typescale.emphasized["display-large"]["text-transform"]);
-    applyProperty(uk.sys.typescale.emphasized["display-large"]["axis-value"], uk.raw.sys.typescale.emphasized["display-large"]["axis-value"]);
-    applyProperty(uk.sys.typescale.emphasized["display-large"]["font-style"], uk.raw.sys.typescale.emphasized["display-large"]["font-style"]);
-    applyProperty(uk.sys.typescale.emphasized["display-large"]["text-decoration"], uk.raw.sys.typescale.emphasized["display-large"]["text-decoration"]);
-    applyProperty(uk.sys.typescale.emphasized["display-large"]["line-height"], uk.raw.sys.typescale.emphasized["display-large"]["line-height"]);
+    applyProperty(
+        uk.sys.typescale.emphasized["display-large"]["text-transform"],
+        uk.raw.sys.typescale.emphasized["display-large"]["text-transform"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-large"]["axis-value"],
+        uk.raw.sys.typescale.emphasized["display-large"]["axis-value"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-large"]["font-style"],
+        uk.raw.sys.typescale.emphasized["display-large"]["font-style"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-large"]["text-decoration"],
+        uk.raw.sys.typescale.emphasized["display-large"]["text-decoration"],
+    );
+    applyProperty(
+        uk.sys.typescale.emphasized["display-large"]["line-height"],
+        uk.raw.sys.typescale.emphasized["display-large"]["line-height"],
+    );
     applyProperty(uk.sys.typescale.emphasized["display-large"].tracking, uk.raw.sys.typescale.emphasized["display-large"].tracking);
     applyProperty(uk.sys.typescale.emphasized["display-large"].size, uk.raw.sys.typescale.emphasized["display-large"].size);
     applyProperty(uk.sys.typescale.emphasized["display-large"].weight, uk.raw.sys.typescale.emphasized["display-large"].weight);
@@ -2822,13 +2972,13 @@ function applyTheme(theme: UKDesignTheme, element: HTMLDivElement, mode: "light"
     }
 
     element.querySelector("[data-uikit-styles]")!.innerHTML = `.${randomClassName} {
-    ${
-        cssVars.map(v => {
-            return `${v[0]}:${v[1]}`
-        }).join(";")
-    }            
-}`
-    element.classList.add(randomClassName)
+    ${cssVars
+        .map((v) => {
+            return `${v[0]}:${v[1]}`;
+        })
+        .join(";")}
+}`;
+    element.classList.add(randomClassName);
 }
 
 const uk = tokens;

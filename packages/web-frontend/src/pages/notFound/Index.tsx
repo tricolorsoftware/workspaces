@@ -5,7 +5,7 @@ import UKText from "@tricolor/uikit-solid/src/components/text/UKText.jsx";
 const NotFoundPage: Component<RouteSectionProps<unknown>> = () => {
     return (
         <div>
-            <UKText emphasized size="l" role="display">
+            <UKText emphasized={true} size="l" role="display">
                 404 - Not Found
             </UKText>
         </div>

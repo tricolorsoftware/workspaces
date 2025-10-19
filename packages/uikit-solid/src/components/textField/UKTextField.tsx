@@ -23,6 +23,7 @@ const UKTextField: Component<{
     as?: "textarea" | "input";
     error?: boolean;
     class?: string;
+    autocomplete?: string;
 }> = (props) => {
     const [characterLength, setCharacterLength] = createSignal<number>(0);
     let textAreaRef!: HTMLTextAreaElement;
@@ -55,6 +56,7 @@ const UKTextField: Component<{
         type: props.shouldMask ? "password" : "text",
         onFocus: props.onFocus,
         onBlur: props.onBlur,
+        autocomplete: props.autocomplete,
     };
 
     createEffect(() => {

@@ -21,32 +21,34 @@ const UserSelectPage: Component = () => {
                 Sign In
             </UKText>
             <UKDivider direction={DividerDirection.horizontal} />
-            <UKTextField color={"outlined"} label={"Username"} getValue={setUsername} />
-            <UKTextField shouldMask={true} color={"outlined"} label={"Password"} getValue={setPassword} />
-            <div class={styles.loginButtons}>
-                <UKButton onClick={() => 0} disabled={username() === ""} color={"standard"}>
-                    Forgot password?
-                </UKButton>
-                <UKButton
-                    disabled={username() === "" || password() === ""}
-                    onClick={async () => {
-                        const resp = await trpc.authorization.signin.mutate({
-                            username: username(),
-                            password: password(),
-                        });
+            <form>
+                <UKTextField color={"outlined"} label={"Username"} getValue={setUsername} autocomplete="username" />
+                <UKTextField shouldMask={true} color={"outlined"} label={"Password"} autocomplete="password" getValue={setPassword} />
+                <div class={styles.loginButtons}>
+                    <UKButton onClick={() => 0} disabled={username() === ""} color={"standard"}>
+                        Forgot password?
+                    </UKButton>
+                    <UKButton
+                        disabled={username() === "" || password() === ""}
+                        onClick={async () => {
+                            const resp = await trpc.authorization.signin.mutate({
+                                username: username(),
+                                password: password(),
+                            });
 
-                        if (resp.type === "success") {
-                            window.location.href = "/app";
-                        }
+                            if (resp.type === "success") {
+                                window.location.href = "/app";
+                            }
 
-                        // TODO: change to a toast when support is included in UIKit
-                        console.error("Failed to login");
-                    }}
-                    color={"filled"}
-                >
-                    Login
-                </UKButton>
-            </div>
+                            // TODO: change to a toast when support is included in UIKit
+                            console.error("Failed to login");
+                        }}
+                        color={"filled"}
+                    >
+                        Login
+                    </UKButton>
+                </div>
+            </form>
             <UKDivider direction={DividerDirection.horizontal} />
             <div class={styles.signupSegment}>
                 <UKText role={"body"} size={"m"}>

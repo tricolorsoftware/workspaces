@@ -6,18 +6,25 @@
     width: max-content;
     min-width: min(20rem, calc(100% - 2rem));
 
-    > .loginButtons {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: end;
-        gap: 0.5rem;
-    }
-
     > .signupSegment {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    > form {
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        > .loginButtons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: end;
+            gap: 0.5rem;
+        }
     }
 }
