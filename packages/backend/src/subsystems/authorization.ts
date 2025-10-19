@@ -1,7 +1,5 @@
-import z from "zod";
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
-import { publicProcedure } from "./trpc.js";
 import { USERS_DATABASE_CONNECTION_ID } from "./users.js";
 
 export const AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID = "databases/authorization_sessions";
@@ -52,11 +50,16 @@ export default class AuthorizationSubsystem extends SubSystem {
 
         const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
 
-        const sessionId = (
-            await sessionsDb`SELECT session_id FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`
-        )?.[0]?.session_id;
+        const session = (
+            await sessionsDb`SELECT session_id, valid_until FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`
+        )?.[0];
 
-        if (sessionId !== undefined) return Number(userId);
+        if (Number(session?.valid_until) < Date.now()) {
+            await sessionsDb`DELETE FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`;
+            return undefined;
+        }
+
+        if (session?.session_id !== undefined) return Number(userId);
 
         return undefined;
     }
