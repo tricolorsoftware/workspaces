@@ -6,42 +6,63 @@
     padding-left: 0;
     padding-right: 0;
     margin-left: 0;
+    position: relative;
 
     transition: padding var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
 
     & .icon {
         --icon-size: 24px;
         color: rgb(var(--uk-sys-color-on-surface-variant));
+        background: #0000;
+
+        transition:
+            background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
     }
 
     & .label {
         color: rgb(var(--uk-sys-color-on-surface-variant));
+        position: absolute;
+        line-height: 1rem;
+        transition:
+            top var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            transform var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
     }
 
     &[data-expanded="true"] {
         flex-direction: row;
         align-items: center;
         width: max-content;
+        padding-right: 1rem;
+
+        & .label {
+            position: relative;
+        }
     }
 
     &[data-expanded="false"] {
-        flex-direction: column;
         justify-content: center;
         width: 100%;
 
         & .icon {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
             padding-left: 1rem;
             padding-right: 1rem;
+            border-radius: 10rem;
         }
 
         & .label {
-            width: 3.5rem;
-            text-align: center;
+            width: max-content;
+            top: 2rem;
+            left: 50%;
+            transform: translate(-50%, 0);
         }
     }
 
     &[data-active="true"] {
-        & .label {
+        .label {
             color: rgb(var(--uk-sys-color-secondary));
         }
 
@@ -50,7 +71,7 @@
         }
 
         &[data-expanded="false"] {
-            & .icon {
+            .icon {
                 background-color: rgb(var(--uk-sys-color-secondary-container));
             }
         }
