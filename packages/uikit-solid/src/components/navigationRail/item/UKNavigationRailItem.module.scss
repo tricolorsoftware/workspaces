@@ -21,11 +21,14 @@
     & .icon {
         --icon-size: 24px;
         color: rgb(var(--uk-sys-color-on-surface-variant));
+        padding: 0;
 
         transition:
             width var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
-            color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+            color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            padding-left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            padding-right var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
     }
 
     & .label {
@@ -33,11 +36,15 @@
         position: absolute;
         line-height: 1rem;
         padding-left: 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
 
         transition:
             top var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
-            transform var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+            transform var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            padding-left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
     }
 
     &[data-expanded="true"] {
@@ -50,9 +57,9 @@
         padding-bottom: 1rem;
 
         & .label {
-            position: relative;
             padding-left: 0.5rem;
             text-align: start;
+            animation: label-fade-in-expanded var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate) forwards;
         }
 
         & .icon {
@@ -71,8 +78,9 @@
         & .icon {
             padding-top: 0.25rem;
             padding-bottom: 0.25rem;
-            width: 3.5rem;
             border-radius: 10rem;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
         }
 
         &:hover {
@@ -88,13 +96,10 @@
         & .label {
             width: max-content;
             max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            top: 2.25rem;
             left: 50%;
             text-align: center;
             transform: translate(-50%, 0);
+            animation: label-fade-in-collapsed var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate) forwards;
         }
     }
 
@@ -114,5 +119,43 @@
                 background-color: rgb(var(--uk-sys-color-secondary-container));
             }
         }
+    }
+}
+
+@keyframes label-fade-in-expanded {
+    0% {
+        opacity: 0;
+        position: absolute;
+    }
+    30% {
+        opacity: 0.25;
+        position: relative;
+        margin-left: -0.5rem;
+    }
+    100% {
+        opacity: 1;
+        position: relative;
+        margin-left: 0;
+    }
+}
+
+@keyframes label-fade-in-collapsed {
+    0% {
+        opacity: 0;
+        position: absolute;
+    }
+    25% {
+        opacity: 0;
+        position: absolute;
+    }
+    50% {
+        opacity: 0.25;
+        position: absolute;
+        top: 2rem;
+    }
+    100% {
+        opacity: 1;
+        position: absolute;
+        top: 2.25rem;
     }
 }

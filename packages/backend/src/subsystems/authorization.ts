@@ -20,26 +20,32 @@ export default class AuthorizationSubsystem extends SubSystem {
     // Creates a new session for a user
     // @returns {string} the new session's sessionToken
     async createSession(userId: number, password: string, deviceId: AuthorizedDeviceType): Promise<string | undefined> {
-        const usersDb = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        try {
+            const usersDb = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        if (
-            !(await Bun.password.verify(
-                password,
-                (await usersDb`SELECT hashed_password FROM Users WHERE id = ${userId}`)?.[0]?.hashed_password,
-            ))
-        )
+            if (
+                !(await Bun.password.verify(
+                    password,
+                    (await usersDb`SELECT hashed_password FROM Users WHERE id = ${userId}`)?.[0]?.hashed_password,
+                ))
+            )
+                return undefined;
+
+            const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
+
+            this.log.info("Password entered matched the hashed password.");
+
+            const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
+
+            // valid for 7 days?
+            await sessionsDb`INSERT INTO Sessions (user_id, session_token, device_id, valid_until) VALUES (${userId}, ${sessionToken}, ${deviceId}, ${Date.now() + 7 * 24 * 60 * 60 * 1000})`;
+
+            return `workspaces_session:${userId}:${sessionToken}`;
+        } catch (err) {
+            this.log.warning(`Failed to create session. -> ${userId} @ ${AuthorizedDeviceType[deviceId]}`);
+
             return undefined;
-
-        const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
-
-        this.log.info("Password entered matched the hashed password.");
-
-        const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
-
-        // valid for 7 days?
-        await sessionsDb`INSERT INTO Sessions (user_id, session_token, device_id, valid_until) VALUES (${userId}, ${sessionToken}, ${deviceId}, ${Date.now() + 7 * 24 * 60 * 60 * 1000})`;
-
-        return `workspaces_session:${userId}:${sessionToken}`;
+        }
     }
 
     // Verifies that a sessionToken exists and is vaild

@@ -77,7 +77,7 @@ export const workspacesRouter = t.router({
             .mutation(async (opt) => {
                 // TODO: implement this
 
-                if (opt.input.emailCode !== "[WHATEVER IT WAS]")
+                if (opt.input.emailCode !== "a")
                     return {
                         type: "error",
                         message: "The email code did not match!",
@@ -170,28 +170,21 @@ export const workspacesRouter = t.router({
     app: {
         navigation: {
             user: {
-                name: procedure
-                    .output(
-                        z.union([
-                            z.object({ type: z.literal("error"), message: z.string() }),
-                            z.object({ username: z.string(), forename: z.string(), surname: z.string() }),
-                        ]),
-                    )
-                    .query(async (opt) => {
-                        const db = opt.ctx.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+                name: procedure.output(z.object({ username: z.string(), forename: z.string(), surname: z.string() })).query(async (opt) => {
+                    const db = opt.ctx.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-                        const user = (await db`SELECT username, forename, surname FROM Users WHERE id = ${opt.ctx.userId};`)?.[0];
+                    const user = (await db`SELECT username, forename, surname FROM Users WHERE id = ${opt.ctx.userId};`)?.[0];
 
-                        if (!user) {
-                            return { type: "error", message: "User does not exist" };
-                        }
+                    if (!user) {
+                        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: { message: "User does not exist" } });
+                    }
 
-                        return {
-                            username: user.username || "@",
-                            forename: user.forename || "Unknown",
-                            surname: user.surname || "",
-                        };
-                    }),
+                    return {
+                        username: user.username || "@",
+                        forename: user.forename || "Unknown",
+                        surname: user.surname || "",
+                    };
+                }),
             },
         },
     },

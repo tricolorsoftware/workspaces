@@ -1,4 +1,4 @@
-import { For, type Component, type JSX, type ParentProps } from "solid-js";
+import { For, Index, type Component, type JSX, type ParentProps } from "solid-js";
 import styles from "./UKNavigationRail.module.scss";
 import UKNavigationRailItem from "./item/UKNavigationRailItem";
 import UKNavigationRailMenuButton from "./menuButton/UKNavigationRailMenuButton";
@@ -31,7 +31,7 @@ const UKNavigationRail: Component<
             <div class={styles.root} data-type={props.type || "modal"} data-expanded={props.expanded || false}>
                 {props.setExpanded && <UKNavigationRailMenuButton setExpanded={props.setExpanded} expanded={props.expanded || false} />}
                 {props.anchorPoints?.top}
-                <For each={props.items}>{(i) => <UKNavigationRailItem expanded={props.expanded || false} {...i} />}</For>
+                <Index each={props.items}>{(i) => <UKNavigationRailItem expanded={props.expanded || false} {...i()} />}</Index>
                 {props.anchorPoints?.bottom}
             </div>
             <div class={styles.pageRoot}>{props.children}</div>
