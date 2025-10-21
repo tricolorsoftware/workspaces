@@ -18,11 +18,11 @@ const UKNavigationRailItem: Component<{
             {props.badgeCount === undefined ? (
                 <UKIcon class={styles.icon}>{props.icon}</UKIcon>
             ) : (
-                <UKBadge count={props.badgeCount}>
+                <UKBadge class={styles.badge} count={props.badgeCount}>
                     <UKIcon class={styles.icon}>{props.icon}</UKIcon>
                 </UKBadge>
             )}
-            <UKText class={styles.label} role="label" size="s">
+            <UKText class={styles.label} role="label" size={props.expanded ? "m" : "s"}>
                 {props.label}
             </UKText>
         </button>

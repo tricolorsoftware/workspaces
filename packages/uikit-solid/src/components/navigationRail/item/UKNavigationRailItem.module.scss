@@ -1,21 +1,29 @@
 .root {
+    &:first-of-type {
+        margin-top: 2.75rem;
+    }
+
     display: flex;
-    background: transparent;
+    background-color: rgb(0, 0, 0, 0);
     border: none;
     color: unset;
     padding-left: 0;
     padding-right: 0;
     margin-left: 0;
     position: relative;
+    border-radius: 10rem;
+    user-select: none;
 
-    transition: padding var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+    transition:
+        padding var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+        background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
 
     & .icon {
         --icon-size: 24px;
         color: rgb(var(--uk-sys-color-on-surface-variant));
-        background: #0000;
 
         transition:
+            width var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
     }
@@ -24,6 +32,8 @@
         color: rgb(var(--uk-sys-color-on-surface-variant));
         position: absolute;
         line-height: 1rem;
+        padding-left: 0;
+
         transition:
             top var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
@@ -34,29 +44,56 @@
         flex-direction: row;
         align-items: center;
         width: max-content;
+        padding-left: 1rem;
         padding-right: 1rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
 
         & .label {
             position: relative;
+            padding-left: 0.5rem;
+            text-align: start;
+        }
+
+        & .icon {
+            width: 1.5rem;
+        }
+
+        &:hover {
+            background-color: rgb(var(--uk-sys-color-secondary-container), var(--uk-sys-state-hover-state-layer-opacity));
         }
     }
 
     &[data-expanded="false"] {
-        justify-content: center;
-        width: 100%;
+        width: 4rem;
+        padding-bottom: 1rem;
 
         & .icon {
             padding-top: 0.25rem;
             padding-bottom: 0.25rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            width: 3.5rem;
             border-radius: 10rem;
+        }
+
+        &:hover {
+            & .icon {
+                background-color: rgb(var(--uk-sys-color-secondary-container), var(--uk-sys-state-hover-state-layer-opacity));
+            }
+        }
+
+        & .badge {
+            width: 100%;
         }
 
         & .label {
             width: max-content;
-            top: 2rem;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            top: 2.25rem;
             left: 50%;
+            text-align: center;
             transform: translate(-50%, 0);
         }
     }
@@ -68,6 +105,8 @@
 
         &[data-expanded="true"] {
             background-color: rgb(var(--uk-sys-color-secondary-container));
+
+            /* margin-left: 1.25rem; */
         }
 
         &[data-expanded="false"] {

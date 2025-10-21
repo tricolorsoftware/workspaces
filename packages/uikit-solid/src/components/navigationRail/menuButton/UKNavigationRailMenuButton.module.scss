@@ -1,0 +1,14 @@
+.root {
+    margin-right: auto;
+    margin-top: 2.75rem;
+    margin-left: 0.75rem;
+}
+
+.icon {
+    transform: rotate(180deg);
+    transition: transform var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+}
+
+.expanded {
+    transform: rotate(0deg);
+}

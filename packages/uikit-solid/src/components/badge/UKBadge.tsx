@@ -1,14 +1,15 @@
 import type { Component, JSX } from "solid-js";
-import styles from "./UKBadge.module.scss"
+import styles from "./UKBadge.module.scss";
+import clsx from "clsx";
 
-const UKBadge: Component<{ children: JSX.Element; count: number }> = ({ children, count }) => {
+const UKBadge: Component<{ children: JSX.Element; count: number; class?: string }> = (props) => {
     return (
-        <div class={styles.root}>
-            {children}
-            {count === 1 ? (
+        <div class={clsx(styles.root, props.class)}>
+            {props.children}
+            {props.count === 1 ? (
                 <div class={styles.singleCount} />
-            ) : count > 1 ? (
-                <div class={styles.multipleCount}>{Math.min(count, 999) === 999 ? `999+` : count}</div>
+            ) : props.count > 1 ? (
+                <div class={styles.multipleCount}>{Math.min(props.count, 999) === 999 ? `999+` : props.count}</div>
             ) : null}
         </div>
     );

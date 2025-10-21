@@ -30,4 +30,6 @@
     line-height: var(--uk-sys-typescale-label-small-line-height);
     padding-left: 4px;
     padding-right: 4px;
+    user-select: none;
+    pointer-events: none;
 }

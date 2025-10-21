@@ -5,7 +5,7 @@ import type { IconButtonShape } from "./lib/shape";
 import type { IconButtonColor } from "./lib/color";
 import type { IconButtonWidth } from "./lib/width";
 import clsx from "clsx";
-import styles from "./UKIconButton.module.scss"
+import styles from "./UKIconButton.module.scss";
 
 // TODO: implement smooth animations as is done with UKButton
 
@@ -18,6 +18,7 @@ const UKIconButton: Component<{
     color?: IconButtonColor;
     size?: IconButtonSize;
     class?: string;
+    iconClass?: string;
     type?: "normal" | "toggle";
     disabled?: boolean;
 }> = (props) => {
@@ -40,12 +41,9 @@ const UKIconButton: Component<{
                     props.onClick(e);
                 }
             }}
-            class={clsx(
-                props.class,
-                styles.root
-            )}
+            class={clsx(props.class, styles.root)}
         >
-            <UKIcon>{props.icon}</UKIcon>
+            <UKIcon class={props.iconClass}>{props.icon}</UKIcon>
         </button>
     );
 };

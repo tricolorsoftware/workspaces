@@ -11,9 +11,11 @@ const App: Component = () => {
                     <Route path={"/signup"} component={lazy(() => import("./pages/userSelect/signup/Signup.tsx"))} />
                 </Route>
                 <Route component={lazy(() => import("./pages/app/Layout.tsx"))}>
-                    <Route path={"/app"} component={lazy(() => import("./pages/notFound/Index.tsx"))} />
+                    <Route path={"/app"} component={lazy(() => import("./pages/app/App.tsx"))} />
+                    <Route path={"*"} component={lazy(() => import("./pages/notFound/Index.tsx"))} />
                 </Route>
             </Route>
+            <Route path={"*"} component={lazy(() => import("./pages/notFound/Index.tsx"))} />
         </Router>
     );
 };

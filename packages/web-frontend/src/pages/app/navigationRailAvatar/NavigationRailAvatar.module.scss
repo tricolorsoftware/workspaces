@@ -1,0 +1,47 @@
+.root {
+    margin-top: 2.75rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    background: #0000;
+    padding: 1rem;
+    border-radius: 10rem;
+
+    transition:
+        background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+        color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+
+    .avatar {
+        outline-style: solid;
+        outline-offset: 2px;
+        outline-width: 0;
+        outline-color: transparent;
+
+        transition:
+            outline-color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-decelerate),
+            outline-width var(--uk-sys-motion-duration-50) linear;
+
+        &:hover {
+            outline-width: var(--uk-sys-state-focus-indicator-thickness);
+            outline-offset: var(--uk-sys-state-focus-indicator-outer-offset);
+            outline-color: rgb(var(--uk-sys-color-secondary));
+        }
+    }
+
+    .nameContainer {
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        white-space: nowrap;
+    }
+
+    .username {
+    }
+
+    &[data-expanded="true"] {
+        color: rgb(var(--uk-sys-color-secondary));
+        background-color: rgb(var(--uk-sys-color-secondary-container));
+    }
+}

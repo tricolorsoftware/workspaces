@@ -1,7 +1,7 @@
 import { For, type Component, type JSX, type ParentProps } from "solid-js";
-import UKAvatar from "../avatar/UKAvatar";
 import styles from "./UKNavigationRail.module.scss";
 import UKNavigationRailItem from "./item/UKNavigationRailItem";
+import UKNavigationRailMenuButton from "./menuButton/UKNavigationRailMenuButton";
 
 const UKNavigationRail: Component<
     ParentProps<{
@@ -22,12 +22,14 @@ const UKNavigationRail: Component<
             active?: boolean;
         }[];
         expanded?: boolean;
+        setExpanded?: (expanded: boolean) => void;
         type?: "modal" | "surface";
     }>
 > = (props) => {
     return (
         <div class={styles.layout}>
             <div class={styles.root} data-type={props.type || "modal"} data-expanded={props.expanded || false}>
+                {props.setExpanded && <UKNavigationRailMenuButton setExpanded={props.setExpanded} expanded={props.expanded || false} />}
                 {props.anchorPoints?.top}
                 <For each={props.items}>{(i) => <UKNavigationRailItem expanded={props.expanded || false} {...i} />}</For>
                 {props.anchorPoints?.bottom}
