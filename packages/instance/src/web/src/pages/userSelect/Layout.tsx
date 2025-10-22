@@ -1,9 +1,9 @@
-import UKCard from "@tricolor/uikit-solid/src/components/card/UKCard.jsx";
-import UKText from "@tricolor/uikit-solid/src/components/text/UKText.jsx";
+import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.jsx";
+import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
 import { Suspense, type Component } from "solid-js";
 import styles from "./Layout.module.scss";
 import type { RouteSectionProps } from "@solidjs/router";
-import UKIndeterminateSpinner from "@tricolor/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.jsx";
+import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.jsx";
 
 const UserSelectLayout: Component<RouteSectionProps<unknown>> = (props) => {
     return (

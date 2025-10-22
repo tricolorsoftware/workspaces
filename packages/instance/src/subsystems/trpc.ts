@@ -41,7 +41,7 @@ export const procedure = t.procedure.use(async (opt) => {
 
     const parsedCookie = Bun.Cookie.parse(cookieString);
 
-    let userId = opt.ctx.instance.subSystems.authorization.verifySession(parsedCookie.value);
+    let userId = await opt.ctx.instance.subSystems.authorization.verifySession(decodeURIComponent(parsedCookie.value));
 
     if (userId === undefined) {
         throw new TRPCError({ code: "UNAUTHORIZED", message: "invalid session" });
@@ -176,7 +176,7 @@ export const workspacesRouter = t.router({
                     const user = (await db`SELECT username, forename, surname FROM Users WHERE id = ${opt.ctx.userId};`)?.[0];
 
                     if (!user) {
-                        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause: { message: "User does not exist" } });
+                        throw new TRPCError({ code: "NOT_FOUND", cause: { message: "User does not exist" } });
                     }
 
                     return {

@@ -72,7 +72,7 @@ class Instance {
                         if (p[0].type === "unknown") return;
                         if (p[0].error.code === "UNAUTHORIZED") return;
 
-                        console.error(...p);
+                        console.error(p[0].error);
                         this.log.system.error("^");
                     },
                     createContext(opt: { req: BunRequest; resHeaders: Headers }) {
@@ -98,6 +98,8 @@ class Instance {
                         // will be executed if it's not a TRPC request
                         return new Response("Hello world");
                     },
+                    // FIXME: only enable this when the development configuration flag is set (when flags are implemented ofc)
+                    development: true,
                 },
             ),
         );

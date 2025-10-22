@@ -11,24 +11,28 @@
     padding-right: 0;
     margin-left: 0;
     position: relative;
-    border-radius: 10rem;
+    border-radius: 2rem;
     user-select: none;
 
     transition:
         padding var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
-        background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+        background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+        border-radius var(--border-radius-duration, var(--uk-sys-motion-duration-50)) var(--uk-sys-motion-easing-linear);
 
     & .icon {
         --icon-size: 24px;
         color: rgb(var(--uk-sys-color-on-surface-variant));
-        padding: 0;
+        margin: 0;
 
         transition:
             width var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            height var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
             color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
-            padding-left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
-            padding-right var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+            margin-left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            margin-right var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            margin-top var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
+            margin-bottom var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
     }
 
     & .label {
@@ -55,6 +59,7 @@
         padding-right: 1rem;
         padding-top: 1rem;
         padding-bottom: 1rem;
+        border-radius: 3.5rem;
 
         & .label {
             padding-left: 0.5rem;
@@ -65,28 +70,18 @@
         & .icon {
             width: 1.5rem;
         }
-
-        &:hover {
-            background-color: rgb(var(--uk-sys-color-secondary-container), var(--uk-sys-state-hover-state-layer-opacity));
-        }
     }
 
     &[data-expanded="false"] {
         width: 4rem;
-        padding-bottom: 1rem;
+        margin-bottom: 1rem;
 
         & .icon {
-            padding-top: 0.25rem;
-            padding-bottom: 0.25rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+            margin-left: 1.25rem;
+            margin-right: 1.25rem;
             border-radius: 10rem;
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
-        }
-
-        &:hover {
-            & .icon {
-                background-color: rgb(var(--uk-sys-color-secondary-container), var(--uk-sys-state-hover-state-layer-opacity));
-            }
         }
 
         & .badge {
@@ -115,10 +110,22 @@
         }
 
         &[data-expanded="false"] {
-            .icon {
-                background-color: rgb(var(--uk-sys-color-secondary-container));
-            }
+            background-color: rgb(var(--uk-sys-color-secondary-container));
         }
+    }
+
+    &:hover {
+        background-color: rgb(var(--uk-sys-color-secondary-container), var(--uk-sys-state-hover-state-layer-opacity));
+    }
+
+    &:active {
+        background-color: rgb(var(--uk-sys-color-secondary-container), var(--uk-sys-state-pressed-state-layer-opacity));
+    }
+
+    &:focus-visible {
+        outline-width: var(--uk-sys-state-focus-indicator-thickness);
+        outline-offset: var(--uk-sys-state-focus-indicator-outer-offset);
+        outline-color: rgb(var(--uk-sys-color-secondary));
     }
 }
 

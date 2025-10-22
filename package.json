@@ -1,17 +1,18 @@
 {
-    "name": "@tricolor/workspaces",
+    "name": "@tcsw/workspaces",
     "type": "module",
     "version": "0.0.0",
     "workspaces": [
-        "packages/*"
+        "packages/*",
+        "packages/instance/src/web"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/tricoloruk/workspaces"
+        "url": "https://git.tcsw.uk/tricolor/workspaces"
     },
     "scripts": {
-        "web": "bun run --cwd packages/web-frontend dev",
-        "backend": "bun run --cwd packages/backend dev",
+        "web": "bun run --cwd packages/instance dev-web",
+        "backend": "bun run --cwd packages/instance dev-backend",
         "uikit": "bun run --cwd packages/uikit-solid dev"
     },
     "private": true,

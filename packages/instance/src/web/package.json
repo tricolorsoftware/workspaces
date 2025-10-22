@@ -1,5 +1,5 @@
 {
-    "name": "web-frontend",
+    "name": "@tcsw/workspaces-instance-web",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@solidjs/router": "^0.15.3",
-        "@tricolor/uikit-solid": "*",
+        "@tcsw/uikit-solid": "*",
         "@trpc/client": "^11.6.0",
         "@trpc/server": "^11.6.0",
         "clsx": "^2.1.1",

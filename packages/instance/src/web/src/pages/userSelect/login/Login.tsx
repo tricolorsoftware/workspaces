@@ -1,11 +1,11 @@
 import { type Component, createSignal } from "solid-js";
-import UKCard from "@tricolor/uikit-solid/src/components/card/UKCard.tsx";
-import UKButton from "@tricolor/uikit-solid/src/components/button/UKButton.tsx";
-import UKDivider from "@tricolor/uikit-solid/src/components/divider/UKDivider.tsx";
-import { DividerDirection } from "@tricolor/uikit-solid/src/components/divider/lib/direction.ts";
-import UKText from "@tricolor/uikit-solid/src/components/text/UKText.tsx";
+import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.tsx";
+import UKButton from "@tcsw/uikit-solid/src/components/button/UKButton.tsx";
+import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.tsx";
+import { DividerDirection } from "@tcsw/uikit-solid/src/components/divider/lib/direction.ts";
+import UKText from "@tcsw/uikit-solid/src/components/text/UKText.tsx";
 import styles from "./Login.module.scss";
-import UKTextField from "@tricolor/uikit-solid/src/components/textField/UKTextField.tsx";
+import UKTextField from "@tcsw/uikit-solid/src/components/textField/UKTextField.tsx";
 import { useNavigate } from "@solidjs/router";
 import trpc from "../../../lib/trpc";
 

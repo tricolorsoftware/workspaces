@@ -1,7 +1,7 @@
-import UKAvatar from "@tricolor/uikit-solid/src/components/avatar/UKAvatar.jsx";
+import UKAvatar from "@tcsw/uikit-solid/src/components/avatar/UKAvatar.jsx";
 import { createResource, type Component } from "solid-js";
 import styles from "./NavigationRailAvatar.module.scss";
-import UKText from "@tricolor/uikit-solid/src/components/text/UKText.jsx";
+import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
 import trpc from "../../../lib/trpc";
 
 const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
@@ -15,7 +15,7 @@ const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
                     {`${user()?.forename} ${user()?.surname}`}
                 </UKText>
                 <UKText size="m" role="label" class={styles.username}>
-                    {`@${user.username}`}
+                    {`@${user()?.username}`}
                 </UKText>
             </div>
         </div>

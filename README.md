@@ -39,7 +39,7 @@ A working environment for professionals and Home-Lab users.
 | --------------- | ------------------------- | --------------------------- | -------- | --- |
 | SolidJS         | solid                     |                             | No       |     |
 | Vite            | vite                      |                             | No       |     |
-| UIKit           | @tricolor/uikit-mv3-solid |                             | No       |     |
+| UIKit           | @tcsw/uikit-mv3-solid |                             | No       |     |
 | Bun             |                           | https://bun.sh              | No       |     |
 | Docker          |                           | https://www.docker.com/     | Yes      |     |
 | PostgreSQL      |                           | https://www.postgresql.org/ | No       |     |
@@ -67,10 +67,6 @@ A working environment for professionals and Home-Lab users.
 	- filesystem
 	- users
 	- teams
-	- docker containers (& management)
-		- applications
-			- frontends
-			- backends
 - web frontend
 	- login / signup flow
 	- Application-Frame layout

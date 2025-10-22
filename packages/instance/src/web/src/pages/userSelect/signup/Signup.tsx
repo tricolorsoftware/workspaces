@@ -1,18 +1,18 @@
 import { type Component, createSignal, Match, Switch } from "solid-js";
-import UKCard from "@tricolor/uikit-solid/src/components/card/UKCard.tsx";
-import UKButton from "@tricolor/uikit-solid/src/components/button/UKButton.tsx";
-import UKDivider from "@tricolor/uikit-solid/src/components/divider/UKDivider.tsx";
-import { DividerDirection } from "@tricolor/uikit-solid/src/components/divider/lib/direction.ts";
-import UKText from "@tricolor/uikit-solid/src/components/text/UKText.tsx";
-import UKTextField from "@tricolor/uikit-solid/src/components/textField/UKTextField.tsx";
+import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.tsx";
+import UKButton from "@tcsw/uikit-solid/src/components/button/UKButton.tsx";
+import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.tsx";
+import { DividerDirection } from "@tcsw/uikit-solid/src/components/divider/lib/direction.ts";
+import UKText from "@tcsw/uikit-solid/src/components/text/UKText.tsx";
+import UKTextField from "@tcsw/uikit-solid/src/components/textField/UKTextField.tsx";
 import { useNavigate } from "@solidjs/router";
 import styles from "./Signup.module.scss";
 import clsx from "clsx";
-import UKAvatar from "@tricolor/uikit-solid/src/components/avatar/UKAvatar.tsx";
-import UKSearchableDropdownMenu from "@tricolor/uikit-solid/src/components/searchableDropdownMenu/UKSearchableDropdownMenu.tsx";
-import { SearchableDropdownMenuItemType } from "@tricolor/uikit-solid/src/components/searchableDropdownMenu/lib/items.ts";
-import isEmail from "@tricolor/uikit-solid/src/core/validation/isEmail.ts";
-import UKIndeterminateSpinner from "@tricolor/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.tsx";
+import UKAvatar from "@tcsw/uikit-solid/src/components/avatar/UKAvatar.tsx";
+import UKSearchableDropdownMenu from "@tcsw/uikit-solid/src/components/searchableDropdownMenu/UKSearchableDropdownMenu.tsx";
+import { SearchableDropdownMenuItemType } from "@tcsw/uikit-solid/src/components/searchableDropdownMenu/lib/items.ts";
+import isEmail from "@tcsw/uikit-solid/src/core/validation/isEmail.ts";
+import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.tsx";
 import trpc from "../../../lib/trpc";
 
 enum UserSelectStage {

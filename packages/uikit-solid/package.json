@@ -1,61 +1,61 @@
 {
-  "name": "@tricolor/uikit-solid",
-  "version": "1.0.0",
-  "description": "The Tricolor Workspaces UI framework for solid.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tricoloruk/uikit-solid"
-  },
-  "dependencies": {
-    "@solid-primitives/media": "^2.3.3",
-    "clsx": "^2.1.1",
-    "esbuild-plugin-solid": "^0.6.0",
-    "sass-embedded": "^1.90.0",
-    "solid-js": "^1.9.9",
-    "solid-styled-components": "^0.28.5",
-    "tsup": "^8.5.0",
-    "vite": "^7.1.2",
-    "vite-plugin-solid": "^2.11.8"
-  },
-  "private": true,
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "solid": "./dist/index.jsx",
-      "default": "./dist/index.js"
+    "name": "@tcsw/uikit-solid",
+    "version": "1.0.0",
+    "description": "The Tricolor Workspaces UI framework for solid.js",
+    "repository": {
+        "type": "git",
+        "url": "https://git.tcsw.uk/tricolor/workspaces"
     },
-    "./*": {
-      "types": "./dist/*/index.d.ts",
-      "solid": "./dist/*/index.jsx",
-      "default": "./dist/*/index.js"
+    "dependencies": {
+        "@solid-primitives/media": "^2.3.3",
+        "clsx": "^2.1.1",
+        "esbuild-plugin-solid": "^0.6.0",
+        "sass-embedded": "^1.90.0",
+        "solid-js": "^1.9.9",
+        "solid-styled-components": "^0.28.5",
+        "tsup": "^8.5.0",
+        "vite": "^7.1.2",
+        "vite-plugin-solid": "^2.11.8"
     },
-    "./src/*": "./src/*"
-  },
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*/index.d.ts",
-        "./dist/index.d.ts"
-      ]
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "solid": "./dist/index.jsx",
+            "default": "./dist/index.js"
+        },
+        "./*": {
+            "types": "./dist/*/index.d.ts",
+            "solid": "./dist/*/index.jsx",
+            "default": "./dist/*/index.js"
+        },
+        "./src/*": "./src/*"
+    },
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/*/index.d.ts",
+                "./dist/index.d.ts"
+            ]
+        }
+    },
+    "source": "src/index.tsx",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "scripts": {
+        "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" tsup",
+        "build-dev": "cd ./dev && vite build",
+        "dev": "vite serve dev --host"
+    },
+    "packageManager": "yarn@1.22.22",
+    "devDependencies": {
+        "typescript": "^5.9.2",
+        "prettier": "^3.6.2"
     }
-  },
-  "source": "src/index.tsx",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" tsup",
-    "build-dev": "cd ./dev && vite build",
-    "dev": "vite serve dev --host"
-  },
-  "packageManager": "yarn@1.22.22",
-  "devDependencies": {
-    "typescript": "^5.9.2",
-      "prettier": "^3.6.2"
-  }
 }

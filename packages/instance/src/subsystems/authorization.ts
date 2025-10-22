@@ -57,11 +57,11 @@ export default class AuthorizationSubsystem extends SubSystem {
         const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
 
         const session = (
-            await sessionsDb`SELECT session_id, valid_until FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`
+            await sessionsDb`SELECT session_id, valid_until FROM Sessions WHERE user_id = ${userId} AND session_token = ${token}`
         )?.[0];
 
         if (Number(session?.valid_until) < Date.now()) {
-            await sessionsDb`DELETE FROM Sessions WHERE user_id = ${userId} AND session_token = ${sessionToken}`;
+            await sessionsDb`DELETE FROM Sessions WHERE user_id = ${userId} AND session_token = ${token}`;
             return undefined;
         }
 
