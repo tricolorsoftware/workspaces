@@ -5,7 +5,11 @@ A working environment for professionals and Home-Lab users.
 
 ### Links
 - Discord -> https://discord.gg/jcJeGEAYhY
-- Git -> https://git.tcsw.uk/workspaces
+- Git -> https://git.tcsw.uk/tricolor/workspaces
+- Git (Mirror) -> https://github.com/tcswuk/workspaces
+
+> [!IMPORTANT]
+> Pull requests and issues not reported on https://git.tcsw.uk/tricolor/workspaces will be ignored.
 
 ## Installation Guide for Production Environments
 ---
@@ -39,7 +43,7 @@ A working environment for professionals and Home-Lab users.
 | --------------- | ------------------------- | --------------------------- | -------- | --- |
 | SolidJS         | solid                     |                             | No       |     |
 | Vite            | vite                      |                             | No       |     |
-| UIKit           | @tcsw/uikit-mv3-solid |                             | No       |     |
+| UIKit           | @tcsw/uikit-mv3-solid     |                             | No       |     |
 | Bun             |                           | https://bun.sh              | No       |     |
 | Docker          |                           | https://www.docker.com/     | Yes      |     |
 | PostgreSQL      |                           | https://www.postgresql.org/ | No       |     |
@@ -67,7 +71,22 @@ A working environment for professionals and Home-Lab users.
 	- filesystem
 	- users
 	- teams
-- web frontend
+- web
 	- login / signup flow
 	- Application-Frame layout
 	- Notification visuals
+
+
+How do applications work?
+
+Backend starts up
+Backend verifies the filesystem
+Backend creates a Applications.tsx file in /fs
+Web starts up
+Web uses /fs/Applications.tsx as the router for /app
+
+Applications can now be accessed by /app/[application-id]/
+
+Applications can be external or located in /fs/applications/
+Only applications specified in /fs/applications.json as enabled will be loaded
+Any number of unloaded applications can also be specified in /fs/applications.json and they will be enablable by the administrator

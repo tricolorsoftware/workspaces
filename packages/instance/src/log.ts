@@ -1,5 +1,6 @@
 import chalk from "chalk";
-import {Instance} from "./index.js";
+import { Instance } from "./index.js";
+import { WorkspacesFeatureFlags } from "./subsystems/configuration.js";
 
 export enum LogType {
     INFO,
@@ -94,7 +95,7 @@ class Logger {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private logMessage(type: LogType, ...message: any[]): this {
-        this.logHistory.push({type: type, level: this.level, message: message});
+        this.logHistory.push({ type: type, level: this.level, message: message });
 
         let typeString = "";
 
@@ -121,10 +122,10 @@ class Logger {
         return this;
     }
 
-    _internal_getWindowSize(): [ number, number ] {
+    _internal_getWindowSize(): [number, number] {
         let size = process?.stdout?.getWindowSize?.();
 
-        return [ size?.[ 0 ] || 120, size?.[ 1 ] || 60 ];
+        return [size?.[0] || 120, size?.[1] || 60];
     }
 
     _internal_cursorTo(x: number, y: number, cb: () => void) {
@@ -134,67 +135,45 @@ class Logger {
     }
 
     _internal_writePrompt() {
-        if (
-            !this.log.instance?.subSystems.configuration?.hasFeature("slash_commands")
-        )
-            return this;
+        if (!this.log.instance?.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) return this;
 
         // move cursor to the last row, 1st column
-        this._internal_cursorTo(0, this._internal_getWindowSize()[ 1 ], () => {
+        this._internal_cursorTo(0, this._internal_getWindowSize()[1], () => {
             // scroll view down 1 row
             process.stdout.write("\n", () => {
                 // move the cursor to the 3rd last row, 1st column
-                this._internal_cursorTo(
-                    0,
-                    this._internal_getWindowSize()[ 1 ] - 3,
-                    () => {
-                        // write the separator line to the stdout
-                        process.stdout.write(
-                            "-".repeat(this._internal_getWindowSize()[ 0 ]),
-                            () => {
-                                // move the cursor to the 2nd last row, 1st column
-                                this._internal_cursorTo(
-                                    0,
-                                    this._internal_getWindowSize()[ 1 ] - 2,
-                                    () => {
-                                        // write the branding to the stdout
-                                        process.stdout.write(
-                                            `   Workspaces Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis(
-                                                "DEV Mode")}] ` : ""}`,
-                                            () => {
-                                                // move the cursor to the metaLen+6th column of the 2nd from the bottom row
-                                                this._internal_cursorTo(
-                                                    this.log.META_LENGTH + 6,
-                                                    this._internal_getWindowSize()[ 1 ] - 2,
-                                                    () => {
-                                                        if (
-                                                            this.log.instance.subSystems.configuration?.hasFeature("slash_commands")
-                                                        ) {
-                                                            // write the prompt indicator to the stdout
-                                                            process.stdout.write(
-                                                                `> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`
-                                                            );
-                                                        } else {
-                                                            process.stdout.write("  ");
-                                                        }
-                                                    }
-                                                );
-                                            }
-                                        );
-                                    }
-                                );
-                            }
-                        );
-                    }
-                );
+                this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 3, () => {
+                    // write the separator line to the stdout
+                    process.stdout.write("-".repeat(this._internal_getWindowSize()[0]), () => {
+                        // move the cursor to the 2nd last row, 1st column
+                        this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 2, () => {
+                            // write the branding to the stdout
+                            process.stdout.write(
+                                `   Workspaces Pre-Alpha ${
+                                    this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis("DEV Mode")}] ` : ""
+                                }`,
+                                () => {
+                                    // move the cursor to the metaLen+6th column of the 2nd from the bottom row
+                                    this._internal_cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1] - 2, () => {
+                                        if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
+                                            // write the prompt indicator to the stdout
+                                            process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`);
+                                        } else {
+                                            process.stdout.write("  ");
+                                        }
+                                    });
+                                },
+                            );
+                        });
+                    });
+                });
             });
         });
     }
 
     private writeMessage(typeString: string, ...message: any[]) {
-        if (!this.log.instance.subSystems.configuration?.hasFeature("slash_commands")) {
-            // @ts-ignore
-            globalThis._internal_console.log(
+        if (!this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
+            console.log(
                 typeString,
                 chalk.bold(`${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))} `),
                 ...message,
@@ -203,7 +182,7 @@ class Logger {
             return this;
         }
 
-        this._internal_cursorTo(0, this._internal_getWindowSize()[ 1 ] - 3, () => {
+        this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 3, () => {
             process.stdout.clearLine(1, () => {
                 console.log(
                     typeString,
@@ -217,7 +196,7 @@ class Logger {
     }
 }
 
-export type {Logger}
+export type { Logger };
 
 export default class Log {
     allLogHistory: {

@@ -12,15 +12,22 @@ export default class ConfigurationSubsystem extends SubSystem {
     constructor(instance: Instance) {
         super("configuration", instance);
 
-        this.enabledFeatures = [];
+        this.enabledFeatures = [WorkspacesFeatureFlags.SlashCommands];
 
         return this;
     }
 
-    // TODO: IMPLEMENT THIS
-    hasFeature(feature: string): boolean {
-        if (feature === "slash_commands") return true;
+    hasFeature(feature: WorkspacesFeatureFlags | string): boolean {
+        if (this.enabledFeatures.find((f) => f === feature)) return true;
 
         return false;
+    }
+
+    async startup(): Promise<boolean> {
+        for (const feature in WorkspacesFeatureFlags) {
+            this.log.info(`Feature '${feature}' -> ${this.enabledFeatures.includes(feature as WorkspacesFeatureFlags)}`);
+        }
+
+        return true;
     }
 }

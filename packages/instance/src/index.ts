@@ -11,6 +11,7 @@ import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
 import { AnyRouter } from "@trpc/server";
 import { createTRPCContext, workspacesRouter } from "./subsystems/trpc.js";
 import { BunRequest } from "bun";
+import ApplicationsSubsystem from "./subsystems/applications.js";
 
 export enum InstanceStatus {
     Online,
@@ -38,6 +39,7 @@ class Instance {
         this.subSystems.database = new DatabaseSubsystem(this);
         this.subSystems.users = new UsersSubsystem(this);
         this.subSystems.authorization = new AuthorizationSubsystem(this);
+        this.subSystems.applications = new ApplicationsSubsystem(this);
 
         this.status = InstanceStatus.Offline;
 
@@ -98,8 +100,7 @@ class Instance {
                         // will be executed if it's not a TRPC request
                         return new Response("Hello world");
                     },
-                    // FIXME: only enable this when the development configuration flag is set (when flags are implemented ofc)
-                    development: true,
+                    development: this.subSystems.configuration.isDevmode,
                 },
             ),
         );
@@ -116,4 +117,4 @@ const INSTANCE = new Instance();
 export default INSTANCE;
 export type { Instance };
 
-INSTANCE.startup();
+await INSTANCE.startup();
