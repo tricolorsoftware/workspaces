@@ -110,6 +110,10 @@ class Instance {
 
         return this;
     }
+
+    async promptForRestart(reason: string): Promise<this> {
+        return this;
+    }
 }
 
 const INSTANCE = new Instance();

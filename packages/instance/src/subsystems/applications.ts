@@ -9,7 +9,6 @@ const APPLICATIONS_CONFIG_FILE_PATH = (subsystem: SubSystem) =>
     path.join(subsystem.instance.subSystems.filesystem.FS_ROOT, "applications.json");
 
 export default class ApplicationsSubsystem extends SubSystem {
-    isDevmode: boolean = true;
     availableApplications: {
         path: string;
         enabled: boolean;
@@ -37,6 +36,14 @@ export default class ApplicationsSubsystem extends SubSystem {
             let applicationsConfig = JSON.parse((await fs.readFile(APPLICATIONS_CONFIG_FILE_PATH(this))).toString());
 
             this.availableApplications = applicationsConfig;
+
+            for (const app of this.availableApplications) {
+                await this.loadApplication(app.path);
+            }
+
+            for (const app of this.availableApplications) {
+                this.log.info(`application '${app.manifest?.id}' is ${app.enabled ? "enabled" : "disabled"}`);
+            }
 
             return true;
         } catch (err) {
@@ -80,13 +87,18 @@ export default class ApplicationsSubsystem extends SubSystem {
             return false;
         }
 
-        this.log.info(`installing application at path -> ${applicationPath}`);
+        if (this.availableApplications.find((a) => a.path === applicationPath)) {
+            this.log.warning(`Cannot install application at path -> '${applicationPath}' as it is already installed!`);
+            return false;
+        }
+
+        this.log.info(`Installing application at path -> '${applicationPath}'`);
 
         await this.loadApplication(applicationPath);
 
         await this.saveApplicationsConfig();
 
-        return false;
+        return true;
     }
 
     // Load an application into Workspaces by it's installation path
@@ -94,7 +106,17 @@ export default class ApplicationsSubsystem extends SubSystem {
     async loadApplication(applicationPath: string): Promise<boolean> {
         const APPLICATION_MANIFEST_PATH = path.join(applicationPath, "manifest.json");
 
-        let applicationManifest = JSON.parse(await fs.readFile(APPLICATION_MANIFEST_PATH).toString());
+        let applicationManifest = JSON.parse((await fs.readFile(APPLICATION_MANIFEST_PATH)).toString());
+
+        let alreadyRegisteredAppliction = this.availableApplications.find((a) => a.path === applicationPath);
+
+        if (alreadyRegisteredAppliction) {
+            alreadyRegisteredAppliction.manifest = applicationManifest;
+            alreadyRegisteredAppliction.path = applicationPath;
+            alreadyRegisteredAppliction.status = [];
+
+            return true;
+        }
 
         this.availableApplications.push({
             enabled: false,
@@ -103,12 +125,41 @@ export default class ApplicationsSubsystem extends SubSystem {
             status: [],
         });
 
-        return false;
+        return true;
     }
 
     // Enable an application by it's id
     // Loads the specified backend and web frontend
     async enableApplication(applicationId: string): Promise<boolean> {
+        let app = this.availableApplications.find((a) => a.manifest?.id === applicationId);
+
+        if (app) {
+            app.enabled = true;
+            this.log.info(`Enabled application '${applicationId}'`);
+        } else {
+            this.log.error(`Couldn't find application with id '${applicationId}'`);
+        }
+
+        await this.saveApplicationsConfig();
+
+        return false;
+    }
+
+    // Disable an application by it's id
+    // doesn't take effect until the instance is restarted. When finished, it will prompt the administrator to restart
+    async disableApplication(applicationId: string): Promise<boolean> {
+        let app = this.availableApplications.find((a) => a.manifest?.id === applicationId);
+
+        if (app) {
+            app.enabled = false;
+            this.log.info(`Disabled application '${applicationId}'`);
+            await this.instance.promptForRestart(`Disable application '${applicationId}'`);
+        } else {
+            this.log.error(`Couldn't find application with id '${applicationId}'`);
+        }
+
+        await this.saveApplicationsConfig();
+
         return false;
     }
 }
