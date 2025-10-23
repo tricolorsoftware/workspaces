@@ -112,6 +112,9 @@ class Instance {
     }
 
     async promptForRestart(reason: string): Promise<this> {
+        this.log.system.warning(
+            `Hey Server Admin, THE INSTANCE HAS BEEN PROMPTED FOR RESTART DUE TO '${reason}' please restart when possible.`,
+        );
         return this;
     }
 }
