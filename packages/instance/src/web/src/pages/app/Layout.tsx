@@ -3,7 +3,6 @@ import styles from "./Layout.module.scss";
 import type { RouteSectionProps } from "@solidjs/router";
 import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.jsx";
 import UKNavigationRail from "@tcsw/uikit-solid/src/components/navigationRail/UKNavigationRail.jsx";
-import UKAvatar from "@tcsw/uikit-solid/src/components/avatar/UKAvatar.jsx";
 import NavigationRailAvatar from "./navigationRailAvatar/NavigationRailAvatar";
 
 const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {

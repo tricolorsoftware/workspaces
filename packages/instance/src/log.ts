@@ -8,6 +8,7 @@ export enum LogType {
     ERROR,
     SUCCESS,
     DEBUG,
+    RAW,
 }
 
 class Logger {
@@ -28,6 +29,26 @@ class Logger {
 
     emphasis(...message: (string | Uint8Array)[]) {
         return chalk.bold.magenta(message);
+    }
+
+    rawLog(...message: (string | Uint8Array)[]) {
+        if (this.level.length === 0) {
+            throw new Error("log level is empty");
+        }
+
+        if (message.length === 0) {
+            throw new Error("log message is empty");
+        }
+
+        return this.logMessage(LogType.RAW, ...message);
+    }
+
+    removeCommandPrompt() {
+        process.stdout.cursorTo(0, process.stdout.getWindowSize()[1] - 3, () => {
+            process.stdout.clearScreenDown();
+        });
+
+        return this;
     }
 
     info(...message: (string | Uint8Array)[]) {
@@ -115,6 +136,9 @@ class Logger {
             case LogType.DEBUG:
                 typeString = chalk.bold(`${chalk.white("[")}${chalk.magenta("DBG")}${chalk.white("]")}`);
                 break;
+            case LogType.RAW:
+                typeString = ``;
+                break;
         }
 
         this.writeMessage(typeString, ...message);
@@ -172,6 +196,17 @@ class Logger {
     }
 
     private writeMessage(typeString: string, ...message: any[]) {
+        // rawLog only
+        if (typeString === "") {
+            process.stdout.write(
+                chalk.bold(
+                    `      ${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))}  `,
+                ) + message.join(" "),
+            );
+
+            return this;
+        }
+
         if (!this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
             console.log(
                 typeString,

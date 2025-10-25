@@ -10,8 +10,9 @@ import AuthorizationSubsystem from "./subsystems/authorization.js";
 import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
 import { AnyRouter } from "@trpc/server";
 import { createTRPCContext, workspacesRouter } from "./subsystems/trpc.js";
-import { BunRequest } from "bun";
+import { BunRequest, file } from "bun";
 import ApplicationsSubsystem from "./subsystems/applications.js";
+import path from "path";
 
 export enum InstanceStatus {
     Online,
@@ -96,9 +97,48 @@ class Instance {
                 },
                 {
                     port: 3563,
+                    routes: {
+                        "/api/user/me/avatar/:size": {
+                            GET: async (req: BunRequest) => {
+                                const size = (req.params as { size: string }).size;
+
+                                const cookieString = req.headers?.get("cookie");
+
+                                if (cookieString === null) {
+                                    throw Response.json({ code: "UNAUTHORIZED", message: "missing auth cookie" });
+                                }
+
+                                const parsedCookie = Bun.Cookie.parse(cookieString);
+
+                                let userId = await self.subSystems.authorization.verifySession(decodeURIComponent(parsedCookie.value));
+
+                                if (userId === undefined) {
+                                    throw Response.json({ code: "UNAUTHORIZED", message: "invalid session" });
+                                }
+
+                                switch (size) {
+                                    case "xs":
+                                    case "s":
+                                    case "m":
+                                    case "l":
+                                    case "xl":
+                                        // do nothing
+                                        break;
+                                    default:
+                                        return new Response(
+                                            file(path.join(self.subSystems.filesystem.FS_ROOT, `users/${userId}/assets/avatar/xs.png`)),
+                                        );
+                                }
+
+                                return new Response(
+                                    file(path.join(self.subSystems.filesystem.FS_ROOT, `users/${userId}/assets/avatar/${size}.png`)),
+                                );
+                            },
+                        },
+                    },
                     fetch(request, server) {
                         // will be executed if it's not a TRPC request
-                        return new Response("Hello world");
+                        return new Response("Unknown path");
                     },
                     development: this.subSystems.configuration.isDevmode,
                 },

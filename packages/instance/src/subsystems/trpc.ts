@@ -119,6 +119,8 @@ export const workspacesRouter = t.router({
                     };
                 }
 
+                opt.ctx.rawRequest.resHeaders.set("set-cookie", Bun.Cookie.from("Authorization", session, { secure: true }).serialize());
+
                 return {
                     type: "success",
                     sessionToken: session,

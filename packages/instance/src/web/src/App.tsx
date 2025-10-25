@@ -2,6 +2,8 @@ import { type Component, lazy } from "solid-js";
 import { Route, Router } from "@solidjs/router";
 import { UIKitRoot } from "@tcsw/uikit-solid/src/index.tsx";
 
+const ApplicationsRouter = lazy(() => import("../../../fs/Applications.tsx"));
+
 const App: Component = () => {
     return (
         <Router>
@@ -11,7 +13,9 @@ const App: Component = () => {
                     <Route path={"/signup"} component={lazy(() => import("./pages/userSelect/signup/Signup.tsx"))} />
                 </Route>
                 <Route component={lazy(() => import("./pages/app/Layout.tsx"))}>
-                    <Route path={"/app"} component={lazy(() => import("./pages/app/App.tsx"))} />
+                    <Route path={"app"}>
+                        <ApplicationsRouter />
+                    </Route>
                     <Route path={"*"} component={lazy(() => import("./pages/notFound/Index.tsx"))} />
                 </Route>
             </Route>

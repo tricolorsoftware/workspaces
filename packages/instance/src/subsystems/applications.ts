@@ -39,10 +39,80 @@ export default class ApplicationsSubsystem extends SubSystem {
 
             for (const app of this.availableApplications) {
                 await this.loadApplication(app.path);
+
+                if (app.enabled) {
+                    await this.enableApplication(app.manifest!.id);
+                }
             }
 
             for (const app of this.availableApplications) {
                 this.log.info(`application '${app.manifest?.id}' is ${app.enabled ? "enabled" : "disabled"}`);
+            }
+
+            let applicationsInfill = ``;
+            for (const app of this.availableApplications) {
+                if (this.enabledApplications.find((a) => a === app.manifest?.id)) {
+                    if (app.manifest?.modules.web) {
+                        applicationsInfill += `<Route path="${app.manifest.id}/*" component={lazy(() => import("${path.relative(path.join(this.instance.subSystems.filesystem.FS_ROOT), path.join(app.path, app.manifest.modules.web.path, "/App.tsx"))}"))} />
+`;
+                    }
+                }
+            }
+
+            let applicationsWebRouterTemplate = `import { Route } from "@solidjs/router";
+import { type Component, lazy } from "solid-js";
+
+const ApplicationsRouter: Component = () => {
+    return (
+        <>
+            ${applicationsInfill}       </>
+    );
+};
+
+export default ApplicationsRouter`;
+
+            await fs.writeFile(path.join(this.instance.subSystems.filesystem.FS_ROOT, "Applications.tsx"), applicationsWebRouterTemplate);
+
+            if (!(await fs.exists(path.join(this.instance.subSystems.filesystem.FS_ROOT, "package.json")))) {
+                await fs.writeFile(
+                    path.join(this.instance.subSystems.filesystem.FS_ROOT, "package.json"),
+                    `{
+    "name": "workspaces-fs",
+    "author": "Tricolor Software",
+    "dependencies": {
+        "@solidjs/router": "^0.15.3",
+        "solid-js": "^1.9.8",
+        "vite": "^7.1.2",
+        "vite-plugin-solid": "^2.11.8"
+    }
+}`,
+                );
+
+                const child = Bun.spawn({
+                    cwd: this.instance.subSystems.filesystem.FS_ROOT,
+                    cmd: ["bun", "install"],
+                    stdout: "pipe",
+                    stderr: "pipe",
+                });
+
+                for await (const msg of child.stdout) {
+                    this.log.info("Applications Initial Startup -> " + Buffer.from(msg).toString());
+                }
+
+                for await (const msg of child.stderr) {
+                    this.log.error("Applications Initial Startup -> " + Buffer.from(msg).toString());
+                }
+
+                await fs.cp(
+                    path.join(this.instance.subSystems.filesystem.SRC_ROOT, "web/tsconfig.app.json"),
+                    path.join(this.instance.subSystems.filesystem.FS_ROOT, "tsconfig.json"),
+                );
+                await fs.writeFile(
+                    path.join(this.instance.subSystems.filesystem.FS_ROOT, "tsconfig.json"),
+                    (await fs.readFile(path.join(this.instance.subSystems.filesystem.FS_ROOT, "tsconfig.json")))
+                        .toString()
+                        .replace(`"include": ["src"]`, `"include": ["./Applications.tsx"]`),
+                );
             }
 
             return true;
@@ -135,6 +205,11 @@ export default class ApplicationsSubsystem extends SubSystem {
 
         if (app) {
             app.enabled = true;
+
+            if (!this.enabledApplications.find((a) => a === app.manifest?.id)) {
+                this.enabledApplications.push(app.manifest?.id!);
+            }
+
             this.log.info(`Enabled application '${applicationId}'`);
         } else {
             this.log.error(`Couldn't find application with id '${applicationId}'`);
@@ -142,7 +217,40 @@ export default class ApplicationsSubsystem extends SubSystem {
 
         await this.saveApplicationsConfig();
 
-        return false;
+        if (app?.manifest?.modules.bun) {
+            let child = Bun.spawn({
+                stderr: "pipe",
+                stdout: "pipe",
+                stdin: "pipe",
+                cmd: ["bun", app.manifest.modules.bun.path],
+                cwd: app.path,
+                env: process.env,
+            });
+
+            const MODULE_LOG_PREFIX = `${app.manifest.id} -> `;
+
+            for await (const msg of child.stdout) {
+                let bufMsg = MODULE_LOG_PREFIX + Buffer.from(msg).toString();
+
+                if (bufMsg.endsWith("\n")) {
+                    bufMsg = bufMsg.slice(0, -1);
+                }
+
+                this.log.info(bufMsg);
+            }
+
+            for await (const msg of child.stderr) {
+                let bufMsg = MODULE_LOG_PREFIX + Buffer.from(msg).toString();
+
+                if (bufMsg.endsWith("\n")) {
+                    bufMsg = bufMsg.slice(0, -1);
+                }
+
+                this.log.error(bufMsg);
+            }
+        }
+
+        return true;
     }
 
     // Disable an application by it's id

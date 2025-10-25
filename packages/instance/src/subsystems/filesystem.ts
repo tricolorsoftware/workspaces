@@ -23,7 +23,7 @@ export default class FilesystemSubsystem extends SubSystem {
             return false;
         }
 
-        await fs.promises.mkdir(path);
+        await fs.promises.mkdir(path, { recursive: true });
 
         return true;
     }

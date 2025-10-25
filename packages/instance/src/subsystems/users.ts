@@ -1,6 +1,9 @@
 import { sql } from "bun";
 import { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
+import path from "path";
+import { promises as fs } from "fs";
+import sharp from "sharp";
 
 export const USERS_DATABASE_CONNECTION_ID = "databases/users";
 
@@ -21,6 +24,10 @@ export class WorkspacesUser {
         this.userId = userId;
 
         return this;
+    }
+
+    getPath(): string {
+        return path.join(this.instance.subSystems.filesystem.FS_ROOT, `users/${this.userId}`);
     }
 
     // Sets the user's username to username
@@ -143,6 +150,73 @@ export class WorkspacesUser {
 
         return (await db`SELECT bio FROM Users WHERE id = ${this.userId}`)?.[0]?.surname || undefined;
     }
+
+    // TODO: set email & gender
+
+    async setAvatar(avatarFile: string): Promise<boolean> {
+        await fs.cp(avatarFile, path.join(this.getPath(), "assets/avatar/avatar.png"));
+
+        return true;
+    }
+
+    async generateAvatars(override?: boolean): Promise<boolean> {
+        const AVATAR_SIZES: { width: number; height: number; name: string }[] = [
+            { width: 16, height: 16, name: "xs" },
+            { width: 32, height: 32, name: "s" },
+            { width: 64, height: 64, name: "m" },
+            { width: 128, height: 128, name: "l" },
+            { width: 256, height: 256, name: "xl" },
+        ];
+
+        try {
+            for (const size of AVATAR_SIZES) {
+                if (override || !(await fs.exists(path.join(this.getPath(), `assets/avatar/${size.name}.png`)))) {
+                    this.instance.subSystems.users.log.info(`Generating avatar for user '${this.userId}' @ ${size.name}`);
+                    await sharp(path.join(this.getPath(), "assets/avatar/avatar.png"))
+                        .resize(size.width, size.height)
+                        .toFile(path.join(this.getPath(), `assets/avatar/${size.name}.png`));
+                    this.instance.subSystems.users.log.success(`Generated avatar for user '${this.userId}' @ ${size.name}`);
+                }
+            }
+        } catch (err) {
+            this.instance.subSystems.users.log.error("Failed to generate avatar sizes");
+        }
+
+        return true;
+    }
+
+    async verify() {
+        const USER_DIRECTORIES = [
+            "/",
+            "/fs",
+            "/fs/Desktop",
+            "/fs/Downloads",
+            "/fs/Documents",
+            "/fs/Photos",
+            "/fs/Music",
+            "/fs/Videos",
+            "/assets",
+            "/assets/avatar",
+            "/system",
+            "/system/logs",
+        ];
+
+        for (const dir of USER_DIRECTORIES) {
+            await this.instance.subSystems.filesystem.createDirectoryIfNotExists(
+                path.join(this.instance.subSystems.filesystem.FS_ROOT, `users/${this.userId}`, dir),
+            );
+        }
+
+        if (!(await fs.exists(path.join(this.getPath(), "assets/avatar/avatar.png")))) {
+            this.setAvatar(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "assets/placeholder/avatar.png"));
+        }
+
+        await this.generateAvatars();
+
+        this.instance.subSystems.users.log.success(`Verified user '${this.userId}'`);
+
+        return true;
+    }
 }
 
 export default class UsersSubsystem extends SubSystem {
@@ -157,7 +231,7 @@ export default class UsersSubsystem extends SubSystem {
 
         const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-        // init the users database
+        // init the users databasecurrentCommandInterface
         //
         // id - permanent unique user id number (number)
         // username - the user's changable username (string)
@@ -167,15 +241,24 @@ export default class UsersSubsystem extends SubSystem {
         // bio - the user's chosen bio (string)
         // storage_quota - the user's storage quota in MB (number)
         // email - the user's chosen contact email (string)
+        // is_email_verified - is the user's chosen contact email verified to be theirs (boolean)
         // socials - the user's chosen social media links in the format '[name]:-:[url]' as such, the string ':-:' must not be in either [name] or [url] (string[])
         // hashed_password - the user's password after it has been hashed by bun (string)
-        await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, socials TEXT[], hashed_password TEXT)`;
+        await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, is_email_verified BOOL, socials TEXT[], hashed_password TEXT)`;
 
         let administratorUserId = await this.createUser("admin");
 
         // if the account is newly-created
         if (administratorUserId !== undefined) {
-            this.getUserById(administratorUserId);
+            const adminUser = await this.getUserById(administratorUserId);
+
+            adminUser?.getFullName("Admin", "Istrator");
+        }
+
+        const users = await this.getAllUsers();
+
+        for (const user of users) {
+            await user.verify();
         }
 
         return true;
@@ -197,6 +280,17 @@ export default class UsersSubsystem extends SubSystem {
 
         let id = (await db`INSERT INTO Users ${sql(user)} RETURNING id`)?.[0]?.id;
 
+        const ubi = await this.getUserById(id);
+
+        if (!ubi) {
+            this.log.error("Failed during the user creation process.");
+            return undefined;
+        }
+
+        await ubi.setAvatar(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "assets/placeholder/avatar.png"));
+
+        await ubi.verify();
+
         return id;
     }
 
@@ -209,6 +303,12 @@ export default class UsersSubsystem extends SubSystem {
         if ((await db`SELECT username FROM Users WHERE id = ${userId}`).count === 1) return true;
 
         return false;
+    }
+
+    async getAllUsers(): Promise<WorkspacesUser[]> {
+        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+
+        return (await db`SELECT id FROM Users`).map((u: number) => new WorkspacesUser(this.instance, u.id));
     }
 
     async getUserById(userId: number): Promise<WorkspacesUser | undefined> {

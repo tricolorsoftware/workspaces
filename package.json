@@ -4,7 +4,9 @@
     "version": "0.0.0",
     "workspaces": [
         "packages/*",
-        "packages/instance/src/web"
+        "packages/instance/src/web",
+        "packages/applications/*/web",
+        "packages/applications/*/backend"
     ],
     "repository": {
         "type": "git",

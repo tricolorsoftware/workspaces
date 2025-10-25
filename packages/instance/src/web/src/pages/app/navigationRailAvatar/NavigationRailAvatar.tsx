@@ -3,13 +3,14 @@ import { createResource, type Component } from "solid-js";
 import styles from "./NavigationRailAvatar.module.scss";
 import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
 import trpc from "../../../lib/trpc";
+import backend from "../../../lib/backend";
 
 const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
     const [user] = createResource(() => trpc.app.navigation.user.name.query());
 
     return (
         <div class={styles.root} data-expanded={props.expanded}>
-            <UKAvatar class={styles.avatar} avatar={"/assets/placeholder/avatar.png"} size="s" username="[PUT SIDEBAR HERE]" />
+            <UKAvatar class={styles.avatar} avatar={backend("/api/user/me/avatar/s")} size="s" username="[PUT SIDEBAR HERE]" />
             <div class={styles.nameContainer}>
                 <UKText size="m" role="title" class={styles.displayName}>
                     {`${user()?.forename} ${user()?.surname}`}
