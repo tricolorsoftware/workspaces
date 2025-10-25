@@ -11,10 +11,7 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
     const [quickShortcuts] = createResource(() => trpc.app.navigation.quickShortcuts.query());
 
     const [expanded, setExpanded] = createSignal<boolean>(false);
-    const [selected, setSelected] = createSignal<boolean>(false);
-    const [selected2, setSelected2] = createSignal<boolean>(false);
-    const [selected3, setSelected3] = createSignal<boolean>(false);
-    const [selected4, setSelected4] = createSignal<boolean>(false);
+    const [selected, setSelected] = createSignal<string>("");
 
     return (
         <UKNavigationRail
@@ -24,7 +21,10 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
                     return {
                         icon: sc.icon.value,
                         label: sc.label,
+                        active: selected() === sc.label,
                         onClick() {
+                            setSelected(sc.label);
+
                             if (sc.location.type === "local") {
                                 navigate(sc.location.value);
                             } else if (sc.location.type === "remote") {
@@ -37,36 +37,36 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
                     icon: "check",
                     label: "Select",
                     onClick() {
-                        setSelected(!selected());
+                        setSelected("select");
                     },
-                    active: selected(),
+                    active: selected() === "select",
                     badgeCount: 4,
                 },
                 {
                     icon: "check",
-                    label: "Select",
+                    label: "Select1",
                     onClick() {
-                        setSelected2(!selected2());
+                        setSelected("select1");
                     },
-                    active: selected2(),
+                    active: selected() === "select1",
                     badgeCount: 1,
                 },
                 {
                     icon: "check",
-                    label: "Select",
+                    label: "Select2",
                     onClick() {
-                        setSelected3(!selected3());
+                        setSelected("select2");
                     },
-                    active: selected3(),
+                    active: selected() === "select2",
                     badgeCount: 0,
                 },
                 {
                     icon: "check",
                     label: "Select Something Ig",
                     onClick() {
-                        setSelected4(!selected4());
+                        setSelected("Select Something Ig");
                     },
-                    active: selected4(),
+                    active: selected() === "Select Something Ig",
                     badgeCount: 0,
                 },
             ]}

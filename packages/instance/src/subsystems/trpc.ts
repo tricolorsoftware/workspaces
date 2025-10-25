@@ -199,7 +199,19 @@ export const workspacesRouter = t.router({
                     ),
                 )
                 .query(async (opt) => {
-                    return [];
+                    return [
+                        {
+                            icon: {
+                                type: "icon",
+                                value: "person",
+                            },
+                            label: "Person Test",
+                            location: {
+                                type: "local",
+                                value: "/app/uk.tcsw.dashboard",
+                            },
+                        },
+                    ];
                 }),
         },
     },
