@@ -16,6 +16,7 @@ const UKNavigationRail: Component<
         }[];
         items?: {
             icon: string;
+            imageIcon?: string;
             label: string;
             onClick: () => void;
             badgeCount?: number;

@@ -1,11 +1,15 @@
-import { createSignal, Suspense, type Component } from "solid-js";
+import { createResource, createSignal, Suspense, type Component } from "solid-js";
 import styles from "./Layout.module.scss";
-import type { RouteSectionProps } from "@solidjs/router";
+import { useNavigate, type RouteSectionProps } from "@solidjs/router";
 import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.jsx";
 import UKNavigationRail from "@tcsw/uikit-solid/src/components/navigationRail/UKNavigationRail.jsx";
 import NavigationRailAvatar from "./navigationRailAvatar/NavigationRailAvatar";
+import trpc from "../../lib/trpc";
 
 const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
+    const navigate = useNavigate();
+    const [quickShortcuts] = createResource(() => trpc.app.navigation.quickShortcuts.query());
+
     const [expanded, setExpanded] = createSignal<boolean>(false);
     const [selected, setSelected] = createSignal<boolean>(false);
     const [selected2, setSelected2] = createSignal<boolean>(false);
@@ -16,6 +20,19 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
         <UKNavigationRail
             expanded={expanded()}
             items={[
+                ...(quickShortcuts() || []).map((sc) => {
+                    return {
+                        icon: sc.icon.value,
+                        label: sc.label,
+                        onClick() {
+                            if (sc.location.type === "local") {
+                                navigate(sc.location.value);
+                            } else if (sc.location.type === "remote") {
+                                window.location.href = sc.location.value;
+                            }
+                        },
+                    };
+                }),
                 {
                     icon: "check",
                     label: "Select",

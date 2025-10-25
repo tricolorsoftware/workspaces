@@ -188,6 +188,19 @@ export const workspacesRouter = t.router({
                     };
                 }),
             },
+            quickShortcuts: procedure
+                .output(
+                    z.array(
+                        z.object({
+                            location: z.object({ type: z.union([z.literal("local"), z.literal("remote")]), value: z.string() }),
+                            icon: z.object({ type: z.union([z.literal("icon"), z.literal("image")]), value: z.string() }),
+                            label: z.string(),
+                        }),
+                    ),
+                )
+                .query(async (opt) => {
+                    return [];
+                }),
         },
     },
 });

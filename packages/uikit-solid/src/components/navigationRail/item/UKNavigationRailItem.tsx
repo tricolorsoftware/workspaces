@@ -6,6 +6,7 @@ import styles from "./UKNavigationRailItem.module.scss";
 
 const UKNavigationRailItem: Component<{
     icon: string;
+    imageIcon?: string;
     label: string;
     onClick: () => void;
     badgeCount?: number;
@@ -16,10 +17,10 @@ const UKNavigationRailItem: Component<{
     return (
         <button class={styles.root} data-active={props.active} data-expanded={props.expanded} onClick={props.onClick}>
             {props.badgeCount === undefined ? (
-                <UKIcon class={styles.icon}>{props.icon}</UKIcon>
+                <>{props.imageIcon !== undefined ? <img /> : <UKIcon class={styles.icon}>{props.icon}</UKIcon>}</>
             ) : (
                 <UKBadge class={styles.badge} count={props.badgeCount}>
-                    <UKIcon class={styles.icon}>{props.icon}</UKIcon>
+                    <>{props.imageIcon !== undefined ? <img /> : <UKIcon class={styles.icon}>{props.icon}</UKIcon>}</>
                 </UKBadge>
             )}
             <UKText class={styles.label} role="label" size={props.expanded ? "m" : "s"}>
