@@ -322,7 +322,7 @@ export default class UsersSubsystem extends SubSystem {
 
         const userId = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0]?.id;
 
-        if (this.doesUserExist(userId) === undefined) return undefined;
+        if ((await this.doesUserExist(userId)) === false) return undefined;
 
         return new WorkspacesUser(this.instance, userId);
     }

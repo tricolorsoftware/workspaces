@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { Instance } from "./index.js";
 import { WorkspacesFeatureFlags } from "./subsystems/configuration.js";
+import util from "node:util";
 
 export enum LogType {
     INFO,
@@ -23,6 +24,47 @@ class Logger {
     constructor(level: string, log: Log) {
         this.level = level;
         this.log = log;
+
+        global.console.log = (...data: any[]): void => {
+            new Promise((res) => {
+                setTimeout(() => {
+                    res(true);
+                }, 500);
+            }).then(() => {
+                process.stdout.cursorTo(0, this._internal_getWindowSize()[1] - 3);
+                new Promise((res) => {
+                    setTimeout(() => {
+                        res(true);
+                    }, 500);
+                }).then(() => {
+                    process.stdout.clearScreenDown();
+
+                    new Promise((res) => {
+                        setTimeout(() => {
+                            res(true);
+                        }, 500);
+                    }).then(() => {
+                        for (const d of data) {
+                            if (d.toString !== undefined) {
+                                process.stdout.write(util.format(d));
+                            } else {
+                                process.stdout.write(util.inspect(d));
+                            }
+                            process.stdout.write(" ");
+                        }
+                        process.stdout.write("\n");
+
+                        new Promise((res) => {
+                            setTimeout(() => {
+                                res(true);
+                            }, 500);
+                        }).then(() => {
+                            this._internal_writePrompt();
+                        });
+                    });
+                });
+            });
+        };
 
         return this;
     }
@@ -152,43 +194,35 @@ class Logger {
         return [size?.[0] || 120, size?.[1] || 60];
     }
 
-    _internal_cursorTo(x: number, y: number, cb: () => void) {
-        process?.stdout?.cursorTo?.(x, y, cb);
-
-        return this;
-    }
-
     _internal_writePrompt() {
         if (!this.log.instance?.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) return this;
 
         // move cursor to the last row, 1st column
-        this._internal_cursorTo(0, this._internal_getWindowSize()[1], () => {
+        process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
             // scroll view down 1 row
-            process.stdout.write("\n", () => {
+            process.stdout.write("-".repeat(this._internal_getWindowSize()[0]) + "\n", () => {
                 // move the cursor to the 3rd last row, 1st column
-                this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 3, () => {
+                process.stdout.cursorTo(0, this._internal_getWindowSize()[1] - 1, () => {
                     // write the separator line to the stdout
-                    process.stdout.write("-".repeat(this._internal_getWindowSize()[0]), () => {
-                        // move the cursor to the 2nd last row, 1st column
-                        this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 2, () => {
-                            // write the branding to the stdout
-                            process.stdout.write(
-                                `   Workspaces Pre-Alpha ${
-                                    this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis("DEV Mode")}] ` : ""
-                                }`,
-                                () => {
-                                    // move the cursor to the metaLen+6th column of the 2nd from the bottom row
-                                    this._internal_cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1] - 2, () => {
-                                        if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
-                                            // write the prompt indicator to the stdout
-                                            process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`);
-                                        } else {
-                                            process.stdout.write("  ");
-                                        }
-                                    });
-                                },
-                            );
-                        });
+                    // move the cursor to the 2nd last row, 1st column
+                    process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
+                        // write the branding to the stdout
+                        process.stdout.write(
+                            `Workspaces Pre-Alpha ${
+                                this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis("Dev Mode")}] ` : ""
+                            }`,
+                            () => {
+                                // move the cursor to the metaLen+6th column of the 2nd from the bottom row
+                                process.stdout.cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1], () => {
+                                    if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
+                                        // write the prompt indicator to the stdout
+                                        process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`);
+                                    } else {
+                                        process.stdout.write("  ");
+                                    }
+                                });
+                            },
+                        );
                     });
                 });
             });
@@ -207,27 +241,13 @@ class Logger {
             return this;
         }
 
-        if (!this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
-            console.log(
-                typeString,
-                chalk.bold(`${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))} `),
-                ...message,
-            );
+        console.log(
+            typeString,
+            chalk.bold(`${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))} `),
+            ...message,
+        );
 
-            return this;
-        }
-
-        this._internal_cursorTo(0, this._internal_getWindowSize()[1] - 3, () => {
-            process.stdout.clearLine(1, () => {
-                console.log(
-                    typeString,
-                    chalk.bold(`${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))} `),
-                    ...message.map((msg) => msg.split("\n").join("\n" + " ".repeat(this.log.META_LENGTH + 6))),
-                );
-
-                this._internal_writePrompt();
-            });
-        });
+        return this;
     }
 }
 
