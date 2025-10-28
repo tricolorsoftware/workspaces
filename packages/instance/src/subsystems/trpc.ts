@@ -199,19 +199,21 @@ export const workspacesRouter = t.router({
                     ),
                 )
                 .query(async (opt) => {
-                    return [
-                        {
+                    let quickShortcuts = opt.ctx.instance.subSystems.applications.getEnabledApplications();
+
+                    return quickShortcuts.map((app) => {
+                        return {
                             icon: {
                                 type: "icon",
                                 value: "person",
                             },
-                            label: "Person Test",
+                            label: app.manifest?.displayName || "Unknown",
                             location: {
                                 type: "local",
-                                value: "/app/uk.tcsw.dashboard",
+                                value: `/app/${app.manifest?.id}` || "/404",
                             },
-                        },
-                    ];
+                        };
+                    });
                 }),
         },
     },

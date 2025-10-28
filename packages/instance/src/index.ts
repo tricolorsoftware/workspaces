@@ -66,6 +66,7 @@ class Instance {
         const self = this;
 
         this.webServer = Bun.serve(
+            // TODO: change this so that multiple applications can have their own tRPC on separate routes e.g: /app/uk.tcsw.dashboard/trpc
             createBunServeHandler(
                 {
                     router: workspacesRouter,

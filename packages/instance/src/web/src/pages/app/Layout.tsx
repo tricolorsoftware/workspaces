@@ -33,42 +33,6 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
                         },
                     };
                 }),
-                {
-                    icon: "check",
-                    label: "Select",
-                    onClick() {
-                        setSelected("select");
-                    },
-                    active: selected() === "select",
-                    badgeCount: 4,
-                },
-                {
-                    icon: "check",
-                    label: "Select1",
-                    onClick() {
-                        setSelected("select1");
-                    },
-                    active: selected() === "select1",
-                    badgeCount: 1,
-                },
-                {
-                    icon: "check",
-                    label: "Select2",
-                    onClick() {
-                        setSelected("select2");
-                    },
-                    active: selected() === "select2",
-                    badgeCount: 0,
-                },
-                {
-                    icon: "check",
-                    label: "Select Something Ig",
-                    onClick() {
-                        setSelected("Select Something Ig");
-                    },
-                    active: selected() === "Select Something Ig",
-                    badgeCount: 0,
-                },
             ]}
             setExpanded={(exp) => setExpanded(exp)}
             anchorPoints={{

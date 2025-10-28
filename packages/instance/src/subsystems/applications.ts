@@ -8,13 +8,15 @@ import { WorkspacesApplicationServiceStatus } from "./applications/serviceStatus
 const APPLICATIONS_CONFIG_FILE_PATH = (subsystem: SubSystem) =>
     path.join(subsystem.instance.subSystems.filesystem.FS_ROOT, "applications.json");
 
+interface AvailableWorkspacesApplication {
+    path: string;
+    enabled: boolean;
+    status?: WorkspacesApplicationServiceStatus[];
+    manifest?: WorkspacesApplication;
+}
+
 export default class ApplicationsSubsystem extends SubSystem {
-    availableApplications: {
-        path: string;
-        enabled: boolean;
-        status?: WorkspacesApplicationServiceStatus[];
-        manifest?: WorkspacesApplication;
-    }[];
+    availableApplications: AvailableWorkspacesApplication[];
     enabledApplications: string[];
 
     constructor(instance: Instance) {
@@ -24,6 +26,14 @@ export default class ApplicationsSubsystem extends SubSystem {
         this.enabledApplications = [];
 
         return this;
+    }
+
+    getEnabledApplications(): AvailableWorkspacesApplication[] {
+        const apps = this.enabledApplications
+            .map((a) => this.availableApplications.find((aa) => aa.manifest?.id === a))
+            .filter((a) => a !== undefined);
+
+        return apps;
     }
 
     async startup(): Promise<boolean> {
@@ -218,11 +228,21 @@ export default ApplicationsRouter`;
         await this.saveApplicationsConfig();
 
         if (app?.manifest?.modules.bun) {
+            try {
+                // @ts-ignore
+                globalThis.instance = this.instance;
+                await import(path.join(app.path, app.manifest.modules.bun.path));
+            } catch (err) {
+                console.error("problem with application's bun module ->", err);
+            }
+        }
+
+        if (app?.manifest?.modules.script) {
             let child = Bun.spawn({
                 stderr: "pipe",
                 stdout: "pipe",
                 stdin: "pipe",
-                cmd: ["bun", app.manifest.modules.bun.path],
+                cmd: [app.manifest.modules.script.path],
                 cwd: app.path,
                 env: process.env,
             });

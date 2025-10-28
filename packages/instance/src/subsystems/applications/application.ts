@@ -13,5 +13,7 @@ export interface WorkspacesApplication {
         web?: { path: string };
         // run bun ./[path.ts]
         bun?: { path: string };
+        // run ./[path]
+        script?: { path: string };
     };
 }
