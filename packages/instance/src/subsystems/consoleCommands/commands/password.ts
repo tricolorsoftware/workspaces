@@ -1,3 +1,4 @@
+import { USERS_DATABASE_CONNECTION_ID } from "../../users.js";
 import Command, { type ICommandRuntimeParameters } from "../command.js";
 
 export default class ExitCommand extends Command {
@@ -13,63 +14,33 @@ export default class ExitCommand extends Command {
         let password = "";
 
         const log = self.instance.log.createLogger("useradd_command");
-        log.removeCommandPrompt();
-        process.stdout.write("\n");
-        log.rawLog("Username -> ");
+        log.prompt("Username -> ");
         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
             username = data.trim();
             if (username !== "") {
-                log.rawLog("Password -> ");
+                log.prompt("Password -> ");
                 self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                     password = data.trim();
                     if (password !== "") {
-                        log.rawLog("Full Name -> ");
-                        self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
-                            fullName = data.trim();
-                            if (fullName !== "") {
-                                log.rawLog("Email -> ");
-                                self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
-                                    email = data.trim();
-                                    if (email !== "") {
-                                        log.rawLog("Gender -> ");
-                                        self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
-                                            gender = data.trim();
-                                            if (gender !== "") {
-                                                log.info("Creating user...");
+                        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
 
-                                                let uid = await self.instance.subSystems.users.createUser(username);
+                        const { id: userId } = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0] || { id: undefined };
 
-                                                if (!uid) {
-                                                    log.error("Failed to create user");
-                                                    return;
-                                                }
+                        if (!userId) {
+                            log.error(`No such user ${username}`);
+                            return this.finishRun();
+                        }
 
-                                                let user = await self.instance.subSystems.users.getUserById(uid);
+                        this.instance.subSystems.authorization.setPassword(userId, password);
+                        log.success(`Set password for ${username}(${userId}) to '${password}'`);
 
-                                                if (!user) {
-                                                    log.error("Failed to get created user");
-                                                    return;
-                                                }
-
-                                                // user.setFullName(...fullName.split(" "))
-                                            } else {
-                                                log.rawLog("Gender -> ");
-                                            }
-                                        };
-                                    } else {
-                                        log.rawLog("Email -> ");
-                                    }
-                                };
-                            } else {
-                                log.rawLog("Full Name -> ");
-                            }
-                        };
+                        return this.finishRun();
                     } else {
-                        log.rawLog("Password -> ");
+                        log.prompt("Password -> ");
                     }
                 };
             } else {
-                log.rawLog("Username -> ");
+                log.prompt("Username -> ");
             }
         };
 

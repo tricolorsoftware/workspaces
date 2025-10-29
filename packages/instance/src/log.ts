@@ -10,6 +10,7 @@ export enum LogType {
     SUCCESS,
     DEBUG,
     RAW,
+    PROMPT,
 }
 
 class Logger {
@@ -26,43 +27,19 @@ class Logger {
         this.log = log;
 
         global.console.log = (...data: any[]): void => {
-            new Promise((res) => {
-                setTimeout(() => {
-                    res(true);
-                }, 500);
-            }).then(() => {
-                process.stdout.cursorTo(0, this._internal_getWindowSize()[1] - 3);
-                new Promise((res) => {
-                    setTimeout(() => {
-                        res(true);
-                    }, 500);
-                }).then(() => {
-                    process.stdout.clearScreenDown();
+            process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
+                process.stdout.clearLine(1);
+                for (const d of data) {
+                    if (d.toString !== undefined) {
+                        process.stdout.write(util.format(d));
+                    } else {
+                        process.stdout.write(util.inspect(d));
+                    }
+                    process.stdout.write(" ");
+                }
+                process.stdout.write("\n");
 
-                    new Promise((res) => {
-                        setTimeout(() => {
-                            res(true);
-                        }, 500);
-                    }).then(() => {
-                        for (const d of data) {
-                            if (d.toString !== undefined) {
-                                process.stdout.write(util.format(d));
-                            } else {
-                                process.stdout.write(util.inspect(d));
-                            }
-                            process.stdout.write(" ");
-                        }
-                        process.stdout.write("\n");
-
-                        new Promise((res) => {
-                            setTimeout(() => {
-                                res(true);
-                            }, 500);
-                        }).then(() => {
-                            this._internal_writePrompt();
-                        });
-                    });
-                });
+                this._internal_writePrompt();
             });
         };
 
@@ -74,10 +51,6 @@ class Logger {
     }
 
     rawLog(...message: (string | Uint8Array)[]) {
-        if (this.level.length === 0) {
-            throw new Error("log level is empty");
-        }
-
         if (message.length === 0) {
             throw new Error("log message is empty");
         }
@@ -85,8 +58,12 @@ class Logger {
         return this.logMessage(LogType.RAW, ...message);
     }
 
+    prompt(...message: any[]) {
+        return this.logMessage(LogType.PROMPT, ...message);
+    }
+
     removeCommandPrompt() {
-        process.stdout.cursorTo(0, process.stdout.getWindowSize()[1] - 3, () => {
+        process.stdout.cursorTo(0, process.stdout.getWindowSize()[1] - 1, () => {
             process.stdout.clearScreenDown();
         });
 
@@ -178,12 +155,15 @@ class Logger {
             case LogType.DEBUG:
                 typeString = chalk.bold(`${chalk.white("[")}${chalk.magenta("DBG")}${chalk.white("]")}`);
                 break;
+            case LogType.PROMPT:
+                typeString = chalk.bold(`${chalk.white("[")}${chalk.cyan("PRM")}${chalk.white("]")} `);
+                break;
             case LogType.RAW:
-                typeString = ``;
+                typeString = `     `;
                 break;
         }
 
-        this.writeMessage(typeString, ...message);
+        this.writeMessage(type, typeString, ...message);
 
         return this;
     }
@@ -197,44 +177,29 @@ class Logger {
     _internal_writePrompt() {
         if (!this.log.instance?.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) return this;
 
-        // move cursor to the last row, 1st column
         process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
-            // scroll view down 1 row
-            process.stdout.write("-".repeat(this._internal_getWindowSize()[0]) + "\n", () => {
-                // move the cursor to the 3rd last row, 1st column
-                process.stdout.cursorTo(0, this._internal_getWindowSize()[1] - 1, () => {
-                    // write the separator line to the stdout
-                    // move the cursor to the 2nd last row, 1st column
-                    process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
-                        // write the branding to the stdout
-                        process.stdout.write(
-                            `Workspaces Pre-Alpha ${
-                                this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis("Dev Mode")}] ` : ""
-                            }`,
-                            () => {
-                                // move the cursor to the metaLen+6th column of the 2nd from the bottom row
-                                process.stdout.cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1], () => {
-                                    if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
-                                        // write the prompt indicator to the stdout
-                                        process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`);
-                                    } else {
-                                        process.stdout.write("  ");
-                                    }
-                                });
-                            },
-                        );
+            process.stdout.write(
+                `Workspaces Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis("Dev Mode")}] ` : ""}`,
+                () => {
+                    // move the cursor to the metaLen+6th column of the 2nd from the bottom row
+                    process.stdout.cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1], () => {
+                        if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
+                            // write the prompt indicator to the stdout
+                            process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`);
+                        } else {
+                            process.stdout.write("  ");
+                        }
                     });
-                });
-            });
+                },
+            );
         });
     }
 
-    private writeMessage(typeString: string, ...message: any[]) {
-        // rawLog only
-        if (typeString === "") {
+    private writeMessage(logType: LogType, typeString: string, ...message: any[]) {
+        if (logType === LogType.RAW || logType === LogType.PROMPT) {
             process.stdout.write(
                 chalk.bold(
-                    `      ${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))}  `,
+                    `${typeString}${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))}  `,
                 ) + message.join(" "),
             );
 
