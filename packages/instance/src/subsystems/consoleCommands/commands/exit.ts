@@ -7,10 +7,7 @@ export default class ExitCommand extends Command {
     shortDescription = "Terminate the Workspaces instance";
 
     async run(parameters: ICommandRuntimeParameters) {
-        process.stdout.cursorTo(0, 0);
-        process.stdout.clearScreenDown();
-
-        process.exit(0);
+        await this.instance.shutdown();
 
         // Note: do not remove this line of code or Typescript will complain
         return this.finishRun();

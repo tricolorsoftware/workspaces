@@ -55,6 +55,15 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             let cursorPos = 36;
             let line = "";
 
+            process.stdin.on("data", async (key) => {
+                let keyStr = key.toString();
+
+                if (keyStr === "\u0003") {
+                    self.instance.shutdown();
+                    return;
+                }
+            });
+
             process.stdin.on("keypress", async (str, key) => {
                 if (key.name === "up") {
                     console.log("Prev command");
@@ -70,6 +79,10 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     process.stdout.moveCursor(-1, 0);
                     return;
                 } else if (key.name === "right") {
+                    if (cursorPos - 36 >= line.length) {
+                        return;
+                    }
+
                     cursorPos++;
                     process.stdout.moveCursor(1, 0);
                     return;

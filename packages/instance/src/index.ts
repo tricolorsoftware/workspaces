@@ -159,6 +159,18 @@ class Instance {
         );
         return this;
     }
+
+    async shutdown() {
+        this.subSystems.consoleCommands.currentCommandInterface.active = true;
+        this.subSystems.consoleCommands.currentCommandInterface.cb = () => 0;
+        this.log.system.info("Shutting down...");
+
+        process.stdout.cursorTo(0, 0);
+        process.stdout.clearScreenDown();
+        process.exit(0);
+
+        return this;
+    }
 }
 
 const INSTANCE = new Instance();
