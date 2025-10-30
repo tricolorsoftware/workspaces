@@ -1,6 +1,7 @@
 import { type Component, lazy } from "solid-js";
 import { Route, Router } from "@solidjs/router";
 import { UIKitRoot } from "@tcsw/uikit-solid/src/index.tsx";
+import AppIndex from "./pages/app/App.tsx";
 
 const ApplicationsRouter = lazy(() => import("../../../fs/Applications.tsx"));
 
@@ -14,6 +15,7 @@ const App: Component = () => {
                 </Route>
                 <Route component={lazy(() => import("./pages/app/Layout.tsx"))}>
                     <Route path={"app"}>
+                        <Route path={"/"} component={() => <AppIndex />} />
                         <ApplicationsRouter />
                     </Route>
                     <Route path={"*"} component={lazy(() => import("./pages/notFound/Index.tsx"))} />
