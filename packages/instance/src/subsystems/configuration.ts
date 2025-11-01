@@ -7,12 +7,31 @@ export enum WorkspacesFeatureFlags {
 
 export default class ConfigurationSubsystem extends SubSystem {
     isDevmode: boolean = true;
+    databases: {
+        postgres: {
+            user: string;
+            password: string;
+            host: string;
+            port: number;
+            database: string;
+        };
+    };
     enabledFeatures: WorkspacesFeatureFlags[];
 
     constructor(instance: Instance) {
         super("configuration", instance);
 
         this.enabledFeatures = [WorkspacesFeatureFlags.SlashCommands];
+        this.databases = {
+            postgres: {
+                // TODO: actually set these values
+                user: "postgres",
+                password: "password",
+                host: "localhost",
+                port: 5432,
+                database: "tricolor_workspaces",
+            },
+        };
 
         return this;
     }

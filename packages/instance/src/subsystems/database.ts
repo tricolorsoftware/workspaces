@@ -25,10 +25,10 @@ export default class DatabaseSubsystem extends SubSystem {
     getConnection(connectionId: string) {
         if (this.databaseConnections[connectionId]) return this.databaseConnections[connectionId];
 
-        return this.createConnection(connectionId);
+        return this.createSQLiteConnection(connectionId);
     }
 
-    private createConnection(connectionId: string) {
+    private createSQLiteConnection(connectionId: string) {
         let conPath = "sqlite://" + path.join(this.instance.subSystems.filesystem.FS_ROOT, connectionId) + ".sqlite";
 
         let con = new SQL({
@@ -40,6 +40,16 @@ export default class DatabaseSubsystem extends SubSystem {
         });
 
         this.databaseConnections[connectionId] = con;
+
+        return con;
+    }
+
+    private createPostgresConnection() {
+        const connectionString = `postgres://${this.instance.subSystems.configuration.databases.postgres.user}:${this.instance.subSystems.configuration.databases.postgres.password}@${this.instance.subSystems.configuration.databases.postgres.host}:${this.instance.subSystems.configuration.databases.postgres.port}/${this.instance.subSystems.configuration.databases.postgres.database}`;
+
+        let con = new SQL(connectionString);
+
+        this.databaseConnections[`postgres`] = con;
 
         return con;
     }
