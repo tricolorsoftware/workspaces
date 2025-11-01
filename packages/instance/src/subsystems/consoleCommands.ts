@@ -52,7 +52,9 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             process.stdin.setRawMode(true);
             self.currentCommandInterface.active = false;
 
-            let cursorPos = 36;
+            const CURSOR_MIN_POS = 36;
+            let cursorPos = CURSOR_MIN_POS;
+            let historyIndex = 0;
             let line = "";
 
             process.stdin.on("data", async (key) => {
@@ -66,20 +68,45 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
 
             process.stdin.on("keypress", async (str, key) => {
                 if (key.name === "up") {
-                    console.log("Prev command");
+                    if (historyIndex < 1) {
+                        return;
+                    }
+
+                    historyIndex--;
+
+                    line = self.commandHistory[historyIndex].join(" ");
+                    cursorPos = CURSOR_MIN_POS + line.length;
+
+                    process.stdout.cursorTo(CURSOR_MIN_POS);
+                    process.stdout.clearLine(1);
+                    process.stdout.write(line);
+                    process.stdout.cursorTo(cursorPos);
+
                     return;
                 } else if (key.name === "down") {
-                    console.log("Next command");
+                    if (historyIndex + 1 > self.commandHistory.length - 1) {
+                        return;
+                    }
+                    historyIndex++;
+
+                    line = self.commandHistory[historyIndex].join(" ");
+                    cursorPos = CURSOR_MIN_POS + line.length;
+
+                    process.stdout.cursorTo(CURSOR_MIN_POS);
+                    process.stdout.clearLine(1);
+                    process.stdout.write(line);
+                    process.stdout.cursorTo(cursorPos);
+
                     return;
                 } else if (key.name === "left") {
-                    if (cursorPos <= 36) {
+                    if (cursorPos <= CURSOR_MIN_POS) {
                         return;
                     }
                     cursorPos--;
                     process.stdout.moveCursor(-1, 0);
                     return;
                 } else if (key.name === "right") {
-                    if (cursorPos - 36 >= line.length) {
+                    if (cursorPos - CURSOR_MIN_POS >= line.length) {
                         return;
                     }
 
@@ -87,8 +114,8 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     process.stdout.moveCursor(1, 0);
                     return;
                 } else if (key.name === "enter" || key.name === "return") {
-                    cursorPos = 36;
-                    process.stdout.cursorTo(36, 0);
+                    cursorPos = CURSOR_MIN_POS;
+                    process.stdout.cursorTo(CURSOR_MIN_POS, 0);
                     process.stdout.write("\n");
 
                     if (self.currentCommandInterface.active) {
@@ -108,6 +135,9 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                         return;
                     }
 
+                    self.commandHistory.push(line.split(" "));
+                    historyIndex = self.commandHistory.length - 1;
+
                     let command = self.commands.find((cmd) => cmd.commandId === cmdId || cmd.aliases.includes(cmdId));
 
                     if (!command) {
@@ -126,7 +156,6 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     }
 
                     self.currentCommandInterface.active = true;
-                    self.commandHistory.push(line.split(" "));
                     await self.executeCommand(cmdId, {
                         arguments: segments,
                         flags: {},
@@ -136,12 +165,12 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     line = "";
                     return;
                 } else if (key.name === "backspace") {
-                    if (cursorPos <= 36) {
+                    if (cursorPos <= CURSOR_MIN_POS) {
                         return;
                     }
                     cursorPos--;
-                    line = line.slice(0, cursorPos - 36) + line.slice(cursorPos - 35);
-                    process.stdout.cursorTo(36);
+                    line = line.slice(0, cursorPos - CURSOR_MIN_POS) + line.slice(cursorPos - (CURSOR_MIN_POS - 1));
+                    process.stdout.cursorTo(CURSOR_MIN_POS);
                     process.stdout.clearLine(1);
                     process.stdout.write(line);
                     process.stdout.cursorTo(cursorPos);
