@@ -3,7 +3,6 @@ import z from "zod";
 import { Instance } from "../index.js";
 import { AuthorizedDeviceType } from "./authorization.js";
 import { BunRequest } from "bun";
-import { USERS_DATABASE_CONNECTION_ID } from "./users.js";
 
 export const createTRPCContext = (opt: { rawRequest: { req: BunRequest; resHeaders: Headers }; instance: Instance }) => {
     return {
@@ -71,7 +70,7 @@ export const workspacesRouter = t.router({
             .output(
                 z.union([
                     z.object({ type: z.literal("error"), message: z.string() }),
-                    z.object({ type: z.literal("success"), sessionToken: z.string() }),
+                    z.object({ type: z.literal("success"), sessionToken: z.string(), notice: z.boolean().optional() }),
                 ]),
             )
             .mutation(async (opt) => {
@@ -173,7 +172,7 @@ export const workspacesRouter = t.router({
         navigation: {
             user: {
                 name: procedure.output(z.object({ username: z.string(), forename: z.string(), surname: z.string() })).query(async (opt) => {
-                    const db = opt.ctx.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+                    const db = opt.ctx.instance.subSystems.database.db();
 
                     const user = (await db`SELECT username, forename, surname FROM Users WHERE id = ${opt.ctx.userId};`)?.[0];
 

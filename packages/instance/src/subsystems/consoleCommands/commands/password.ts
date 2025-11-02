@@ -1,4 +1,3 @@
-import { USERS_DATABASE_CONNECTION_ID } from "../../users.js";
 import Command, { type ICommandRuntimeParameters } from "../command.js";
 
 export default class ExitCommand extends Command {
@@ -22,7 +21,7 @@ export default class ExitCommand extends Command {
                 self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                     password = data.trim();
                     if (password !== "") {
-                        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+                        const db = this.instance.subSystems.database.db();
 
                         const { id: userId } = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0] || { id: undefined };
 

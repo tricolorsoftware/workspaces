@@ -26,7 +26,7 @@ export default class ConfigurationSubsystem extends SubSystem {
             postgres: {
                 // TODO: actually set these values
                 user: "postgres",
-                password: "password",
+                password: "postgres",
                 host: "localhost",
                 port: 5432,
                 database: "tricolor_workspaces",

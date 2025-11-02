@@ -137,7 +137,7 @@ export default class Log {
                                     this._internal_cursorTo(this.instance.log.metaLength + 6, this._internal_getWindowSize()[1] - 2, () => {
                                         if (this.instance.configurationManager?.hasFeature(YourDashFeatureFlags.SlashCommands)) {
                                             // write the prompt indicator to the stdout
-                                            process.stdout.write(`> ${this.instance.commandManager?.rlInterface?.line}`);
+                                            process.stdout.write(`> ${this.instance.commandManager?.rlInterface?.line || "unknown value"}`);
                                         } else {
                                             process.stdout.write("  ");
                                         }

@@ -4,7 +4,7 @@
     "description": "The Homepage for workspaces",
     "authors": ["Tricolor Software <https://tcsw.uk>"],
     "license": "MIT",
-    "source": "https://git.tcsw.uk/tricolor/workspaces/src/branch/main/packages/applications/uk.tcsw.dashboard",
+    "source": "https://github.com/tricolorsoftware/workspaces/src/branch/main/packages/applications/uk.tcsw.dashboard",
     "modules": {
         "web": { "path": "./web" },
         "bun": { "path": "./backend/index.ts" }

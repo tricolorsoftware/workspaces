@@ -28,18 +28,31 @@ class Logger {
 
         global.console.log = (...data: any[]): void => {
             process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
-                process.stdout.clearLine(1);
-                for (const d of data) {
-                    if (d.toString !== undefined) {
-                        process.stdout.write(util.format(d));
-                    } else {
-                        process.stdout.write(util.inspect(d));
+                process.stdout.clearLine(1, () => {
+                    let writtenData = "";
+                    for (const d of data) {
+                        if (d.toString !== undefined) {
+                            writtenData += util.format(d);
+                        } else {
+                            writtenData += util.inspect(d, {
+                                compact: false,
+                                colors: true,
+                                depth: 3,
+                                breakLength: this._internal_getWindowSize()[0] - this.log.META_LENGTH + 6,
+                            });
+                        }
+                        writtenData += " ";
                     }
-                    process.stdout.write(" ");
-                }
-                process.stdout.write("\n");
-
-                this._internal_writePrompt();
+                    if (writtenData.endsWith("\n")) {
+                        process.stdout.write(writtenData, () => {
+                            this._internal_writePrompt();
+                        });
+                    } else {
+                        process.stdout.write(writtenData + "\n", () => {
+                            this._internal_writePrompt();
+                        });
+                    }
+                });
             });
         };
 
@@ -62,9 +75,10 @@ class Logger {
         return this.logMessage(LogType.PROMPT, ...message);
     }
 
-    removeCommandPrompt() {
+    removeCommandPrompt(cb: () => void) {
         process.stdout.cursorTo(0, process.stdout.getWindowSize()[1] - 1, () => {
             process.stdout.clearScreenDown();
+            cb();
         });
 
         return this;
@@ -185,7 +199,7 @@ class Logger {
                     process.stdout.cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1], () => {
                         if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
                             // write the prompt indicator to the stdout
-                            process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line}`);
+                            process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line || ""}`);
                         } else {
                             process.stdout.write("  ");
                         }

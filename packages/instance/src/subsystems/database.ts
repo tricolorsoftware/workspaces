@@ -19,6 +19,8 @@ export default class DatabaseSubsystem extends SubSystem {
             path.join(this.instance.subSystems.filesystem.FS_ROOT, "databases"),
         );
 
+        this.createPostgresConnection();
+
         return true;
     }
 
@@ -26,6 +28,10 @@ export default class DatabaseSubsystem extends SubSystem {
         if (this.databaseConnections[connectionId]) return this.databaseConnections[connectionId];
 
         return this.createSQLiteConnection(connectionId);
+    }
+
+    db() {
+        return this.getConnection("postgres");
     }
 
     private createSQLiteConnection(connectionId: string) {

@@ -5,8 +5,6 @@ import path from "path";
 import { promises as fs } from "fs";
 import sharp from "sharp";
 
-export const USERS_DATABASE_CONNECTION_ID = "databases/users";
-
 export interface IUserDatabaseUser {
     id: number;
     username: string;
@@ -34,20 +32,24 @@ export class WorkspacesUser {
     // @returns {false} failed to change the username
     // @returns {true} successfully changed the username
     async setUsername(username: string): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        if ((await db`SELECT username FROM Users WHERE username = ${username}`).count !== 0) return false;
+        try {
+            if ((await db`SELECT username FROM Users WHERE username = ${username}`).count !== 0) return false;
 
-        await db`UPDATE Users SET username = ${username} WHERE id = ${this.userId}`;
-
-        return true;
+            await db`UPDATE Users SET username = ${username} WHERE id = ${this.userId}`;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set username for ${this.userId}`);
+            return false;
+        }
     }
 
     // Get the user's username
     // @returns {string} the users username
     // @returns {undefined} could not get the user's username
     async getUsername(): Promise<string | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         return (await db`SELECT username FROM Users WHERE id = ${this.userId}`)?.[0]?.username || undefined;
     }
@@ -56,18 +58,23 @@ export class WorkspacesUser {
     // @returns {false} failed to change the forename
     // @returns {true} successfully changed the forename
     async setForename(forename: string): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        await db`UPDATE Users SET forename = ${forename} WHERE id = ${this.userId}`;
+        try {
+            await db`UPDATE Users SET forename = ${forename} WHERE id = ${this.userId}`;
 
-        return true;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set forename for ${this.userId}`);
+            return false;
+        }
     }
 
     // Get the user's forename
     // @returns {string} the users forename
     // @returns {undefined} could not get the user's forename
     async getForename(): Promise<string | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         return (await db`SELECT forename FROM Users WHERE id = ${this.userId}`)?.[0]?.forename || undefined;
     }
@@ -76,18 +83,23 @@ export class WorkspacesUser {
     // @returns {false} failed to change the surname
     // @returns {true} successfully changed the surname
     async setSurname(surname: string): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        await db`UPDATE Users SET surname = ${surname} WHERE id = ${this.userId}`;
+        try {
+            await db`UPDATE Users SET surname = ${surname} WHERE id = ${this.userId}`;
 
-        return true;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set surname for ${this.userId}`);
+            return false;
+        }
     }
 
     // Get the user's surname
     // @returns {string} the users surname
     // @returns {undefined} could not get the user's surname
     async getSurname(): Promise<string | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         return (await db`SELECT surname FROM Users WHERE id = ${this.userId}`)?.[0]?.surname || undefined;
     }
@@ -115,18 +127,22 @@ export class WorkspacesUser {
     // @returns {false} failed to set the quota
     // @returns {true} successfully set the quota
     async setQuota(quota: number): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        await db`UPDATE Users SET storage_quota = ${quota} WHERE id = ${this.userId}`;
-
-        return true;
+        try {
+            await db`UPDATE Users SET storage_quota = ${quota} WHERE id = ${this.userId}`;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set storage quota for ${this.userId}`);
+            return false;
+        }
     }
 
     // Get the user's quota
     // @returns {number} the users quota
     // @returns {undefined} could not get the user's quota
     async getQuota(): Promise<number | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         return (await db`SELECT storage_quota FROM Users WHERE id = ${this.userId}`)?.[0]?.storage_quota || undefined;
     }
@@ -135,30 +151,89 @@ export class WorkspacesUser {
     // @returns {false} failed to change the bio
     // @returns {true} successfully changed the bio
     async setBio(bio: string): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        await db`UPDATE Users SET bio = ${bio} WHERE id = ${this.userId}`;
-
-        return true;
+        try {
+            await db`UPDATE Users SET bio = ${bio} WHERE id = ${this.userId}`;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set bio for ${this.userId}`);
+            return false;
+        }
     }
 
     // Get the user's bio
     // @returns {string} the users bio
     // @returns {undefined} could not get the user's bio
     async getBio(): Promise<string | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        return (await db`SELECT bio FROM Users WHERE id = ${this.userId}`)?.[0]?.surname || undefined;
+        return (await db`SELECT bio FROM Users WHERE id = ${this.userId}`)?.[0]?.bio || undefined;
     }
 
-    // TODO: set email & gender
+    // Sets the user's email to email
+    // @returns {false} failed to change the email
+    // @returns {true} successfully changed the email
+    async setEmail(email: string): Promise<boolean> {
+        const db = this.instance.subSystems.database.db();
+        try {
+            await db`UPDATE Users SET email = ${email} WHERE id = ${this.userId}`;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set email for ${this.userId}`);
+            return false;
+        }
+    }
 
+    // Get the user's email
+    // @returns {string} the users email
+    // @returns {undefined} could not get the user's email
+    async getEmail(): Promise<string | undefined> {
+        const db = this.instance.subSystems.database.db();
+
+        return (await db`SELECT email FROM Users WHERE id = ${this.userId}`)?.[0]?.email || undefined;
+    }
+
+    // Sets the user's gender to gender
+    // @returns {false} failed to change the gender
+    // @returns {true} successfully changed the gender
+    async setGender(gender: "female" | "male" | "other"): Promise<boolean> {
+        const db = this.instance.subSystems.database.db();
+
+        try {
+            return await db`UPDATE Users SET gender = ${gender} WHERE id = ${this.userId}`;
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set gender for ${this.userId}`);
+            return false;
+        }
+    }
+
+    // Get the user's gender
+    // @returns {"female" | "male" | "other"} the users gender
+    // @returns {undefined} could not get the user's gender
+    async getGender(): Promise<string | undefined> {
+        const db = this.instance.subSystems.database.db();
+
+        return (await db`SELECT gender FROM Users WHERE id = ${this.userId}`)?.[0]?.gender || undefined;
+    }
+
+    // sets the user's original quality avatar to avatarFile
+    // @returns {true} - copied the avatarFile successfully
+    // @returns {false} - failed to copy the avatarFile
     async setAvatar(avatarFile: string): Promise<boolean> {
-        await fs.cp(avatarFile, path.join(this.getPath(), "assets/avatar/avatar.png"));
-
-        return true;
+        try {
+            await fs.cp(avatarFile, path.join(this.getPath(), "assets/avatar/avatar.png"));
+            return true;
+        } catch (err) {
+            this.instance.subSystems.users.log.error(`Failed to set avatar for ${this.userId} to ${avatarFile}`);
+            return false;
+        }
     }
 
+    // generates the required avatar sizes from the user's avatarFile, if override is not set to true, only missing avatar sizes will be generated
+    // @returns {true} - generated required avatar files successfully
+    // @returns {false} - failed to generate all required avatar files
     async generateAvatars(override?: boolean): Promise<boolean> {
         const AVATAR_SIZES: { width: number; height: number; name: string }[] = [
             { width: 16, height: 16, name: "xs" },
@@ -185,6 +260,8 @@ export class WorkspacesUser {
         return true;
     }
 
+    // Check that all required directories and assets are valid for this user.
+    // If they are missing or invalid, directories will be created and assets will be generated / copied
     async verify() {
         const USER_DIRECTORIES = [
             "/",
@@ -229,7 +306,7 @@ export default class UsersSubsystem extends SubSystem {
     async startup(): Promise<boolean> {
         await super.startup();
 
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         // init the users databasecurrentCommandInterface
         //
@@ -244,7 +321,19 @@ export default class UsersSubsystem extends SubSystem {
         // is_email_verified - is the user's chosen contact email verified to be theirs (boolean)
         // socials - the user's chosen social media links in the format '[name]:-:[url]' as such, the string ':-:' must not be in either [name] or [url] (string[])
         // hashed_password - the user's password after it has been hashed by bun (string)
-        await db`CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, forename TEXT, surname TEXT, gender TEXT, bio TEXT, storage_quota BIGINT, email TEXT, is_email_verified BOOL, socials TEXT[], hashed_password TEXT)`;
+        await db`CREATE TABLE IF NOT EXISTS Users (
+            id SERIAL PRIMARY KEY,
+            username TEXT,
+            forename TEXT,
+            surname TEXT,
+            gender TEXT DEFAULT 'other',
+            bio TEXT,
+            storage_quota BIGINT,
+            email TEXT,
+            is_email_verified BOOL DEFAULT FALSE,
+            socials TEXT[] DEFAULT '{}',
+            hashed_password TEXT
+        )`;
 
         let administratorUserId = await this.createUser("admin");
 
@@ -268,7 +357,7 @@ export default class UsersSubsystem extends SubSystem {
     // @returns {number} the userId of the created user
     // @returns {undefined} the user already exists
     async createUser(username: string): Promise<number | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         if ((await db`SELECT username FROM Users WHERE username = ${username}`).count !== 0) return undefined;
 
@@ -298,27 +387,35 @@ export default class UsersSubsystem extends SubSystem {
     // @returns {true} they exist
     // @returns {false} they do not exist
     async doesUserExist(userId: number): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         if ((await db`SELECT username FROM Users WHERE id = ${userId}`).count === 1) return true;
 
         return false;
     }
 
+    // Gets an array of all users registered on this instance
+    // @returns {WorkspacesUser[]} an array of all users
     async getAllUsers(): Promise<WorkspacesUser[]> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
-        return (await db`SELECT id FROM Users`).map((u: number) => new WorkspacesUser(this.instance, u.id));
+        return (await db`SELECT id FROM Users`).map((u: { id: number }) => new WorkspacesUser(this.instance, u.id));
     }
 
+    // Gets a user by their userId
+    // @returns {WorkspacesUser} the user
+    // @returns {undefined} no such user exists
     async getUserById(userId: number): Promise<WorkspacesUser | undefined> {
         if (this.doesUserExist(userId) === undefined) return undefined;
 
         return new WorkspacesUser(this.instance, userId);
     }
 
+    // Gets a user by their username
+    // @returns {WorkspacesUser} the user
+    // @returns {undefined} no such user exists
     async getUserByUsername(username: string): Promise<WorkspacesUser | undefined> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         const userId = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0]?.id;
 
