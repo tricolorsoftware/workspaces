@@ -55,6 +55,18 @@ export const procedure = t.procedure.use(async (opt) => {
 
 export const workspacesRouter = t.router({
     authorization: {
+        signupRequirements: publicProcedure
+            .output(
+                z.object({
+                    email: z.boolean(),
+                }),
+            )
+            .query(async (opt) => {
+                return {
+                    // change to true when an email server exists
+                    email: false,
+                };
+            }),
         signup: publicProcedure
             .input(
                 z.object({

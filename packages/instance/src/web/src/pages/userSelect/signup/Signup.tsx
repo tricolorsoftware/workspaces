@@ -1,4 +1,4 @@
-import { type Component, createSignal, Match, Switch } from "solid-js";
+import { type Component, createResource, createSignal, Match, Switch } from "solid-js";
 import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.tsx";
 import UKButton from "@tcsw/uikit-solid/src/components/button/UKButton.tsx";
 import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.tsx";
@@ -40,6 +40,8 @@ const UserSelectPage: Component = () => {
     const [displayName, setDisplayName] = createSignal<string>("");
     const [gender, setGender] = createSignal<"female" | "male" | "other">("other");
     const [bio, setBio] = createSignal<string>("");
+
+    const [requirements] = createResource(() => trpc.authorization.signupRequirements.query(), { initialValue: undefined });
 
     const [twoFactorTestCode, setTwoFactorTestCode] = createSignal<string>("");
 
@@ -112,7 +114,11 @@ const UserSelectPage: Component = () => {
                         <UKButton
                             disabled={emailAddress() === "" || !isEmail(emailAddress())}
                             onClick={() => {
-                                setStage(UserSelectStage.VerifyEmail);
+                                if (requirements()?.email) {
+                                    setStage(UserSelectStage.VerifyEmail);
+                                } else {
+                                    setStage(UserSelectStage.Password);
+                                }
                             }}
                             color={"filled"}
                         >
@@ -185,7 +191,11 @@ const UserSelectPage: Component = () => {
                     <div class={styles.stageButtons}>
                         <UKButton
                             onClick={() => {
-                                setStage(UserSelectStage.VerifyEmail);
+                                if (requirements()?.email) {
+                                    setStage(UserSelectStage.VerifyEmail);
+                                } else {
+                                    setStage(UserSelectStage.Password);
+                                }
                             }}
                             color={"tonal"}
                         >

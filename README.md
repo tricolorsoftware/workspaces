@@ -52,8 +52,9 @@ A working environment for professionals and Home-Lab users.
         3. Switch to the postgres user -> `sudo su postgres`
         4. Open the PostgreSQL database with psql -> `psql`
         5. Create a PostgreSQL database with the following query -> `CREATE DATABASE tricolor_workspaces;`
-        6. Exit psql -> `exit;`
-        7. Logout from the postgres user -> `exit`
+        6. Change the PostgreSQL password with the following query -> `ALTER USER postgres WITH PASSWORD 'postgres';`
+        7. Exit psql -> `exit;`
+        8. Logout from the postgres user -> `exit`
     2. Windows
         1. Simply install postgreSQL with the setup file downloaded from the postgreSQL website
     3. MacOS
