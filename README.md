@@ -45,26 +45,26 @@ A working environment for professionals and Home-Lab users.
 ### Installation
 1. Choose either the `Full-Stack` or `UIKit` section to continue
 #### Full-Stack (Workspaces)
-1. Ensure all non-NPM dependencies are installed before continuing
+1. Ensure all non-NPM dependencies are installed
+    1. Linux (Ubuntu)
+        1. Install PostgreSQL -> `sudo apt install postgresql postgresql-contrib`
+        2. Start the PostgreSQL service -> `sudo systemctl start postgresql`
+        3. Switch to the postgres user -> `sudo su postgres`
+        4. Open the PostgreSQL database with psql -> `psql`
+        5. Create a PostgreSQL database with the following query -> `CREATE DATABASE tricolor_workspaces;`
+        6. Exit psql -> `exit;`
+        7. Logout from the postgres user -> `exit`
+    2. Windows
+        1. Simply install postgreSQL with the setup file downloaded from the postgreSQL website
+    3. MacOS
+        1. Using Orbstack with Ubuntu follow the linux instructions above
 2. Run `bun install` to install all NPM dependencies
 3. Run `bun run web` and `bun run backend` to start up the web interface and backend in development mode
 4. Enjoy! :D
+
 #### UIKit (UI Library dev page)
 1. Ensure all non-NPM dependencies are installed before continuing
 2. Run `bun install` to install all NPM dependencies
 3. cd into the UIKit directory `cd ./packages/uikit-solid`
 4. Run `bun run dev-web` to start up the web interface and backend in development mode
 5. Enjoy! :D
-
-
-# Project Core Functionality Roadmap
-- backend
-	- notifications
-	- authentication
-	- filesystem
-	- users
-	- teams
-- web
-	- login / signup flow
-	- Application-Frame layout
-	- Notification visuals

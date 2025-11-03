@@ -192,6 +192,7 @@ class Instance {
 
         process.stdout.write("Shutdown completed! -> ");
         process.stdout.write(goodbye[Math.floor(Math.random() * goodbye.length)]);
+        process.stdout.write("\n");
         process.exit(0);
     }
 }
