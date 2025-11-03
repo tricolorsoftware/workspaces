@@ -34,13 +34,12 @@ export default abstract class SubSystem {
     }
 
     async startup(): Promise<boolean> {
-        this.instance.log.system.info("Starting up...");
+        this.log.info("Starting up...");
         return true;
     }
 
     stop() {
-        this.instance.log.system.info(`Stopping SubSystem ${this.id}`);
-
+        this.log.info(`Stopping SubSystem ${this.id}`);
         return this;
     }
 }

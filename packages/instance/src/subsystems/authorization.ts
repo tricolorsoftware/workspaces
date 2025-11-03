@@ -1,8 +1,5 @@
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
-import { USERS_DATABASE_CONNECTION_ID } from "./users.js";
-
-export const AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID = "databases/authorization_sessions";
 
 export enum AuthorizedDeviceType {
     Desktop,
@@ -21,7 +18,7 @@ export default class AuthorizationSubsystem extends SubSystem {
     // @returns {string} the new session's sessionToken
     async createSession(userId: number, password: string, deviceId: AuthorizedDeviceType): Promise<string | undefined> {
         try {
-            const usersDb = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+            const usersDb = this.instance.subSystems.database.db();
 
             if (
                 !(await Bun.password.verify(
@@ -31,7 +28,7 @@ export default class AuthorizationSubsystem extends SubSystem {
             )
                 return undefined;
 
-            const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
+            const sessionsDb = this.instance.subSystems.database.db();
 
             this.log.info("Password entered matched the hashed password.");
 
@@ -54,7 +51,7 @@ export default class AuthorizationSubsystem extends SubSystem {
     async verifySession(sessionToken: string): Promise<number | undefined> {
         const [_, userId, token] = sessionToken.split(":");
 
-        const sessionsDb = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
+        const sessionsDb = this.instance.subSystems.database.db();
 
         const session = (
             await sessionsDb`SELECT session_id, valid_until FROM Sessions WHERE user_id = ${userId} AND session_token = ${token}`
@@ -74,7 +71,7 @@ export default class AuthorizationSubsystem extends SubSystem {
     // @returns {true} successful
     // @returns {false} failed
     async setPassword(userId: number, password: string): Promise<boolean> {
-        const db = this.instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         if (!(await this.instance.subSystems.users.doesUserExist(userId))) {
             return false;
@@ -90,7 +87,7 @@ export default class AuthorizationSubsystem extends SubSystem {
     async startup() {
         // loop through all users, check for any session tokens which are expired and remove them from the user's valud sessions pool
 
-        const db = this.instance.subSystems.database.getConnection(AUTHORIZATION_SESSIONS_DATABASE_CONNECTION_ID);
+        const db = this.instance.subSystems.database.db();
 
         // init the sessions database
         //
@@ -99,7 +96,13 @@ export default class AuthorizationSubsystem extends SubSystem {
         // session_token - the session's access token in the format 'workspaces_session:[user_id]:[token]' (string)
         // device_id - the session's device type (AuthorizedDeviceType)
         // valid_until - the epoch time which when reached, the session will be invalid (number)
-        await db`CREATE TABLE IF NOT EXISTS Sessions (session_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, session_token TEXT, device_id INTEGER, valid_until BIGINT)`;
+        await db`CREATE TABLE IF NOT EXISTS Sessions (
+            session_id SERIAL PRIMARY KEY,
+            user_id INTEGER,
+            session_token TEXT,
+            device_id INTEGER,
+            valid_until BIGINT
+        )`;
 
         return true;
     }

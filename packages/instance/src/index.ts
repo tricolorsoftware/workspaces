@@ -167,9 +167,33 @@ class Instance {
 
         process.stdout.cursorTo(0, 0);
         process.stdout.clearScreenDown();
-        process.exit(0);
+        process.stdout.cursorTo(0, 0);
 
-        return this;
+        const goodbye = [
+            "Goodbye!",
+            "Chao",
+            "Salut",
+            "Ciao",
+            "Tschüss",
+            "じゃあね",
+            "拜拜",
+            "Tchau",
+            "Пока",
+            "잘 가",
+            "Hej då",
+            "Doei",
+            "Γεια",
+            "Na razie",
+            "Güle güle",
+            "Adeus",
+            "Tot ziens",
+            "Hẹn gặp lại",
+        ];
+
+        process.stdout.write("Shutdown completed! -> ");
+        process.stdout.write(goodbye[Math.floor(Math.random() * goodbye.length)]);
+        process.stdout.write("\n");
+        process.exit(0);
     }
 }
 

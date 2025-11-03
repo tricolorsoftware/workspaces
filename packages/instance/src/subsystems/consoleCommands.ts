@@ -68,7 +68,7 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
 
             process.stdin.on("keypress", async (str, key) => {
                 if (key.name === "up") {
-                    if (historyIndex < 1) {
+                    if (historyIndex === 0) {
                         return;
                     }
 
@@ -85,6 +85,14 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     return;
                 } else if (key.name === "down") {
                     if (historyIndex + 1 > self.commandHistory.length - 1) {
+                        line = "";
+                        cursorPos = CURSOR_MIN_POS;
+
+                        process.stdout.cursorTo(CURSOR_MIN_POS);
+                        process.stdout.clearLine(1);
+                        process.stdout.write(line);
+                        process.stdout.cursorTo(cursorPos);
+
                         return;
                     }
                     historyIndex++;
