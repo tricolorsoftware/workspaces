@@ -48,7 +48,7 @@ A working environment for professionals and Home-Lab users.
 1. Ensure all non-NPM dependencies are installed
     1. Linux (Ubuntu)
         1. Install PostgreSQL -> `sudo apt install postgresql postgresql-contrib`
-        2. Start the PostgreSQL service -> `sudo systemctl start postgresql`
+        2. Start the PostgreSQL service -> `sudo systemctl enable --now postgresql`
         3. Switch to the postgres user -> `sudo su postgres`
         4. Open the PostgreSQL database with psql -> `psql`
         5. Create a PostgreSQL database with the following query -> `CREATE DATABASE tricolor_workspaces;`

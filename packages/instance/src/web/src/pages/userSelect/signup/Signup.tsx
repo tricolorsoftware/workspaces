@@ -41,7 +41,7 @@ const UserSelectPage: Component = () => {
     const [gender, setGender] = createSignal<"female" | "male" | "other">("other");
     const [bio, setBio] = createSignal<string>("");
 
-    const [requirements] = createResource(() => trpc.authorization.signupRequirements.query(), { initialValue: undefined });
+    const [requirements] = createResource(() => trpc.authorization.signupRequirements.query());
 
     const [twoFactorTestCode, setTwoFactorTestCode] = createSignal<string>("");
 
@@ -117,6 +117,8 @@ const UserSelectPage: Component = () => {
                                 if (requirements()?.email) {
                                     setStage(UserSelectStage.VerifyEmail);
                                 } else {
+                                    // FIXME: remove this eventually
+                                    setEmailCode("a");
                                     setStage(UserSelectStage.Password);
                                 }
                             }}

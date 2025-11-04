@@ -63,7 +63,7 @@ export default class ApplicationsSubsystem extends SubSystem {
             for (const app of this.availableApplications) {
                 if (this.enabledApplications.find((a) => a === app.manifest?.id)) {
                     if (app.manifest?.modules.web) {
-                        applicationsInfill += `<Route path="${app.manifest.id}/*" component={lazy(() => import("${path.relative(path.join(this.instance.subSystems.filesystem.FS_ROOT), path.join(app.path, app.manifest.modules.web.path, "/App.tsx"))}"))} />
+                        applicationsInfill += `<Route path="${app.manifest.id}/*" component={lazy(() => import("${path.relative(path.join(this.instance.subSystems.filesystem.FS_ROOT), path.join(app.path, app.manifest.modules.web.path, "/App.tsx")).replaceAll("\\", "/")}"))} />
 `;
                     }
                 }
