@@ -71,7 +71,6 @@ class Instance {
         this.webServer = Bun.serve(
             // TODO: change this so that multiple applications can have their own tRPC on separate routes e.g: /app/uk.tcsw.dashboard/trpc
             this.subSystems.tRPC.serve({
-                port: 3563,
                 routes: {
                     "/api/user/me/avatar/:size": {
                         GET: async (req: BunRequest) => {

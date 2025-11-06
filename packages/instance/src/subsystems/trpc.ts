@@ -50,8 +50,26 @@ export default class TRPCSubsystem extends SubSystem {
         },
     */
 
-    serve(options: object) {
-        // TODO: this
-        return { ...options };
+    private attemptTRPCRequest(req: Request) {}
+
+    serve(options: { routes: object; fetch(request: any, server: any): Response; development: boolean }) {
+        return {
+            ...options,
+            async fetch(req: Request, server: Server<void>) {
+                const url = new URL(req.url);
+
+                if (opts.endpoint && !url.pathname.startsWith(opts.endpoint)) {
+                    return;
+                }
+
+                if (trpcResponse) {
+                    return trpcResponse;
+                }
+
+                return options?.fetch?.call(server, req, server);
+            },
+            // TODO: implement websocket transport support
+            // websocket: createBunWSHandler(opts),
+        };
     }
 }
