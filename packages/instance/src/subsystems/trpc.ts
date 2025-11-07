@@ -1,7 +1,9 @@
-import { Server } from "bun";
+import { BunRequest, Server } from "bun";
 import { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import { TRPCBuiltRouter } from "@trpc/server";
+import { createTRPCContext } from "./trpc/trpc.js";
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 export default class TRPCSubsystem extends SubSystem {
     registeredRouters: { basePath: string; router: TRPCBuiltRouter<any, any> }[];
@@ -50,17 +52,35 @@ export default class TRPCSubsystem extends SubSystem {
         },
     */
 
-    private attemptTRPCRequest(req: Request) {}
+    private attemptTRPCRequest(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+        const url = new URL(req.url);
+
+        for (const router of this.registeredRouters) {
+            if (!url.pathname.startsWith(router.basePath)) {
+                continue;
+            }
+
+            if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
+                return new Response(null, { status: 101 });
+            }
+
+            return fetchRequestHandler({
+                createContext: () => ({}) as never,
+                req,
+                endpoint: router.basePath ?? "",
+            });
+        }
+
+        return;
+    }
 
     serve(options: { routes: object; fetch(request: any, server: any): Response; development: boolean }) {
+        const self = this;
+
         return {
             ...options,
-            async fetch(req: Request, server: Server<void>) {
-                const url = new URL(req.url);
-
-                if (opts.endpoint && !url.pathname.startsWith(opts.endpoint)) {
-                    return;
-                }
+            async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+                let trpcResponse = self.attemptTRPCRequest(req, server);
 
                 if (trpcResponse) {
                     return trpcResponse;
