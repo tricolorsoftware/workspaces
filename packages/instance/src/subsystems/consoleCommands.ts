@@ -191,8 +191,8 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                 }
 
                 cursorPos++;
-                line += key.name;
-                process.stdout.write(key.name);
+                line += key.sequence;
+                process.stdout.write(key.sequence);
             });
         })();
 

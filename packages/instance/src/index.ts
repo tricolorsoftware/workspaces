@@ -10,10 +10,11 @@ import AuthorizationSubsystem from "./subsystems/authorization.js";
 // https://github.com/cah4a/trpc-bun-adapter/blob/main/src/createBunHttpHandler.ts TODO: patch this and merge into the instance package
 import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
 import { AnyRouter } from "@trpc/server";
-import { createTRPCContext, workspacesRouter } from "./subsystems/trpc.js";
+import { createTRPCContext, workspacesRouter } from "./subsystems/trpc/trpc.js";
 import { BunRequest, file } from "bun";
 import ApplicationsSubsystem from "./subsystems/applications.js";
 import path from "path";
+import TRPCSubsystem from "./subsystems/trpc.js";
 
 export enum InstanceStatus {
     Online,
@@ -42,6 +43,7 @@ class Instance {
         this.subSystems.users = new UsersSubsystem(this);
         this.subSystems.authorization = new AuthorizationSubsystem(this);
         this.subSystems.applications = new ApplicationsSubsystem(this);
+        this.subSystems.tRPC = new TRPCSubsystem(this);
 
         this.status = InstanceStatus.Offline;
 
@@ -68,83 +70,52 @@ class Instance {
 
         this.webServer = Bun.serve(
             // TODO: change this so that multiple applications can have their own tRPC on separate routes e.g: /app/uk.tcsw.dashboard/trpc
-            createBunServeHandler(
-                {
-                    router: workspacesRouter,
-                    endpoint: "/trpc",
-                    onError: (...p: any[]) => {
-                        // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
-                        if (p[0].type === "unknown") return;
-                        if (p[0].error.code === "UNAUTHORIZED") return;
+            this.subSystems.tRPC.serve({
+                routes: {
+                    "/api/user/me/avatar/:size": {
+                        GET: async (req: BunRequest) => {
+                            const size = (req.params as { size: string }).size;
 
-                        console.error(p[0].error);
-                        this.log.system.error("^");
-                    },
-                    createContext(opt: { req: BunRequest; resHeaders: Headers }) {
-                        return createTRPCContext({ rawRequest: { req: opt.req, resHeaders: opt.resHeaders }, instance: self });
-                    },
-                    responseMeta() {
-                        return {
-                            status: 200,
-                            headers: {
-                                "Access-Control-Allow-Origin": "http://localhost:5173", // TODO: change this according to a config file
-                                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                                "Access-Control-Allow-Credentials": "true",
-                            },
-                        };
-                    },
-                    batching: { enabled: true },
-                    emitWsUpgrades: false,
-                },
-                {
-                    port: 3563,
-                    routes: {
-                        "/api/user/me/avatar/:size": {
-                            GET: async (req: BunRequest) => {
-                                const size = (req.params as { size: string }).size;
+                            const cookieString = req.headers?.get("cookie");
 
-                                const cookieString = req.headers?.get("cookie");
+                            if (cookieString === null) {
+                                throw Response.json({ code: "UNAUTHORIZED", message: "missing auth cookie" });
+                            }
 
-                                if (cookieString === null) {
-                                    throw Response.json({ code: "UNAUTHORIZED", message: "missing auth cookie" });
-                                }
+                            const parsedCookie = Bun.Cookie.parse(cookieString);
 
-                                const parsedCookie = Bun.Cookie.parse(cookieString);
+                            let userId = await self.subSystems.authorization.verifySession(decodeURIComponent(parsedCookie.value));
 
-                                let userId = await self.subSystems.authorization.verifySession(decodeURIComponent(parsedCookie.value));
+                            if (userId === undefined) {
+                                throw Response.json({ code: "UNAUTHORIZED", message: "invalid session" });
+                            }
 
-                                if (userId === undefined) {
-                                    throw Response.json({ code: "UNAUTHORIZED", message: "invalid session" });
-                                }
+                            switch (size) {
+                                case "xs":
+                                case "s":
+                                case "m":
+                                case "l":
+                                case "xl":
+                                    // do nothing
+                                    break;
+                                default:
+                                    return new Response(
+                                        file(path.join(self.subSystems.filesystem.FS_ROOT, `users/${userId}/assets/avatar/xs.png`)),
+                                    );
+                            }
 
-                                switch (size) {
-                                    case "xs":
-                                    case "s":
-                                    case "m":
-                                    case "l":
-                                    case "xl":
-                                        // do nothing
-                                        break;
-                                    default:
-                                        return new Response(
-                                            file(path.join(self.subSystems.filesystem.FS_ROOT, `users/${userId}/assets/avatar/xs.png`)),
-                                        );
-                                }
-
-                                return new Response(
-                                    file(path.join(self.subSystems.filesystem.FS_ROOT, `users/${userId}/assets/avatar/${size}.png`)),
-                                );
-                            },
+                            return new Response(
+                                file(path.join(self.subSystems.filesystem.FS_ROOT, `users/${userId}/assets/avatar/${size}.png`)),
+                            );
                         },
                     },
-                    fetch(request, server) {
-                        // will be executed if it's not a TRPC request
-                        return new Response("Unknown path");
-                    },
-                    development: this.subSystems.configuration.isDevmode,
                 },
-            ),
+                fetch(request, server) {
+                    // will be executed if it's not a TRPC request
+                    return new Response("Unknown path");
+                },
+                development: this.subSystems.configuration.isDevmode,
+            }),
         );
         this.log.system.success(`Listening for requests on port ${3563}`);
 

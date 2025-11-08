@@ -8,6 +8,7 @@ import type NotificationsSubsystem from "./subsystems/notifications.js";
 import type UsersSubsystem from "./subsystems/users.js";
 import DatabaseSubsystem from "./subsystems/database.js";
 import ApplicationsSubsystem from "./subsystems/applications.js";
+import TRPCSubsystem from "./subsystems/trpc.js";
 
 export type SubSystems = {
     users: UsersSubsystem;
@@ -18,6 +19,7 @@ export type SubSystems = {
     authorization: AuthorizationSubsystem;
     database: DatabaseSubsystem;
     applications: ApplicationsSubsystem;
+    tRPC: TRPCSubsystem;
 } & { [key: string]: SubSystem };
 
 export default abstract class SubSystem {

@@ -1,5 +1,4 @@
-import { createTRPCContext, procedure } from "@tcsw/workspaces-instance/src/subsystems/trpc";
-import { USERS_DATABASE_CONNECTION_ID } from "@tcsw/workspaces-instance/src/subsystems/users";
+import { createTRPCContext, procedure } from "@tcsw/workspaces-instance/src/subsystems/trpc/trpc";
 import { initTRPC } from "@trpc/server";
 import z from "zod";
 
@@ -20,7 +19,7 @@ const router = t.router({
                     }),
                 )
                 .query(async (opt) => {
-                    const db = instance.subSystems.database.getConnection(USERS_DATABASE_CONNECTION_ID);
+                    const db = instance.subSystems.database.db();
 
                     const { forename, surname, username } = (
                         await db`SELECT forename, surname, username FROM Users WHERE id = ${opt.ctx.userId}`

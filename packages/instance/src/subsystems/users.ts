@@ -4,6 +4,7 @@ import SubSystem from "../subSystems.js";
 import path from "path";
 import { promises as fs } from "fs";
 import sharp from "sharp";
+import crypto from "crypto";
 
 export interface IUserDatabaseUser {
     id: number;
@@ -132,7 +133,7 @@ export class WorkspacesUser {
         Gets the user's forename and surname
         @returns {{ forename?: string, surname?: string }}
     */
-    async getFullName(forename: string, surname: string): Promise<{ forename?: string; surname?: string }> {
+    async getFullName(): Promise<{ forename?: string; surname?: string }> {
         let forenameRes = await this.getForename();
         let surnameRes = await this.getSurname();
 
@@ -381,7 +382,20 @@ export default class UsersSubsystem extends SubSystem {
         if (administratorUserId !== undefined) {
             const adminUser = await this.getUserById(administratorUserId);
 
-            adminUser?.getFullName("Admin", "Istrator");
+            if (!adminUser) {
+                this.log.error("Admin user didn't exist and couldn't be created!");
+            } else {
+                adminUser.setFullName("Admin", "Istrator");
+
+                function generateRandomDefaultPassword(): string {
+                    return crypto.randomBytes(16 / 2).toString("hex");
+                }
+
+                const defaultPassword = generateRandomDefaultPassword();
+
+                await this.instance.subSystems.authorization.setPassword(adminUser.userId, defaultPassword);
+                this.log.info(`The default admin user has a password of '${defaultPassword}'`);
+            }
         }
 
         const users = await this.getAllUsers();

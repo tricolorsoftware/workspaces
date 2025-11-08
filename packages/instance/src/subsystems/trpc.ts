@@ -1,221 +1,95 @@
-import { initTRPC, TRPCError } from "@trpc/server";
-import z from "zod";
+import { BunRequest, Server } from "bun";
 import { Instance } from "../index.js";
-import { AuthorizedDeviceType } from "./authorization.js";
-import { BunRequest } from "bun";
+import SubSystem from "../subSystems.js";
+import { TRPCBuiltRouter } from "@trpc/server";
+import { createTRPCContext } from "./trpc/trpc.js";
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
-export const createTRPCContext = (opt: { rawRequest: { req: BunRequest; resHeaders: Headers }; instance: Instance }) => {
-    return {
-        rawRequest: {
-            req: opt.rawRequest.req,
-            resHeaders: opt.rawRequest.resHeaders,
-        },
-        instance: opt.instance,
-    };
-};
+export default class TRPCSubsystem extends SubSystem {
+    registeredRouters: { basePath: string; router: TRPCBuiltRouter<any, any> }[];
 
-export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create();
+    constructor(instance: Instance) {
+        super("trpc", instance);
 
-export const publicProcedure = t.procedure.use(async (opt) => {
-    return opt.next({
-        ctx: {
-            userId: "THIS CAN ONLY BE ACCESSED FROM A NON-PUBLIC PROCEDURE",
-        },
-    });
-});
-export const procedure = t.procedure.use(async (opt) => {
-    // console.log(opt.ctx.req.headers);
+        this.registeredRouters = [];
+
+        return this;
+    }
+
+    async startup(): Promise<boolean> {
+        return true;
+    }
 
     /*
-    if (!ctx.user?.isAdmin) {
-      throw new TRPCError({ code: 'UNAUTHORIZED' });
-    }
+    createBunServeHandler(
+        {
+            router: workspacesRouter,
+            endpoint: "/trpc",
+            onError: (...p: any[]) => {
+                // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
+                if (p[0].type === "unknown") return;
+                if (p[0].error.code === "UNAUTHORIZED") return;
+
+                console.error(p[0].error);
+                this.log.system.error("^");
+            },
+            createContext(opt: { req: BunRequest; resHeaders: Headers }) {
+                return createTRPCContext({ rawRequest: { req: opt.req, resHeaders: opt.resHeaders }, instance: self });
+            },
+            responseMeta() {
+                return {
+                    status: 200,
+                    headers: {
+                        "Access-Control-Allow-Origin": "http://localhost:5173", // TODO: change this according to a config file
+                        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                        "Access-Control-Allow-Credentials": "true",
+                    },
+                };
+            },
+            batching: { enabled: true },
+            emitWsUpgrades: false,
+        },
     */
 
-    const cookieString = opt.ctx.rawRequest.req.headers?.get("cookie");
+    private attemptTRPCRequest(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+        const url = new URL(req.url);
 
-    if (cookieString === null) {
-        throw new TRPCError({ code: "UNAUTHORIZED", message: "missing auth cookie" });
+        for (const router of this.registeredRouters) {
+            if (!url.pathname.startsWith(router.basePath)) {
+                continue;
+            }
+
+            if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
+                return new Response(null, { status: 101 });
+            }
+
+            return fetchRequestHandler({
+                createContext: () => ({}) as never,
+                req,
+                endpoint: router.basePath ?? "",
+            });
+        }
+
+        return;
     }
 
-    const parsedCookie = Bun.Cookie.parse(cookieString);
+    serve(options: { routes: object; fetch(request: any, server: any): Response; development: boolean }) {
+        const self = this;
 
-    let userId = await opt.ctx.instance.subSystems.authorization.verifySession(decodeURIComponent(parsedCookie.value));
+        return {
+            ...options,
+            async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+                let trpcResponse = self.attemptTRPCRequest(req, server);
 
-    if (userId === undefined) {
-        throw new TRPCError({ code: "UNAUTHORIZED", message: "invalid session" });
-    }
-
-    return opt.next({
-        ctx: {
-            userId: userId,
-        },
-    });
-});
-
-export const workspacesRouter = t.router({
-    authorization: {
-        signup: publicProcedure
-            .input(
-                z.object({
-                    username: z.string(),
-                    password: z.string(),
-                    emailAddress: z.string(),
-                    emailCode: z.string(),
-                    displayName: z.string(),
-                    gender: z.string(),
-                    bio: z.string(),
-                }),
-            )
-            .output(
-                z.union([
-                    z.object({ type: z.literal("error"), message: z.string() }),
-                    z.object({ type: z.literal("success"), sessionToken: z.string(), notice: z.boolean().optional() }),
-                ]),
-            )
-            .mutation(async (opt) => {
-                // TODO: implement this
-
-                if (opt.input.emailCode !== "a")
-                    return {
-                        type: "error",
-                        message: "The email code did not match!",
-                    };
-
-                const uid = await opt.ctx.instance.subSystems.users.createUser(opt.input.username);
-
-                if (uid === undefined)
-                    return {
-                        type: "error",
-                        message: "Failed to create the user",
-                    };
-
-                const user = await opt.ctx.instance.subSystems.users.getUserById(uid);
-
-                if (user === undefined)
-                    return {
-                        type: "error",
-                        message: "Failed to fetch the user",
-                    };
-
-                let splitDisplayName = opt.input.displayName.split(" ");
-                await user.setFullName(splitDisplayName[0], splitDisplayName.slice(1).join(" "));
-
-                await user.setQuota(20);
-
-                await opt.ctx.instance.subSystems.authorization.setPassword(user.userId, opt.input.password);
-
-                const session = await opt.ctx.instance.subSystems.authorization.createSession(
-                    user.userId,
-                    opt.input.password,
-                    AuthorizedDeviceType.UnknownBrowser,
-                );
-
-                if (session === undefined) {
-                    return {
-                        type: "error",
-                        message: "Failed to create a session?",
-                    };
+                if (trpcResponse) {
+                    return trpcResponse;
                 }
 
-                opt.ctx.rawRequest.resHeaders.set("set-cookie", Bun.Cookie.from("Authorization", session, { secure: true }).serialize());
-
-                return {
-                    type: "success",
-                    sessionToken: session,
-                };
-            }),
-        signin: publicProcedure
-            .input(z.object({ username: z.string(), password: z.string() }))
-            .output(
-                z.union([
-                    z.object({ type: z.literal("error"), message: z.string() }),
-                    z.object({ type: z.literal("success"), sessionToken: z.string() }),
-                ]),
-            )
-            .mutation(async (opt) => {
-                const user = await opt.ctx.instance.subSystems.users.getUserByUsername(opt.input.username);
-
-                if (user === undefined)
-                    return {
-                        type: "error",
-                        message: "Failed to find the user",
-                    };
-
-                const session = await opt.ctx.instance.subSystems.authorization.createSession(
-                    user.userId,
-                    opt.input.password,
-                    AuthorizedDeviceType.UnknownBrowser,
-                );
-
-                if (session === undefined) {
-                    return {
-                        type: "error",
-                        message: "Failed to create a session?",
-                    };
-                }
-
-                opt.ctx.rawRequest.resHeaders.set("set-cookie", Bun.Cookie.from("Authorization", session, { secure: true }).serialize());
-
-                return {
-                    type: "success",
-                    sessionToken: session,
-                };
-            }),
-        isAuthenticated: procedure.output(z.object({ authenticated: z.boolean() })).query(() => {
-            return {
-                authenticated: true,
-            };
-        }),
-    },
-    app: {
-        navigation: {
-            user: {
-                name: procedure.output(z.object({ username: z.string(), forename: z.string(), surname: z.string() })).query(async (opt) => {
-                    const db = opt.ctx.instance.subSystems.database.db();
-
-                    const user = (await db`SELECT username, forename, surname FROM Users WHERE id = ${opt.ctx.userId};`)?.[0];
-
-                    if (!user) {
-                        throw new TRPCError({ code: "NOT_FOUND", cause: { message: "User does not exist" } });
-                    }
-
-                    return {
-                        username: user.username || "@",
-                        forename: user.forename || "Unknown",
-                        surname: user.surname || "",
-                    };
-                }),
+                return options?.fetch?.call(server, req, server);
             },
-            quickShortcuts: procedure
-                .output(
-                    z.array(
-                        z.object({
-                            location: z.object({ type: z.union([z.literal("local"), z.literal("remote")]), value: z.string() }),
-                            icon: z.object({ type: z.union([z.literal("icon"), z.literal("image")]), value: z.string() }),
-                            label: z.string(),
-                        }),
-                    ),
-                )
-                .query(async (opt) => {
-                    let quickShortcuts = opt.ctx.instance.subSystems.applications.getEnabledApplications();
-
-                    return quickShortcuts.map((app) => {
-                        return {
-                            icon: {
-                                type: "icon",
-                                value: "person",
-                            },
-                            label: app.manifest?.displayName || "Unknown",
-                            location: {
-                                type: "local",
-                                value: `/app/${app.manifest?.id}` || "/404",
-                            },
-                        };
-                    });
-                }),
-        },
-    },
-});
-
-export type WorkspacesTRPCRouter = typeof workspacesRouter;
+            // TODO: implement websocket transport support
+            // websocket: createBunWSHandler(opts),
+        };
+    }
+}
