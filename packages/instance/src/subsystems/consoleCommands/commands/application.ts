@@ -1,5 +1,4 @@
 import Command, { type ICommandRuntimeParameters } from "../command.js";
-import chalk from "chalk";
 
 export default class InstallApplicationCommand extends Command {
     commandId = "application";
@@ -11,7 +10,7 @@ export default class InstallApplicationCommand extends Command {
         const targetId = parameters.arguments[0];
 
         if (!targetId) {
-            this.instance.log.system.warning(`Failed to find application '' please provide a valid id`);
+            this.instance.log.system.warning(`Failed to find application '${targetId}' please provide a valid id`);
 
             return this.finishRun();
         }
@@ -22,7 +21,7 @@ export default class InstallApplicationCommand extends Command {
                 await this.instance.subSystems.applications.enableApplication(targetId);
                 break;
             case "disable":
-                this.instance.log.system.info(`Enabling application '${targetId}'`);
+                this.instance.log.system.info(`Disabling application '${targetId}'`);
                 await this.instance.subSystems.applications.disableApplication(targetId);
                 break;
             default:

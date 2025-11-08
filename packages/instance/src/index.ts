@@ -10,7 +10,7 @@ import AuthorizationSubsystem from "./subsystems/authorization.js";
 // https://github.com/cah4a/trpc-bun-adapter/blob/main/src/createBunHttpHandler.ts TODO: patch this and merge into the instance package
 import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
 import { AnyRouter } from "@trpc/server";
-import { createTRPCContext, workspacesRouter } from "./subsystems/trpc/trpc.js";
+import { createTRPCContext as createWorkspacesTRPCContext, workspacesRouter } from "./subsystems/trpc/trpc.js";
 import { BunRequest, file } from "bun";
 import ApplicationsSubsystem from "./subsystems/applications.js";
 import path from "path";
@@ -68,6 +68,8 @@ class Instance {
 
         const self = this;
 
+        // TODO: fix this at some point
+        // @ts-ignore
         this.webServer = Bun.serve(
             // TODO: change this so that multiple applications can have their own tRPC on separate routes e.g: /app/uk.tcsw.dashboard/trpc
             this.subSystems.tRPC.serve({
@@ -117,7 +119,14 @@ class Instance {
                 development: this.subSystems.configuration.isDevmode,
             }),
         );
-        this.log.system.success(`Listening for requests on port ${3563}`);
+
+        this.subSystems.tRPC.registeredRouters.push({
+            basePath: "/instance/workspaces/trpc",
+            router: workspacesRouter,
+            createContext: createWorkspacesTRPCContext(this),
+        });
+
+        this.log.system.success(`Listening for requests on port ${this.webServer.port}`);
 
         this.log.system.info("Startup complete");
 

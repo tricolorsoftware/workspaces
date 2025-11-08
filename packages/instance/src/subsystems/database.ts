@@ -30,6 +30,7 @@ export default class DatabaseSubsystem extends SubSystem {
         return this.createSQLiteConnection(connectionId);
     }
 
+    // Get the instance's postgres database connection (The primary database)
     db() {
         return this.getConnection("postgres");
     }

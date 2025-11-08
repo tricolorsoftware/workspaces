@@ -2,15 +2,15 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import z from "zod";
 import { Instance } from "../../index.js";
 import { AuthorizedDeviceType } from "../authorization.js";
-import { BunRequest } from "bun";
+import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
-export const createTRPCContext = (opt: { rawRequest: { req: BunRequest; resHeaders: Headers }; instance: Instance }) => {
+export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContextFnOptions) => {
     return {
         rawRequest: {
-            req: opt.rawRequest.req,
-            resHeaders: opt.rawRequest.resHeaders,
+            req: opt.req,
+            resHeaders: opt.resHeaders,
         },
-        instance: opt.instance,
+        instance: instance,
     };
 };
 

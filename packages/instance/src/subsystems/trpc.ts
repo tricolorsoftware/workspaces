@@ -3,10 +3,14 @@ import { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import { TRPCBuiltRouter } from "@trpc/server";
 import { createTRPCContext } from "./trpc/trpc.js";
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { FetchCreateContextFnOptions, fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 export default class TRPCSubsystem extends SubSystem {
-    registeredRouters: { basePath: string; router: TRPCBuiltRouter<any, any> }[];
+    registeredRouters: {
+        basePath: string;
+        router: TRPCBuiltRouter<any, any>;
+        createContext: (opts: FetchCreateContextFnOptions) => object;
+    }[];
 
     constructor(instance: Instance) {
         super("trpc", instance);
@@ -20,21 +24,58 @@ export default class TRPCSubsystem extends SubSystem {
         return true;
     }
 
-    /*
-    createBunServeHandler(
-        {
-            router: workspacesRouter,
-            endpoint: "/trpc",
-            onError: (...p: any[]) => {
-                // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
-                if (p[0].type === "unknown") return;
-                if (p[0].error.code === "UNAUTHORIZED") return;
+    private attemptTRPCRequest(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+        const url = new URL(req.url);
 
-                console.error(p[0].error);
-                this.log.system.error("^");
-            },
-            createContext(opt: { req: BunRequest; resHeaders: Headers }) {
-                return createTRPCContext({ rawRequest: { req: opt.req, resHeaders: opt.resHeaders }, instance: self });
+        for (const router of this.registeredRouters) {
+            if (!url.pathname.startsWith(router.basePath)) {
+                continue;
+            }
+
+            // TODO: uncomment for Websocket stuff
+            // if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
+            //     return new Response(null, { status: 101 });
+            // }
+
+            return fetchRequestHandler({
+                createContext: router.createContext,
+                req,
+                endpoint: router.basePath ?? "",
+                router: router.router,
+            });
+        }
+
+        return;
+    }
+
+    // private bunWebSocketHandler() {}
+
+    serve(options: {
+        routes: {
+            [path: string]: {
+                GET?: (req: BunRequest) => Promise<Response>;
+                POST?: (req: BunRequest) => Promise<Response>;
+                DELETE?: (req: BunRequest) => Promise<Response>;
+                PUT?: (req: BunRequest) => Promise<Response>;
+            };
+        };
+        fetch(request: any, server: any): Response;
+        development: boolean;
+    }) {
+        const self = this;
+
+        return {
+            ...options,
+            port: 3563,
+            async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+                let trpcResponse = await self.attemptTRPCRequest(req, server);
+
+                if (trpcResponse) {
+                    console.log(trpcResponse);
+                    return trpcResponse;
+                }
+
+                return options?.fetch?.call(server, req, server);
             },
             responseMeta() {
                 return {
@@ -47,48 +88,14 @@ export default class TRPCSubsystem extends SubSystem {
                     },
                 };
             },
-            batching: { enabled: true },
-            emitWsUpgrades: false,
-        },
-    */
+            onError: (...p: any[]) => {
+                // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
+                if (p[0].type === "unknown") return;
+                if (p[0].error.code === "UNAUTHORIZED") return;
 
-    private attemptTRPCRequest(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
-        const url = new URL(req.url);
-
-        for (const router of this.registeredRouters) {
-            if (!url.pathname.startsWith(router.basePath)) {
-                continue;
-            }
-
-            if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
-                return new Response(null, { status: 101 });
-            }
-
-            return fetchRequestHandler({
-                createContext: () => ({}) as never,
-                req,
-                endpoint: router.basePath ?? "",
-            });
-        }
-
-        return;
-    }
-
-    serve(options: { routes: object; fetch(request: any, server: any): Response; development: boolean }) {
-        const self = this;
-
-        return {
-            ...options,
-            async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
-                let trpcResponse = self.attemptTRPCRequest(req, server);
-
-                if (trpcResponse) {
-                    return trpcResponse;
-                }
-
-                return options?.fetch?.call(server, req, server);
+                console.error(p[0].error);
+                this.log.error("^");
             },
-            // TODO: implement websocket transport support
             // websocket: createBunWSHandler(opts),
         };
     }
