@@ -1,0 +1,12 @@
+{
+    "id": "uk.tcsw.store",
+    "displayName": "Store",
+    "description": "Manage and install Applications",
+    "authors": ["Tricolor Software <https://tcsw.uk>"],
+    "license": "MIT",
+    "source": "https://github.com/tricolorsoftware/workspaces/src/branch/main/packages/applications/uk.tcsw.store",
+    "modules": {
+        "web": { "path": "./web" },
+        "bun": { "path": "./backend/index.ts" }
+    }
+}
