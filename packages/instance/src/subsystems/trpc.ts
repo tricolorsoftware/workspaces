@@ -67,26 +67,36 @@ export default class TRPCSubsystem extends SubSystem {
         return {
             ...options,
             port: 3563,
+            hostname: "0.0.0.0",
             async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
+                if (req.method === "OPTIONS") {
+                    return new Response("TricolorSoftware", {
+                        headers: {
+                            "Access-Control-Allow-Origin": "http://localhost:5173", // TODO: change this according to a config file
+                            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                            "Access-Control-Allow-Credentials": "true",
+                        },
+                    });
+                }
+
                 let trpcResponse = await self.attemptTRPCRequest(req, server);
 
                 if (trpcResponse) {
-                    console.log(trpcResponse);
+                    trpcResponse.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
+                    trpcResponse.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                    trpcResponse.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                    trpcResponse.headers.set("Access-Control-Allow-Credentials", "true");
                     return trpcResponse;
                 }
 
-                return options?.fetch?.call(server, req, server);
-            },
-            responseMeta() {
-                return {
-                    status: 200,
-                    headers: {
-                        "Access-Control-Allow-Origin": "http://localhost:5173", // TODO: change this according to a config file
-                        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                        "Access-Control-Allow-Credentials": "true",
-                    },
-                };
+                const resp = options?.fetch?.call(server, req, server);
+                resp.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
+                resp.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                resp.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                resp.headers.set("Access-Control-Allow-Credentials", "true");
+
+                return resp;
             },
             onError: (...p: any[]) => {
                 // Do nothing as the error is most-likely from bun.serve for tRPC contentType, (i have no clue why as everything else is working)
