@@ -7,6 +7,7 @@
     background: #0000;
     padding: 1rem;
     border-radius: 10rem;
+    position: relative;
 
     transition:
         background-color var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
@@ -47,5 +48,20 @@
     &[data-expanded="true"] {
         color: rgb(var(--uk-sys-color-secondary));
         background-color: rgb(var(--uk-sys-color-secondary-container));
+
+        > .logout {
+            pointer-events: all;
+            opacity: 1;
+            transition: opacity var(--uk-sys-motion-duration-1000) var(--uk-sys-motion-easing-emphasized-decelerate);
+        }
+    }
+
+    .logout {
+        display: flex;
+        pointer-events: none;
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        opacity: 0;
     }
 }

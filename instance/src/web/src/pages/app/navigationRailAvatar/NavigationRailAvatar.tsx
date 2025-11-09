@@ -4,8 +4,11 @@ import styles from "./NavigationRailAvatar.module.scss";
 import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
 import trpc from "../../../lib/trpc";
 import backend from "../../../lib/backend";
+import UKIconButton from "@tcsw/uikit-solid/src/components/iconButton/UKIconButton.tsx";
+import { useNavigate } from "@solidjs/router";
 
 const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
+    const navigate = useNavigate()
     const [user] = createResource(() => trpc.app.navigation.user.name.query());
 
     return (
@@ -19,6 +22,11 @@ const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
                     {`@${user()?.username}`}
                 </UKText>
             </div>
+            <UKIconButton class={styles.logout} icon={"logout"} alt={"Logout"} size={"s"} width={"default"} onClick={async () => {
+                await trpc.authorization.logout.mutate()
+
+                navigate("/")
+            }}></UKIconButton>
         </div>
     );
 };

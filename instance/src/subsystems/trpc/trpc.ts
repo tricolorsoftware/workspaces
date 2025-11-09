@@ -197,6 +197,23 @@ export const workspacesRouter = t.router({
                 authenticated: true,
             };
         }),
+        logout: procedure.output(z.object({ success: z.literal(true) })).mutation(async opt => {
+            const cookieString = opt.ctx.rawRequest.req.headers?.get("cookie");
+
+            if (cookieString === null) {
+                return {
+                    success: true,
+                };
+            }
+
+            const parsedCookie = Bun.Cookie.parse(cookieString);
+
+            await opt.ctx.instance.subSystems.authorization.endSession(decodeURIComponent(parsedCookie.value));
+
+            return {
+                success: true,
+            };
+        })
     },
     app: {
         navigation: {

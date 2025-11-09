@@ -12,10 +12,18 @@
 
 .tricolor {
     margin-top: auto;
-    pointer-events: none;
     user-select: none;
-    padding-bottom: 0.5rem;
+    cursor: pointer;
     width: 4rem;
     height: 4rem;
     margin-right: auto;
+    background-position: center;
+    background-size: 4rem;
+    background-color: transparent;
+    background-image: url("/assets/tricolor/tricolor_icon_transparent.svg");
+}
+
+.versionLabel {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
 }

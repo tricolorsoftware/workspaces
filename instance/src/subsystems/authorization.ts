@@ -67,6 +67,21 @@ export default class AuthorizationSubsystem extends SubSystem {
         return undefined;
     }
 
+    // Removes a user's session and invalidates it's token
+    // @returns {true} the session is removed, and it's token is invalidated
+    // @returns {undefined} the sessionToken is invalid
+    async endSession(sessionToken: string): Promise<boolean | undefined> {
+        const [_, userId, token] = sessionToken.split(":");
+
+        const sessionsDb = this.instance.subSystems.database.db();
+
+        const session = (
+            await sessionsDb`DELETE FROM Sessions WHERE user_id = ${userId} AND session_token = ${token}`
+        )?.[0];
+
+        return true;
+    }
+
     // Sets a user's password to password
     // @returns {true} successful
     // @returns {false} failed

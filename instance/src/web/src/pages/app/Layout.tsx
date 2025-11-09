@@ -6,6 +6,7 @@ import UKNavigationRail from "@tcsw/uikit-solid/src/components/navigationRail/UK
 import NavigationRailAvatar from "./navigationRailAvatar/NavigationRailAvatar";
 import trpc from "../../lib/trpc";
 import NavigationRailClock from "./navigationRailClock/NavigationRailClock.tsx";
+import UKText from "@tcsw/uikit-solid/src/components/text/UKText.tsx";
 
 const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
     const navigate = useNavigate();
@@ -49,7 +50,15 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
                 ),
                 bottom: (
                     <>
-                        <img class={styles.tricolor} draggable={false} src="/assets/tricolor/tricolor_icon_transparent.svg" alt="" />
+                        <button
+                            class={styles.tricolor}
+                            onClick={() => {
+                                window.location.href = "https://tcsw.uk";
+                            }}
+                        />
+                        <UKText class={styles.versionLabel} role={"label"} size={"s"} emphasized={true} align={"center"}>
+                            Dev Build
+                        </UKText>
                     </>
                 ),
             }}
