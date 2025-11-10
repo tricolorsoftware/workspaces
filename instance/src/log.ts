@@ -193,16 +193,12 @@ class Logger {
 
         process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
             process.stdout.write(
-                `Workspaces Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevmode ? `[${this.emphasis("Dev Mode")}] ` : ""}`,
+                `Workspaces Pre-Alpha ${this.log.instance.subSystems.configuration?.isDevMode ? `[${this.emphasis("Dev Mode")}] ` : ""}`,
                 () => {
                     // move the cursor to the metaLen+6th column of the 2nd from the bottom row
                     process.stdout.cursorTo(this.log.META_LENGTH + 6, this._internal_getWindowSize()[1], () => {
-                        if (this.log.instance.subSystems.configuration?.hasFeature(WorkspacesFeatureFlags.SlashCommands)) {
-                            // write the prompt indicator to the stdout
-                            process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line || ""}`);
-                        } else {
-                            process.stdout.write("  ");
-                        }
+                        // write the prompt indicator to the stdout
+                        process.stdout.write(`> ${this.log.instance.subSystems.consoleCommands?.rlInterface?.line || ""}`);
                     });
                 },
             );

@@ -4,10 +4,6 @@
     "version": "0.0.1",
     "description": "",
     "main": "src/index.ts",
-    "scripts": {
-        "dev-backend": "bun --watch src/index.ts",
-        "dev-web": "bun run --cwd src/web dev"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/tricoloruk/workspaces"

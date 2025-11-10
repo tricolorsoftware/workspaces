@@ -36,23 +36,27 @@ export default class ExitCommand extends Command {
                                         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                                             gender = data.trim();
                                             if (gender !== "") {
-                                                log.info("Creating user...");
+                                                if (gender === "male" || gender === "other" || gender === "female") {
+                                                    log.info("Creating user...");
 
-                                                let uid = await self.instance.subSystems.users.createUser(username);
+                                                    let uid = await self.instance.subSystems.users.createUser(username);
 
-                                                if (!uid) {
-                                                    log.error("Failed to create user");
-                                                    return;
+                                                    if (!uid) {
+                                                        log.error("Failed to create user");
+                                                        return;
+                                                    }
+
+                                                    let user = await self.instance.subSystems.users.getUserById(uid);
+
+                                                    if (!user) {
+                                                        log.error("Failed to get created user");
+                                                        return;
+                                                    }
+
+                                                    await user.setGender(gender);
+                                                } else {
+                                                    log.prompt("Gender -> ");
                                                 }
-
-                                                let user = await self.instance.subSystems.users.getUserById(uid);
-
-                                                if (!user) {
-                                                    log.error("Failed to get created user");
-                                                    return;
-                                                }
-
-                                                // user.setFullName(...fullName.split(" "))
                                             } else {
                                                 log.prompt("Gender -> ");
                                             }

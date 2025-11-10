@@ -4,7 +4,7 @@ import SubSystem from "../subSystems.js";
 import fs from "fs";
 
 export default class FilesystemSubsystem extends SubSystem {
-    readonly SRC_ROOT = path.resolve("./src/");
+    readonly SRC_ROOT = path.resolve("./instance/src/");
     readonly FS_ROOT = path.resolve("./fs/");
 
     constructor(instance: Instance) {

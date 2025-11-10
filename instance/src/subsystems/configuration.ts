@@ -6,7 +6,7 @@ export enum WorkspacesFeatureFlags {
 }
 
 export default class ConfigurationSubsystem extends SubSystem {
-    isDevmode: boolean = true;
+    isDevMode: boolean = true;
     databases: {
         postgres: {
             user: string;

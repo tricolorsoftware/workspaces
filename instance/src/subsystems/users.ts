@@ -300,8 +300,10 @@ export class WorkspacesUser {
     /**
         Check that all required directories and assets are valid for this user.
         If they are missing or invalid, directories will be created and assets will be generated / copied
+
+        @returns {true} if successful
     */
-    async verify() {
+    async verify(): Promise<boolean> {
         const USER_DIRECTORIES = [
             "/",
             "/fs",
@@ -324,12 +326,32 @@ export class WorkspacesUser {
         }
 
         if (!(await fs.exists(path.join(this.getPath(), "assets/avatar/avatar.png")))) {
-            this.setAvatar(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "assets/placeholder/avatar.png"));
+            await this.setAvatar(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "assets/placeholder/avatar.png"));
         }
 
         await this.generateAvatars();
 
-        this.instance.subSystems.users.log.success(`Verified user with id (${this.userId})`);
+        this.instance.subSystems.users.log.success(`Verified user (${this.userId}) ${await this.getUsername()}`);
+
+        return true;
+    }
+
+    /**
+        Deletes a user from the filesystem and all database entries
+     */
+    async delete() {
+        await fs.rm(
+            path.join(this.instance.subSystems.filesystem.FS_ROOT, `users/${this.userId}`),
+            {
+                recursive: true,
+                force: true
+            }
+        );
+
+        const db = this.instance.subSystems.database.db()
+
+        await db`DELETE FROM Users WHERE id = ${this.userId};`;
+        await db`DELETE FROM Sessions WHERE user_id = ${this.userId};`;
 
         return true;
     }
@@ -483,7 +505,7 @@ export default class UsersSubsystem extends SubSystem {
 
         const userId = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0]?.id;
 
-        if ((await this.doesUserExist(userId)) === false) return undefined;
+        if (!(await this.doesUserExist(userId))) return undefined;
 
         return new WorkspacesUser(this.instance, userId);
     }

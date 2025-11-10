@@ -1,10 +1,9 @@
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import * as readline from "readline";
-import type Command from "./consoleCommands/command.js";
-import type { ICommandRuntimeParameters } from "./consoleCommands/command.js";
 import { promises as fs } from "fs";
 import path from "path";
+import Command, { ICommandRuntimeParameters } from "./consoleCommands/command.js";
 
 export default class ConsoleCommandsSubsytem extends SubSystem {
     rlInterface!: readline.Interface;
@@ -24,15 +23,14 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
     override async startup() {
         if (!this.instance.subSystems.configuration.hasFeature("slash_commands")) return true;
 
-        fs.readdir(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "/subsystems/consoleCommands/commands/")).then((commands) => {
-            for (const cmd of commands) {
-                import(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "/subsystems/consoleCommands/commands/", cmd)).then(
-                    (cmd) => {
-                        this.commands.push(new cmd.default(this.instance));
-                    },
-                );
-            }
-        });
+        const commands = await fs.readdir(path.join(this.instance.subSystems.filesystem.SRC_ROOT, "/subsystems/consoleCommands/commands/"));
+        for (const cmd of commands) {
+            const importedCommand = await import(
+                path.join(this.instance.subSystems.filesystem.SRC_ROOT, "/subsystems/consoleCommands/commands/", cmd)
+            );
+            this.commands.push(new importedCommand.default(this.instance));
+            this.log.info(`Registered command ${cmd}`);
+        }
 
         const self = this;
         this.currentCommandInterface = {
@@ -40,7 +38,7 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             cb: () => {},
         };
 
-        (async function () {
+        await (async function () {
             readline.emitKeypressEvents(process.stdin);
             self.rlInterface = readline.createInterface({
                 input: process.stdin,
@@ -154,7 +152,7 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                         return;
                     }
 
-                    if (command.makeDevModeOnly && !self.instance.subSystems.configuration.isDevmode) {
+                    if (command.makeDevModeOnly && !self.instance.subSystems.configuration.isDevMode) {
                         self.log.info(
                             "command_manager",
                             `You are unable to execute the command '${command.commandId}' as this instance is not running in developer mode`,

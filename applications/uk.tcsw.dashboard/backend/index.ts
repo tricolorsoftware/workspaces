@@ -6,8 +6,6 @@ const log = instance.log.createLogger("uk.tcsw.dashboard");
 
 export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create();
 
-log.success("Hello from the Dashboard backend!");
-
 const router = t.router({
     widgets: {
         user: {

@@ -52,11 +52,12 @@ class Instance {
     }
 
     async startup() {
-        this.log.system.info(`-------------------------------------------------------`);
+        this.log.system.info(`--------------------------------------------------------------------------`);
         this.log.system.info(`   ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}`);
-        this.log.system.info(`  ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}  Workspaces © 2025 Tricolor Software`);
+        this.log.system.info(`  ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}  Workspaces © 2025 Tricolor Software -> https://tcsw.uk`);
         this.log.system.info(` ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}`);
-        this.log.system.info(`-------------------------------------------------------`);
+        this.log.system.info(`--------------------------------------------------------------------------`);
+        this.log.system.info(`Starting up...`);
 
         if (this.status !== InstanceStatus.Offline) {
             this.log.system.info("Cannot stop");
@@ -123,7 +124,7 @@ class Instance {
                     // will be executed if it's not a TRPC request
                     return new Response("Unknown path");
                 },
-                development: this.subSystems.configuration.isDevmode,
+                development: this.subSystems.configuration.isDevMode,
             }),
         );
 
