@@ -1,0 +1,25 @@
+{
+    "name": "@tcsw/workspaces-instance-web",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host",
+        "build": "tsc -b && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@solidjs/router": "^0.15.3",
+        "solid-js": "^1.9.8",
+        "@tcsw/uikit-solid": "workspace:*",
+        "@trpc/client": "^11.6.0",
+        "@trpc/server": "^11.6.0",
+        "clsx": "^2.1.1"
+    },
+    "devDependencies": {
+        "typescript": "~5.8.3",
+        "vite": "^7.1.2",
+        "vite-plugin-solid": "^2.11.8",
+        "sass-embedded":"^1.93.3"
+    }
+}

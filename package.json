@@ -3,19 +3,20 @@
     "type": "module",
     "version": "0.0.0",
     "workspaces": [
-        "packages/*",
-        "packages/instance/src/web",
-        "packages/applications/*/web",
-        "packages/applications/*/backend"
+        "instance/",
+        "instance/src/web/",
+        "applications/*/web/",
+        "applications/*/backend/",
+        "uikit-solid/"
     ],
     "repository": {
         "type": "git",
         "url": "https://github.com/tricolorsoftware/workspaces"
     },
     "scripts": {
-        "web": "bun run --cwd packages/instance dev-web",
-        "backend": "bun run --cwd packages/instance dev-backend",
-        "uikit": "bun run --cwd packages/uikit-solid dev"
+        "backend": "bun --watch instance/src/index.ts",
+        "web": "bun run --cwd instance/src/web dev",
+        "uikit": "bun run --cwd uikit-solid dev"
     },
     "private": true,
     "dependencies": {
