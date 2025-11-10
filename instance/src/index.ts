@@ -15,6 +15,7 @@ import { BunRequest, file } from "bun";
 import ApplicationsSubsystem from "./subsystems/applications.js";
 import path from "path";
 import TRPCSubsystem from "./subsystems/trpc.js";
+import chalk from "chalk";
 
 export enum InstanceStatus {
     Online,
@@ -51,6 +52,12 @@ class Instance {
     }
 
     async startup() {
+        this.log.system.info(`-------------------------------------------------------`);
+        this.log.system.info(`   ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}`);
+        this.log.system.info(`  ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}  Workspaces © 2025 Tricolor Software`);
+        this.log.system.info(` ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}`);
+        this.log.system.info(`-------------------------------------------------------`);
+
         if (this.status !== InstanceStatus.Offline) {
             this.log.system.info("Cannot stop");
             return this;

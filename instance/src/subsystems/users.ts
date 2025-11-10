@@ -329,7 +329,7 @@ export class WorkspacesUser {
 
         await this.generateAvatars();
 
-        this.instance.subSystems.users.log.success(`Verified user '${this.userId}'`);
+        this.instance.subSystems.users.log.success(`Verified user with id (${this.userId})`);
 
         return true;
     }
@@ -348,10 +348,10 @@ export default class UsersSubsystem extends SubSystem {
         const db = this.instance.subSystems.database.db();
 
         /**
-            init the users databasecurrentCommandInterface
+            init the users database
 
             id - permanent unique user id number (number)
-            username - the user's changable username (string)
+            username - the user's changeable username (string)
             forename - the user's chosen forename (string)
             surname - the user's chosen surname (string)
             gender - the user's chosen gender ("female" | "male" | "other")
