@@ -50,12 +50,6 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
                 ),
                 bottom: (
                     <>
-                        <button
-                            class={styles.tricolor}
-                            onClick={() => {
-                                window.location.href = "https://tcsw.uk";
-                            }}
-                        />
                         <UKText class={styles.versionLabel} role={"label"} size={"s"} emphasized={true} align={"center"}>
                             Dev Build
                         </UKText>

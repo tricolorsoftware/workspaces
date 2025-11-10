@@ -20,23 +20,28 @@ export default class ExitCommand extends Command {
         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
             username = data.trim();
             if (username !== "") {
+                log.rawLog("\n");
                 log.prompt("Password -> ");
                 self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                     password = data.trim();
                     if (password !== "") {
+                        log.rawLog("\n");
                         log.prompt("Full Name -> ");
                         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                             fullName = data.trim();
                             if (fullName !== "") {
+                                log.rawLog("\n");
                                 log.prompt("Email -> ");
                                 self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                                     email = data.trim();
                                     if (email !== "") {
+                                        log.rawLog("\n");
                                         log.prompt("Gender -> ");
                                         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                                             gender = data.trim();
                                             if (gender !== "") {
                                                 if (gender === "male" || gender === "other" || gender === "female") {
+                                                    log.rawLog("\n");
                                                     log.info("Creating user...");
 
                                                     let uid = await self.instance.subSystems.users.createUser(username);
@@ -54,6 +59,10 @@ export default class ExitCommand extends Command {
                                                     }
 
                                                     await user.setGender(gender);
+                                                    let fullNameSplit = fullName.split(" ");
+                                                    await user.setFullName(fullNameSplit.shift() || "Unknown", fullNameSplit.join(" "));
+                                                    await user.setEmail(email);
+                                                    await self.instance.subSystems.authorization.setPassword(user.userId, password);
                                                 } else {
                                                     log.prompt("Gender -> ");
                                                 }
