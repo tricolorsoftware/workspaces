@@ -16,23 +16,23 @@ export default class ExitCommand extends Command {
         let gender = "other";
 
         const log = self.instance.log.createLogger("useradd_command");
-        log.prompt("Username -> ");
+        log._internal_promptMessage("Username -> ");
         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
             username = data.trim();
             if (username !== "") {
-                log.prompt("Password -> ");
+                log._internal_promptMessage("Password -> ");
                 self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                     password = data.trim();
                     if (password !== "") {
-                        log.prompt("Full Name -> ");
+                        log._internal_promptMessage("Full Name -> ");
                         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                             fullName = data.trim();
                             if (fullName !== "") {
-                                log.prompt("Email -> ");
+                                log._internal_promptMessage("Email -> ");
                                 self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                                     email = data.trim();
                                     if (email !== "") {
-                                        log.prompt("Gender -> ");
+                                        log._internal_promptMessage("Gender -> ");
                                         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
                                             gender = data.trim();
                                             if (gender !== "") {
@@ -55,26 +55,26 @@ export default class ExitCommand extends Command {
 
                                                     await user.setGender(gender);
                                                 } else {
-                                                    log.prompt("Gender -> ");
+                                                    log._internal_promptMessage("Gender -> ");
                                                 }
                                             } else {
-                                                log.prompt("Gender -> ");
+                                                log._internal_promptMessage("Gender -> ");
                                             }
                                         };
                                     } else {
-                                        log.prompt("Email -> ");
+                                        log._internal_promptMessage("Email -> ");
                                     }
                                 };
                             } else {
-                                log.prompt("Full Name -> ");
+                                log._internal_promptMessage("Full Name -> ");
                             }
                         };
                     } else {
-                        log.prompt("Password -> ");
+                        log._internal_promptMessage("Password -> ");
                     }
                 };
             } else {
-                log.prompt("Username -> ");
+                log._internal_promptMessage("Username -> ");
             }
         };
 

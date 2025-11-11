@@ -8,7 +8,7 @@ import Command, { ICommandRuntimeParameters } from "./consoleCommands/command.js
 export default class ConsoleCommandsSubsytem extends SubSystem {
     rlInterface!: readline.Interface;
     commands: Command[];
-    currentCommandInterface!: { active: boolean; cb: (data: string) => void };
+    currentCommandInterface!: { active: boolean; cb: (data: string) => void; minCursorPositionOffset: number };
     commandHistory: string[][];
 
     constructor(instance: Instance) {
@@ -28,14 +28,16 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             const importedCommand = await import(
                 path.join(this.instance.subSystems.filesystem.SRC_ROOT, "/subsystems/consoleCommands/commands/", cmd)
             );
-            this.commands.push(new importedCommand.default(this.instance));
+            this.commands.push(new importedCommand.default(cmd, this.instance));
             this.log.info(`Registered command ${cmd}`);
         }
 
         const self = this;
+
         this.currentCommandInterface = {
             active: false,
             cb: () => {},
+            minCursorPositionOffset: 0,
         };
 
         await (async function () {
@@ -50,8 +52,9 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             process.stdin.setRawMode(true);
             self.currentCommandInterface.active = false;
 
-            const CURSOR_MIN_POS = 36;
-            let cursorPos = CURSOR_MIN_POS;
+            const CURSOR_MIN_POS = () =>
+                36 + (self.currentCommandInterface.active === true ? self.currentCommandInterface.minCursorPositionOffset : 0);
+            let cursorPos = CURSOR_MIN_POS();
             let historyIndex = 0;
             let line = "";
 
@@ -73,9 +76,9 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     historyIndex--;
 
                     line = self.commandHistory[historyIndex].join(" ");
-                    cursorPos = CURSOR_MIN_POS + line.length;
+                    cursorPos = CURSOR_MIN_POS() + line.length;
 
-                    process.stdout.cursorTo(CURSOR_MIN_POS);
+                    process.stdout.cursorTo(CURSOR_MIN_POS());
                     process.stdout.clearLine(1);
                     process.stdout.write(line);
                     process.stdout.cursorTo(cursorPos);
@@ -84,9 +87,9 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                 } else if (key.name === "down") {
                     if (historyIndex + 1 > self.commandHistory.length - 1) {
                         line = "";
-                        cursorPos = CURSOR_MIN_POS;
+                        cursorPos = CURSOR_MIN_POS();
 
-                        process.stdout.cursorTo(CURSOR_MIN_POS);
+                        process.stdout.cursorTo(CURSOR_MIN_POS());
                         process.stdout.clearLine(1);
                         process.stdout.write(line);
                         process.stdout.cursorTo(cursorPos);
@@ -96,23 +99,23 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     historyIndex++;
 
                     line = self.commandHistory[historyIndex].join(" ");
-                    cursorPos = CURSOR_MIN_POS + line.length;
+                    cursorPos = CURSOR_MIN_POS() + line.length;
 
-                    process.stdout.cursorTo(CURSOR_MIN_POS);
+                    process.stdout.cursorTo(CURSOR_MIN_POS());
                     process.stdout.clearLine(1);
                     process.stdout.write(line);
                     process.stdout.cursorTo(cursorPos);
 
                     return;
                 } else if (key.name === "left") {
-                    if (cursorPos <= CURSOR_MIN_POS) {
+                    if (cursorPos <= CURSOR_MIN_POS()) {
                         return;
                     }
                     cursorPos--;
                     process.stdout.moveCursor(-1, 0);
                     return;
                 } else if (key.name === "right") {
-                    if (cursorPos - CURSOR_MIN_POS >= line.length) {
+                    if (cursorPos - CURSOR_MIN_POS() >= line.length) {
                         return;
                     }
 
@@ -120,8 +123,8 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     process.stdout.moveCursor(1, 0);
                     return;
                 } else if (key.name === "enter" || key.name === "return") {
-                    cursorPos = CURSOR_MIN_POS;
-                    process.stdout.cursorTo(CURSOR_MIN_POS, 0);
+                    cursorPos = CURSOR_MIN_POS();
+                    process.stdout.cursorTo(CURSOR_MIN_POS(), 0);
                     process.stdout.write("\n");
 
                     if (self.currentCommandInterface.active) {
@@ -171,12 +174,12 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                     line = "";
                     return;
                 } else if (key.name === "backspace") {
-                    if (cursorPos <= CURSOR_MIN_POS) {
+                    if (cursorPos <= CURSOR_MIN_POS()) {
                         return;
                     }
                     cursorPos--;
-                    line = line.slice(0, cursorPos - CURSOR_MIN_POS) + line.slice(cursorPos - (CURSOR_MIN_POS - 1));
-                    process.stdout.cursorTo(CURSOR_MIN_POS);
+                    line = line.slice(0, cursorPos - CURSOR_MIN_POS()) + line.slice(cursorPos - (CURSOR_MIN_POS() - 1));
+                    process.stdout.cursorTo(CURSOR_MIN_POS());
                     process.stdout.clearLine(1);
                     process.stdout.write(line);
                     process.stdout.cursorTo(cursorPos);

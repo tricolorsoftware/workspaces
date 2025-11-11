@@ -71,7 +71,7 @@ class Logger {
         return this.logMessage(LogType.RAW, ...message);
     }
 
-    prompt(...message: any[]) {
+    _internal_promptMessage(...message: any[]) {
         return this.logMessage(LogType.PROMPT, ...message);
     }
 
@@ -206,12 +206,26 @@ class Logger {
     }
 
     private writeMessage(logType: LogType, typeString: string, ...message: any[]) {
-        if (logType === LogType.RAW || logType === LogType.PROMPT) {
+        if (logType === LogType.RAW) {
             process.stdout.write(
                 chalk.bold(
                     `${typeString}${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))}  `,
                 ) + message.join(" "),
             );
+
+            return this;
+        }
+
+        if (logType === LogType.PROMPT) {
+            process.stdout.cursorTo(0, this._internal_getWindowSize()[1], () => {
+                process.stdout.clearLine(1, () => {
+                    process.stdout.write(
+                        chalk.bold(
+                            `${typeString}${chalk.yellow(this.level.toUpperCase().slice(0, this.log.META_LENGTH).padEnd(this.log.META_LENGTH))}  `,
+                        ) + message.join(" "),
+                    );
+                });
+            });
 
             return this;
         }
