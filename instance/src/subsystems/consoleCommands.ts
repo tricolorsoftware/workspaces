@@ -53,7 +53,7 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
             self.currentCommandInterface.active = false;
 
             const CURSOR_MIN_POS = () =>
-                36 + (self.currentCommandInterface.active === true ? self.currentCommandInterface.minCursorPositionOffset : 0);
+                36 + (self.currentCommandInterface.active ? self.currentCommandInterface.minCursorPositionOffset : 0);
             let cursorPos = CURSOR_MIN_POS();
             let historyIndex = 0;
             let line = "";
@@ -62,7 +62,7 @@ export default class ConsoleCommandsSubsytem extends SubSystem {
                 let keyStr = key.toString();
 
                 if (keyStr === "\u0003") {
-                    self.instance.shutdown();
+                    await self.instance.shutdown();
                     return;
                 }
             });
