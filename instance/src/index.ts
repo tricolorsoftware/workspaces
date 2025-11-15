@@ -53,9 +53,11 @@ class Instance {
 
     async startup() {
         this.log.system.info(`--------------------------------------------------------------------------`);
-        this.log.system.info(`   ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}`);
-        this.log.system.info(`  ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}  Workspaces © 2025 Tricolor Software -> https://tcsw.uk`);
-        this.log.system.info(` ${chalk.red(/XXX/)}${chalk.green(/XXX/)}${chalk.blue(/XXX/)}`);
+        this.log.system.info(`   ${chalk.hex("FF002E")(/XXX/)}${chalk.hex("70FF00")(/XXX/)}${chalk.hex("0066FF")(/XXX/)}`);
+        this.log.system.info(
+            `  ${chalk.hex("FF002E")(/XXX/)}${chalk.hex("70FF00")(/XXX/)}${chalk.hex("0066FF")(/XXX/)}  Workspaces © 2025 Tricolor Software -> https://tcsw.uk`,
+        );
+        this.log.system.info(` ${chalk.hex("FF002E")(/XXX/)}${chalk.hex("70FF00")(/XXX/)}${chalk.hex("0066FF")(/XXX/)}`);
         this.log.system.info(`--------------------------------------------------------------------------`);
         this.log.system.info(`Starting up...`);
 
@@ -180,7 +182,7 @@ class Instance {
 
         process.stdout.write("Shutdown completed! -> ");
         process.stdout.write(goodbye[Math.floor(Math.random() * goodbye.length)]);
-        process.stdout.write(" 👋🏻\n");
+        process.stdout.write(" 👋\n");
         process.exit(0);
     }
 }

@@ -1,6 +1,6 @@
 import Command, { type ICommandRuntimeParameters } from "../command.js";
 
-export default class ExitCommand extends Command {
+export default class PasswordCommand extends Command {
     commandId = "password";
     flags = {};
     aliases = ["passwd"];
@@ -9,39 +9,40 @@ export default class ExitCommand extends Command {
     async run(parameters: ICommandRuntimeParameters) {
         const self = this;
 
-        let username = "";
         let password = "";
 
-        const log = self.instance.log.createLogger("useradd_command");
-        log.prompt("Username -> ");
-        self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
-            username = data.trim();
-            if (username !== "") {
-                log.prompt("Password -> ");
-                self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
-                    password = data.trim();
-                    if (password !== "") {
-                        const db = this.instance.subSystems.database.db();
+        let username = await this.promptUser("Username", () => true);
+        console.log(username)
 
-                        const { id: userId } = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0] || { id: undefined };
+        // self.log._internal_promptMessage("Username -> ");
+        // self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
+        //     username = data.trim();
+        //     if (username !== "") {
+        //         self.log._internal_promptMessage("Password -> ");
+        //         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
+        //             password = data.trim();
+        //             if (password !== "") {
+        //                 const db = this.instance.subSystems.database.db();
 
-                        if (!userId) {
-                            log.error(`No such user ${username}`);
-                            return this.finishRun();
-                        }
+        //                 const { id: userId } = (await db`SELECT id FROM Users WHERE username = ${username}`)?.[0] || { id: undefined };
 
-                        this.instance.subSystems.authorization.setPassword(userId, password);
-                        log.success(`Set password for ${username}(${userId}) to '${password}'`);
+        //                 if (!userId) {
+        //                     self.log.error(`No such user ${username}`);
+        //                     return this.finishRun();
+        //                 }
 
-                        return this.finishRun();
-                    } else {
-                        log.prompt("Password -> ");
-                    }
-                };
-            } else {
-                log.prompt("Username -> ");
-            }
-        };
+        //                 this.instance.subSystems.authorization.setPassword(userId, password);
+        //                 self.log.success(`Set password for ${username}(${userId}) to '${password}'`);
+
+        //                 return this.finishRun();
+        //             } else {
+        //                 self.log._internal_promptMessage("Password -> ");
+        //             }
+        //         };
+        //     } else {
+        //         self.log._internal_promptMessage("Username -> ");
+        //     }
+        // };
 
         return this.continueRun();
     }

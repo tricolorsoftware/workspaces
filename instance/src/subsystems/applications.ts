@@ -284,7 +284,7 @@ export default ApplicationsRouter`;
         return true;
     }
 
-    // Disable an application by it's id
+    // Disable an application by its id
     // doesn't take effect until the instance is restarted. When finished, it will prompt the administrator to restart
     async disableApplication(applicationId: string): Promise<boolean> {
         let app = this.availableApplications.find((a) => a.manifest?.id === applicationId);

@@ -9,7 +9,7 @@ import UKButton from "@tcsw/uikit-solid/src/components/button/UKButton.tsx";
 import { useNavigate } from "@solidjs/router";
 import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.tsx";
 
-const AuthCheck: Component<ParentProps<{}>> = (props) => {
+const AuthCheck: Component<ParentProps> = (props) => {
     const navigate = useNavigate();
     const [checkResult] = createResource(() => trpc.authorization.isAuthenticated.query());
 

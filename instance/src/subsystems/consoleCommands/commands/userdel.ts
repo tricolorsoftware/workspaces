@@ -12,23 +12,23 @@ export default class ExitCommand extends Command {
         let username = "";
 
         const log = self.instance.log.createLogger("userdel_command");
-        log.prompt("Username -> ");
+        log._internal_promptMessage("Username -> ");
         self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
             username = data.trim();
             if (username !== "") {
-                let user = await self.instance.subSystems.users.getUserByUsername(username)
+                let user = await self.instance.subSystems.users.getUserByUsername(username);
 
                 if (!user) {
-                    username = ""
-                    log.prompt("Username -> ");
-                    return this.continueRun()
+                    username = "";
+                    log._internal_promptMessage("Username -> ");
+                    return this.continueRun();
                 }
 
                 await user.delete();
 
-                return this.finishRun()
+                return this.finishRun();
             } else {
-                log.prompt("Username -> ");
+                log._internal_promptMessage("Username -> ");
             }
         };
 

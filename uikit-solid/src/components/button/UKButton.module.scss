@@ -2,16 +2,17 @@
     padding-left: var(--padding-left-override, var(--padding-left, 0px));
     padding-right: var(--padding-right-override, var(--padding-right, 0px));
 
-    transition: all var(--uk-sys-motion-duration-50) var(--transition-all, linear),
-    outline-color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-decelerate),
-    outline-width 0ms linear,
-    background-color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-normal),
-    color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-normal),
-    padding-left var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
-    margin-left var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
-    padding-right var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
-    margin-right var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
-    border-radius var(--border-radius-duration, var(--uk-sys-motion-duration-50)) var(--uk-sys-motion-easing-linear);
+    transition:
+        all var(--uk-sys-motion-duration-50) var(--transition-all, linear),
+        outline-color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-decelerate),
+        outline-width 0ms linear,
+        background-color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-normal),
+        color var(--uk-sys-motion-duration-100) var(--uk-sys-motion-easing-standard-normal),
+        padding-left var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
+        margin-left var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
+        padding-right var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
+        margin-right var(--uk-sys-motion-duration-50) var(--uk-sys-motion-easing-linear),
+        border-radius var(--border-radius-duration, var(--uk-sys-motion-duration-50)) var(--uk-sys-motion-easing-linear);
 
     &:focus,
     &:hover {
@@ -146,7 +147,7 @@
         --icon-size: 24px;
 
         &[data-shape="square"] {
-            border-radius: var(--uk-sys-shape-corner-large-size);
+            border-radius: var(--uk-sys-shape-corner-large);
             --transition-all: var(--uk-sys-motion-easing-standard-accelerate);
 
             &:not(&[disabled]) {
@@ -183,7 +184,7 @@
         --icon-size: 32px;
 
         &[data-shape="square"] {
-            border-radius: var(--uk-sys-shape-corner-large-size);
+            border-radius: var(--uk-sys-shape-corner-large);
             --transition-all: var(--uk-sys-motion-easing-standard-accelerate);
 
             &:not(&[disabled]) {
@@ -199,7 +200,7 @@
 
             &:not(&[disabled]) {
                 &:active {
-                    border-radius: var(--uk-sys-shape-corner-large-size);
+                    border-radius: var(--uk-sys-shape-corner-large);
                 }
             }
         }
@@ -220,7 +221,7 @@
         --icon-size: 40px;
 
         &[data-shape="square"] {
-            border-radius: var(--uk-sys-shape-corner-extra-large-size);
+            border-radius: var(--uk-sys-shape-corner-extra-large);
             --transition-all: var(--uk-sys-motion-easing-standard-accelerate);
 
             &:not(&[disabled]) {
@@ -236,7 +237,7 @@
 
             &:not(&[disabled]) {
                 &:active {
-                    border-radius: var(--uk-sys-shape-corner-large-size);
+                    border-radius: var(--uk-sys-shape-corner-large);
                 }
             }
         }
@@ -317,18 +318,14 @@
 
     &[data-color="elevated"] {
         border: none;
-        box-shadow: 0 1px 2px var(--uk-sys-color-shadow)
+        box-shadow: 0 1px 2px var(--uk-sys-color-shadow);
     }
-;
-
     &:not([disabled]) {
         &:active,
         &:focus-visible {
-            box-shadow: 0 2px 6px var(--uk-sys-color-shadow)
+            box-shadow: 0 2px 6px var(--uk-sys-color-shadow);
         }
-    ;
     }
-
 
     &[data-color="standard"] {
         background-color: transparent;
