@@ -1,12 +1,11 @@
 import { type Component } from "solid-js";
-import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
+import { Route } from "@solidjs/router";
+import RootPage from "./pages/root/page";
 
 const App: Component = () => {
     return (
         <>
-            <UKText size="l" emphasized role="display">
-                {"Store (uk.tcsw.store) -> Work in progress"}
-            </UKText>
+            <Route path="/" component={RootPage} />
         </>
     );
 };

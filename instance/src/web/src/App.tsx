@@ -4,7 +4,7 @@ import { UIKitRoot } from "@tcsw/uikit-solid/src/index.tsx";
 import AppIndex from "./pages/app/App.tsx";
 import AuthCheck from "./pages/app/AuthCheck.tsx";
 
-const ApplicationsRouter = lazy(() => import("../../../fs/Applications.tsx"));
+const ApplicationsRouter = lazy(() => import("../../../../fs/Applications.tsx"));
 
 const App: Component = () => {
     return (

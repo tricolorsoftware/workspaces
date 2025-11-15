@@ -37,6 +37,7 @@ export default class ExitCommand extends Command {
                                             gender = data.trim();
                                             if (gender !== "") {
                                                 if (gender === "male" || gender === "other" || gender === "female") {
+                                                    log.rawLog("\n");
                                                     log.info("Creating user...");
 
                                                     let uid = await self.instance.subSystems.users.createUser(username);
@@ -54,6 +55,10 @@ export default class ExitCommand extends Command {
                                                     }
 
                                                     await user.setGender(gender);
+                                                    let fullNameSplit = fullName.split(" ");
+                                                    await user.setFullName(fullNameSplit.shift() || "Unknown", fullNameSplit.join(" "));
+                                                    await user.setEmail(email);
+                                                    await self.instance.subSystems.authorization.setPassword(user.userId, password);
                                                 } else {
                                                     log._internal_promptMessage("Gender -> ");
                                                 }
