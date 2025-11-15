@@ -13,6 +13,8 @@ import UKButtonGroup from "../src/components/buttonGroup/UKButtonGroup.tsx";
 import UKButton from "../src/components/button/UKButton.tsx";
 import UKIconButton from "../src/components/iconButton/UKIconButton.tsx";
 import UKSplitButton from "../src/components/splitButtons/UKSplitButton.tsx";
+import UKChip from "../src/components/chip/UKChip.tsx";
+import UKExtendedFloatingActionButton from "../src/components/extendedFloatingActionButton/UKExtendedFloatingActionButton.tsx";
 
 const ButtonVariantsForSize: Component<{ size: ButtonSize }> = ({ size }) => {
     return (
@@ -2354,9 +2356,15 @@ export default function App() {
                 />
             </div>
 
-            <UKSplitButton icon="person" onClick={() => 0} dropDownItems={[]}>
+            <UKSplitButton onClick={() => 0} dropDownItems={[]}>
                 Hello world
             </UKSplitButton>
+
+            <UKChip type="assist" leadingIcon="person">
+                {"Hello world"}
+            </UKChip>
+
+            <UKExtendedFloatingActionButton size="large">Test</UKExtendedFloatingActionButton>
 
             <span>
                 UIKit Material Expressive for SolidJS | "@yourdash/uikit-solid" | Created by{" "}
