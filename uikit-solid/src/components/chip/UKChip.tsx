@@ -12,7 +12,7 @@ const UKChip: Component<{
     trailingIcon?: string;
 }> = (props) => {
     return (
-        <div class={clsx(styles.root, props.class)} data-type={props.type}>
+        <div class={clsx(styles.root, props.class)} data-type={props.type} data-noLeadingIcon={!props.leadingIcon} data-noTrailingIcon={!props.trailingIcon}>
             {props.leadingIcon && <UKIcon class={styles.icon}>{props.leadingIcon}</UKIcon>}
             <UKText role="label" size="m" emphasized={false} class={styles.label}>
                 {props.children}
