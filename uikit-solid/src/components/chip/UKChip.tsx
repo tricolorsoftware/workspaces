@@ -10,9 +10,10 @@ const UKChip: Component<{
     class?: string;
     leadingIcon?: string;
     trailingIcon?: string;
+    onClick?: () => void;
 }> = (props) => {
     return (
-        <div class={clsx(styles.root, props.class)} data-type={props.type} data-noLeadingIcon={!props.leadingIcon} data-noTrailingIcon={!props.trailingIcon}>
+        <div class={clsx(styles.root, props.class)} data-type={props.type} data-noLeadingIcon={!props.leadingIcon} data-noTrailingIcon={!props.trailingIcon} onClick={props.onClick}>
             {props.leadingIcon && <UKIcon class={styles.icon}>{props.leadingIcon}</UKIcon>}
             <UKText role="label" size="m" emphasized={false} class={styles.label}>
                 {props.children}
