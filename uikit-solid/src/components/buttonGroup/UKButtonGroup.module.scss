@@ -146,4 +146,12 @@
             height: 136px;
         }
     }
+
+    &[data-align="start"] {
+        margin-right: auto;
+    }
+
+    &[data-align="end"] {
+        margin-left: auto;
+    }
 }
