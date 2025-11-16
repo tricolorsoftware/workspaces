@@ -3,9 +3,9 @@ import clsx from "clsx";
 import type { CardColor } from "./lib/color";
 import styles from "./UKCard.module.scss";
 
-const UKCard: Component<ParentProps<{ class?: string; color?: CardColor }>> = (props) => {
+const UKCard: Component<ParentProps<{class?: string; color?: CardColor; hashId?: string}>> = (props) => {
     return (
-        <div data-color={props.color || "filled"} class={clsx(styles.root, props.class)}>
+        <div id={props.hashId} data-color={props.color || "filled"} class={clsx(styles.root, props.class)}>
             {props.children}
         </div>
     );
