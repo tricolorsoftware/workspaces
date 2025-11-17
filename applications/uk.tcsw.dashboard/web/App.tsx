@@ -1,14 +1,11 @@
 import { type Component } from "solid-js";
-import Widgets from "./widgets/widgets";
-import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
+import RootPage from "./pages/root";
+import {Route} from "@solidjs/router";
 
 const App: Component = () => {
     return (
         <>
-            <UKText size="l" emphasized role="display">
-                {"Dashboard (uk.tcsw.dashboard) -> Work in progress"}
-            </UKText>
-            <Widgets.user.profile />
+            <Route path={"/"} component={RootPage} />
         </>
     );
 };

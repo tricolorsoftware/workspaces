@@ -5,7 +5,6 @@ import type { Component } from "solid-js";
 const Page: Component = () => {
     return (
         <>
-            Root Page
             <UKText size="l" emphasized role="display">
                 {"Store (uk.tcsw.store) -> Work in progress"}
             </UKText>

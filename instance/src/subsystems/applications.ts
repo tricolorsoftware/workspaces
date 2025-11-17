@@ -38,21 +38,29 @@ export default class ApplicationsSubsystem extends SubSystem {
 
     async updateWebRouter() {
         let applicationsInfill = ``;
+        let applicationImportsInfill = ``;
+        let ind = 0;
         for (const app of this.availableApplications) {
             if (this.enabledApplications.find((a) => a === app.manifest?.id)) {
                 if (app.manifest?.modules.web) {
-                    applicationsInfill += `<Route path="${app.manifest.id}/*" component={lazy(() => import("${path.relative(path.join(this.instance.subSystems.filesystem.FS_ROOT), path.join(app.path, app.manifest.modules.web.path, "/App.tsx")).replaceAll("\\", "/")}"))} />
+                    applicationImportsInfill += `const App${ind}Router = lazy(() => import("${path.relative(path.join(this.instance.subSystems.filesystem.FS_ROOT), path.join(app.path, app.manifest.modules.web.path, "/App.tsx")).replaceAll("\\", "/")}"));`;
+                    applicationsInfill += `<Route path="${app.manifest.id}/*">
+                        <App${ind}Router/>
+                    </Route>
 `;
+                    ind++;
                 }
             }
         }
 
         if (this.availableApplications.length === 0) {
-            applicationsInfill = `<Route path="*" component={() => <>How peculiar. You have no applications installed, please ask an administrator to install some via the command-line interface.</>}/>`
+            applicationsInfill = `<Route path="*" component={() => <>How peculiar. You have no applications installed, please ask an administrator to install some via the command-line interface.</>}/>`;
         }
 
-            let applicationsWebRouterTemplate = `import { Route } from "@solidjs/router";
+        let applicationsWebRouterTemplate = `import { Route } from "@solidjs/router";
 import { type Component, lazy } from "solid-js";
+
+${applicationImportsInfill}
 
 const ApplicationsRouter: Component = () => {
     return (
