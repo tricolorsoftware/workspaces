@@ -16,4 +16,5 @@ export interface WorkspacesApplication {
         // run ./[path]
         script?: { path: string };
     };
+    version?: string;
 }

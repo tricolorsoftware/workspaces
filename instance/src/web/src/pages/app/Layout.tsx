@@ -21,7 +21,7 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
             items={[
                 ...(quickShortcuts() || []).map((sc) => {
                     return {
-                        icon: sc.icon.value,
+                        icon: sc.icon.value || "indeterminate_question_box",
                         label: sc.label,
                         active: selected() === sc.label,
                         onClick() {
