@@ -248,11 +248,13 @@ export const workspacesRouter = t.router({
                     let quickShortcuts = opt.ctx.instance.subSystems.applications.getEnabledApplications();
 
                     return quickShortcuts.map((app) => {
+                        let icon: { type: "icon"; value: string } = { type: "icon", value: "indeterminate_question_box" };
+
+                        // @ts-ignore
+                        if (app.manifest?.icon) icon = app.manifest.icon;
+
                         return {
-                            icon: {
-                                type: "icon",
-                                value: "person",
-                            },
+                            icon: icon,
                             label: app.manifest?.displayName || "Unknown",
                             location: {
                                 type: "local",

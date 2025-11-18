@@ -1,6 +1,7 @@
 import { type Component } from "solid-js";
 import UKIcon from "../icon/UKIcon.tsx";
 import styles from "./UKListItem.module.scss"
+import UKText from "../text/UKText.tsx";
 
 const UKListItem: Component<{
     labelText: string;
@@ -45,14 +46,14 @@ const UKListItem: Component<{
                 </div>
             )}
             <div class={styles.body}>
-                <div class={styles.labelText}>{props.labelText}</div>
-                <p class={styles.supportingText}>{props.supportingText}</p>
+                <UKText role={"label"} size={"l"} class={styles.labelText}>{props.labelText}</UKText>
+                <UKText role={"body"} size={"m"} class={styles.supportingText}>{props.supportingText}</UKText>
             </div>
             {props.trailing?.type === "icon" && (
                 <UKIcon class={styles.trailingIcon}>{props.trailing.value}</UKIcon>
             )}
             {props.trailing?.type === "text" && (
-                <span class={styles.trailingText}>{props.trailing.value}</span>
+                <UKText role={"label"} size={"m"} class={styles.trailingText}>{props.trailing.value}</UKText>
             )}
         </div>
     );

@@ -3,6 +3,9 @@
 
 A working environment for professionals and Home-Lab users.
 
+> [!INFO]
+> New icons are needed for all applications, the current icons are only intended to be placeholders
+
 ### Links
 - Discord -> https://discord.gg/jcJeGEAYhY
 - Source Code (git) -> https://github.com/tricolorsoftware/workspaces

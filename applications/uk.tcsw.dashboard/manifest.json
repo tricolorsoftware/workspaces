@@ -1,12 +1,22 @@
 {
     "id": "uk.tcsw.dashboard",
     "displayName": "Dashboard",
+    "icon": {
+        "type": "icon",
+        "value": "dashboard"
+    },
     "description": "The Homepage for workspaces",
-    "authors": ["Tricolor Software <https://tcsw.uk>"],
+    "authors": [
+        "Tricolor Software <https://tcsw.uk>"
+    ],
     "license": "MIT",
     "source": "https://github.com/tricolorsoftware/workspaces/src/branch/main/packages/applications/uk.tcsw.dashboard",
     "modules": {
-        "web": { "path": "./web" },
-        "bun": { "path": "./backend/index.ts" }
+        "web": {
+            "path": "./web"
+        },
+        "bun": {
+            "path": "./backend/index.ts"
+        }
     }
 }

@@ -1,7 +1,7 @@
 .page {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr auto;
     width: 100%;
     height: 100%;
 }
@@ -24,8 +24,26 @@
     &[data-view-type="list"] {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        max-width: 768px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 1rem;
+        user-select: none;
     }
     &[data-view-type="grid"] {
     }
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 768px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    align-items: center;
+    justify-content: end;
 }

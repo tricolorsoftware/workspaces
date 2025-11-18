@@ -2,6 +2,10 @@ export interface WorkspacesApplication {
     id: string;
     // if undefined, just the id is used
     displayName?: string;
+    icon?: {
+        type: "icon" | "image";
+        value: string;
+    };
     description?: string;
     authors: string[];
     license: string;

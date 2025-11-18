@@ -17,9 +17,14 @@ const router = t.router({
                             id: z.string(),
                             displayName: z.string(),
                             version: z.string(),
+                            icon: z.object({
+                                type: z.literal("icon").or(z.literal("image")),
+                                value: z.string(),
+                            }),
+                            description: z.string(),
                         })
                         .array(),
-                    installed: z.string().array(),
+                    enabledApplications: z.string().array(),
                 }),
             )
             .query(async () => {
@@ -32,10 +37,12 @@ const router = t.router({
                                 id: app.manifest.id,
                                 displayName: app.manifest.displayName || app.manifest.id,
                                 version: app.manifest.version || "rolling",
+                                icon: app.manifest.icon || { type: "icon", value: "indeterminate_question_box" },
+                                description: app.manifest.description || "Description not supplied",
                             };
                         })
                         .filter((a) => a !== undefined),
-                    installed: [],
+                    enabledApplications: instance.subSystems.applications.enabledApplications,
                 };
             }),
     },
