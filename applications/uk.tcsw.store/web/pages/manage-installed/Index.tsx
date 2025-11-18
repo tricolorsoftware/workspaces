@@ -107,7 +107,15 @@ const ManageInstalledPage: Component = () => {
                 </For>
             </div>
             <div class={styles.actions}>
-                <UKButton onClick={() => {}} color={"filled"} size={"s"}>Apply Changes</UKButton>
+                <UKButton
+                    onClick={async () => {
+                        await trpc.manageInstalled.setEnabledApplications.mutate({enabledApplications: enabledApplications()})
+                    }}
+                    color={"filled"}
+                    size={"s"}
+                >
+                    Apply Changes
+                </UKButton>
             </div>
         </div>
     );
