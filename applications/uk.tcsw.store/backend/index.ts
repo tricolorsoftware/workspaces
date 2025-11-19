@@ -45,6 +45,25 @@ const router = t.router({
                     enabledApplications: instance.subSystems.applications.enabledApplications,
                 };
             }),
+        setEnabledApplications: procedure.input(z.object({ enabledApplications: z.string().array() })).mutation(async (opt) => {
+            const currentlyEnabledApplications = instance.subSystems.applications.enabledApplications;
+
+            for (const app of currentlyEnabledApplications) {
+                if (opt.input.enabledApplications.includes(app)) continue;
+
+                instance.subSystems.applications.disableApplication(app);
+            }
+
+            for (const app of opt.input.enabledApplications) {
+                if (currentlyEnabledApplications.includes(app)) continue;
+
+                instance.subSystems.applications.enableApplication(app);
+            }
+
+            return {
+                success: true,
+            };
+        }),
     },
 });
 
