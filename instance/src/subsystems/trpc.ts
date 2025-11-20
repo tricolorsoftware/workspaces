@@ -2,7 +2,7 @@ import { BunRequest, Server } from "bun";
 import { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import { TRPCBuiltRouter } from "@trpc/server";
-import { createTRPCContext } from "./trpc/trpc.js";
+import { createTRPCContext } from "./trpcRouter.js";
 import { FetchCreateContextFnOptions, fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 export default class TRPCSubsystem extends SubSystem {
@@ -33,6 +33,7 @@ export default class TRPCSubsystem extends SubSystem {
             }
 
             // TODO: uncomment for Websocket stuff
+            // @ts-ignore
             // if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
             //     return new Response(null, { status: 101 });
             // }
@@ -68,6 +69,8 @@ export default class TRPCSubsystem extends SubSystem {
             ...options,
             port: 3563,
             hostname: "0.0.0.0",
+            // TODO: this needs to not be undefined!
+            websocket: undefined,
             async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
                 if (req.method === "OPTIONS") {
                     return new Response("TricolorSoftware", {

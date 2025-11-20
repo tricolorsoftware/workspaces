@@ -10,7 +10,7 @@ import AuthorizationSubsystem from "./subsystems/authorization.js";
 // https://github.com/cah4a/trpc-bun-adapter/blob/main/src/createBunHttpHandler.ts TODO: patch this and merge into the instance package
 import { BunWSClientCtx, createBunServeHandler } from "trpc-bun-adapter";
 import { AnyRouter } from "@trpc/server";
-import { createTRPCContext as createWorkspacesTRPCContext, workspacesRouter } from "./subsystems/trpc/trpc.js";
+import { createTRPCContext as createWorkspacesTRPCContext, workspacesRouter } from "./subsystems/trpcRouter.js";
 import { BunRequest, file } from "bun";
 import ApplicationsSubsystem from "./subsystems/applications.js";
 import path from "path";
