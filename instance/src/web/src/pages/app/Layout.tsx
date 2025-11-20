@@ -1,4 +1,4 @@
-import { createResource, createSignal, Suspense, type Component } from "solid-js";
+import {createEffect, createResource, createSignal, Suspense, type Component} from "solid-js";
 import styles from "./Layout.module.scss";
 import { useNavigate, type RouteSectionProps } from "@solidjs/router";
 import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.jsx";
@@ -13,7 +13,14 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
     const [quickShortcuts] = createResource(() => trpc.app.navigation.quickShortcuts.query());
 
     const [expanded, setExpanded] = createSignal<boolean>(false);
-    const [selected, setSelected] = createSignal<string>("");
+    const [ selected, setSelected ] = createSignal<string>("");
+
+    createEffect(() => {
+        // @ts-ignore
+        trpc.app.notifications.listener.subscribe(undefined, (opt) => {
+            console.log(opt)
+        })
+    })
 
     return (
         <UKNavigationRail

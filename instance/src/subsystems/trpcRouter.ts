@@ -1,8 +1,10 @@
-import { initTRPC, TRPCError } from "@trpc/server";
+import { initTRPC, tracked, TRPCError } from "@trpc/server";
 import z from "zod";
-import { Instance } from "../../index.js";
-import { AuthorizedDeviceType } from "../authorization.js";
+import { Instance } from "../index.js";
+import { AuthorizedDeviceType } from "./authorization.js";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import { WorkspacesNotificationEventEmitterEvent, WorkspacesNotificationPriority, type WorkspacesNotification } from "./notifications.js";
+import { on } from "node:events";
 
 export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContextFnOptions) => {
     return {
@@ -63,7 +65,7 @@ export const workspacesRouter = t.router({
             )
             .query(async (opt) => {
                 return {
-                    // change to true when an email server exists
+                    // TODO: change to true when an email server exists (links to emailServerStuff)
                     email: false,
                 };
             }),
@@ -86,7 +88,7 @@ export const workspacesRouter = t.router({
                 ]),
             )
             .mutation(async (opt) => {
-                // TODO: implement this
+                // TODO: implement this (links to emailServerStuff)
 
                 if (opt.input.emailCode !== "a")
                     return {
@@ -189,15 +191,15 @@ export const workspacesRouter = t.router({
 
             if (userId === undefined) {
                 return {
-                    authenticated: false
-                }
+                    authenticated: false,
+                };
             }
 
             return {
                 authenticated: true,
             };
         }),
-        logout: procedure.output(z.object({ success: z.literal(true) })).mutation(async opt => {
+        logout: procedure.output(z.object({ success: z.literal(true) })).mutation(async (opt) => {
             const cookieString = opt.ctx.rawRequest.req.headers?.get("cookie");
 
             if (cookieString === null) {
@@ -213,7 +215,7 @@ export const workspacesRouter = t.router({
             return {
                 success: true,
             };
-        })
+        }),
     },
     app: {
         navigation: {
@@ -262,6 +264,34 @@ export const workspacesRouter = t.router({
                             },
                         };
                     });
+                }),
+        },
+        notifications: {
+            listener: procedure
+                .output(
+                    z.object({
+                        notifications: z
+                            .object({
+                                sourceId: z.string(),
+                                priority: z.enum(WorkspacesNotificationPriority),
+                                content: z.object({ title: z.string(), icon: z.string().optional(), body: z.string() }),
+                            })
+                            .array(),
+                    }),
+                )
+                // @ts-ignore
+                .subscription(async function* (opt) {
+                    for await (const [data] of on(
+                        opt.ctx.instance.subSystems.notifications.eventEmitter,
+                        WorkspacesNotificationEventEmitterEvent.SendNotification,
+                        {
+                            signal: opt.signal,
+                        },
+                    )) {
+                        const notification = data as WorkspacesNotification;
+
+                        yield notification;
+                    }
                 }),
         },
     },

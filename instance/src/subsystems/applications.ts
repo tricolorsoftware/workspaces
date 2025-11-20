@@ -4,6 +4,7 @@ import SubSystem from "../subSystems.js";
 import { promises as fs } from "fs";
 import type { WorkspacesApplication } from "./applications/application.js";
 import type { WorkspacesApplicationServiceStatus } from "./applications/serviceStatus.js";
+import { WorkspacesNotificationPriority } from "./notifications.js";
 
 const APPLICATIONS_CONFIG_FILE_PATH = (subsystem: SubSystem) =>
     path.join(subsystem.instance.subSystems.filesystem.FS_ROOT, "applications.json");
@@ -316,7 +317,13 @@ export default ApplicationsRouter`;
         await this.saveApplicationsConfig();
         await this.updateWebRouter();
 
-        this.instance.subSystems.notifications.send();
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator()))
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.applications",
+                WorkspacesNotificationPriority.Important,
+                { title: "Restart Now", icon: "warn", body: "Please restart the instance to disable any previously-enabled applications." },
+            );
 
         return false;
     }

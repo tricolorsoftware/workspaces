@@ -1,4 +1,4 @@
-import { createTRPCContext, procedure } from "@tcsw/workspaces-instance/src/subsystems/trpc/trpc";
+import { createTRPCContext, procedure } from "@tcsw/workspaces-instance/src/subsystems/trpcRouter";
 import { initTRPC } from "@trpc/server";
 import z from "zod";
 
