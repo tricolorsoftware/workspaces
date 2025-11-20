@@ -24,6 +24,7 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
 
     return (
         <UKNavigationRail
+            class={styles.rail}
             expanded={expanded()}
             items={[
                 ...(quickShortcuts() || []).map((sc) => {
