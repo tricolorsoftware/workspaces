@@ -1,6 +1,6 @@
 import {createEffect, createResource, createSignal, Suspense, type Component} from "solid-js";
 import styles from "./Layout.module.scss";
-import { useNavigate, type RouteSectionProps } from "@solidjs/router";
+import {useLocation, useNavigate, type RouteSectionProps} from "@solidjs/router";
 import UKIndeterminateSpinner from "@tcsw/uikit-solid/src/components/indeterminateSpinner/UKIndeterminateSpinner.jsx";
 import UKNavigationRail from "@tcsw/uikit-solid/src/components/navigationRail/UKNavigationRail.jsx";
 import NavigationRailAvatar from "./navigationRailAvatar/NavigationRailAvatar";
@@ -9,11 +9,11 @@ import NavigationRailClock from "./navigationRailClock/NavigationRailClock.tsx";
 import UKText from "@tcsw/uikit-solid/src/components/text/UKText.tsx";
 
 const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
+    const location = useLocation();
     const navigate = useNavigate();
     const [quickShortcuts] = createResource(() => trpc.app.navigation.quickShortcuts.query());
 
-    const [expanded, setExpanded] = createSignal<boolean>(false);
-    const [ selected, setSelected ] = createSignal<string>("");
+    const [ expanded, setExpanded ] = createSignal<boolean>(false);
 
     createEffect(() => {
         // @ts-ignore
@@ -31,10 +31,8 @@ const AppLayout: Component<RouteSectionProps<unknown>> = (props) => {
                     return {
                         icon: sc.icon.value || "indeterminate_question_box",
                         label: sc.label,
-                        active: selected() === sc.label,
+                        active: location.pathname.startsWith(sc.location.value),
                         onClick() {
-                            setSelected(sc.label);
-
                             if (sc.location.type === "local") {
                                 navigate(sc.location.value);
                             } else if (sc.location.type === "remote") {

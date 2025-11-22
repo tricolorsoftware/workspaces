@@ -30,8 +30,6 @@ export default class AuthorizationSubsystem extends SubSystem {
 
             const sessionsDb = this.instance.subSystems.database.db();
 
-            this.log.info("Password entered matched the hashed password.");
-
             const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
 
             // valid for 7 days?

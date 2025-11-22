@@ -10,23 +10,12 @@ const Page: Component = () => {
         <div class={styles.page}>
             <div class={styles.topBar}>
                 <UKText role={"title"} size="l">
-                    Promoted Applications
+                    Categories
                 </UKText>
             </div>
             <UKDivider direction={DividerDirection.horizontal} />
             <div class={styles.content}>
-            <UKText size="l" emphasized role="display">
-                {"Store (uk.tcsw.store) -> Work in progress"}
-            </UKText>
-            <UKCard color="filled">
-                <img src={"/assets/tricolor/tricolor.svg"} />
-                <UKText size="m" emphasized role="title">
-                    {"Dashboard"}
-                </UKText>
-                <UKText size="m" emphasized role="body">
-                    {"Work in progress"}
-                </UKText>
-            </UKCard>
+                Nothing here...
             </div>
         </div>
     );
