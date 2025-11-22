@@ -1,4 +1,3 @@
-import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.jsx";
 import {DividerDirection} from "@tcsw/uikit-solid/src/components/divider/lib/direction.js";
 import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.jsx";
 import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
@@ -18,7 +17,9 @@ const Page: Component = () => {
             </div>
             <UKDivider direction={DividerDirection.horizontal} />
             <div class={styles.content}>
-                <UKTextField leadingIcon={"search"} getValue={setSearchQuery} setValue={searchQuery()} color={"filled"} label={"Search"} />
+                <UKTextField leadingIcon={{icon: "search", onClick: () => {return 0}}} getValue={setSearchQuery} setValue={searchQuery()} color={"filled"} label={"Search"} />
+                <UKDivider direction={DividerDirection.horizontal} />
+                <div class={styles.resultGrid}></div>
             </div>
         </div>
     );

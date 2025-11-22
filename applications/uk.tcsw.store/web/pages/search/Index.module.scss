@@ -27,3 +27,8 @@
     width: 100%;
     padding: 2rem;
 }
+
+.resultGrid {
+    display: grid;
+    grid-template-columns: repeat(1fr, 20rem);
+}
