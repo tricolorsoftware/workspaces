@@ -4,12 +4,14 @@ import SubSystem from "../subSystems.js";
 import { TRPCBuiltRouter } from "@trpc/server";
 import { createTRPCContext } from "./trpcRouter.js";
 import { FetchCreateContextFnOptions, fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { createBunWSHandler, type CreateBunWSSContextFnOptions } from "./trpcWebsocketHandler.js";
 
 export default class TRPCSubsystem extends SubSystem {
     registeredRouters: {
         basePath: string;
         router: TRPCBuiltRouter<any, any>;
         createContext: (opts: FetchCreateContextFnOptions) => object;
+        createWebsocketContext?: (opts: CreateBunWSSContextFnOptions) => object;
     }[];
 
     constructor(instance: Instance) {
@@ -32,11 +34,24 @@ export default class TRPCSubsystem extends SubSystem {
                 continue;
             }
 
-            // TODO: uncomment for Websocket stuff
-            // @ts-ignore
-            // if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
-            //     return new Response(null, { status: 101 });
-            // }
+            if (
+                server.upgrade(req, {
+                    headers: {
+                        "Set-Cookie": "as",
+                    },
+                    data: (opt) => {
+                        return {
+                            instance: this.instance,
+                            rawRequest: {
+                                req: opt.req,
+                                resHeaders: opt.resHeaders,
+                            },
+                        };
+                    },
+                })
+            ) {
+                return new Response(null, { status: 101 });
+            }
 
             return fetchRequestHandler({
                 createContext: router.createContext,
@@ -70,7 +85,7 @@ export default class TRPCSubsystem extends SubSystem {
             port: 3563,
             hostname: "0.0.0.0",
             // TODO: this needs to not be undefined!
-            websocket: undefined,
+            websocket: createBunWSHandler(self.instance),
             async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
                 if (req.method === "OPTIONS") {
                     return new Response("TricolorSoftware", {
@@ -109,7 +124,6 @@ export default class TRPCSubsystem extends SubSystem {
                 console.error(p[0].error);
                 this.log.error("^");
             },
-            // websocket: createBunWSHandler(opts),
         };
     }
 }

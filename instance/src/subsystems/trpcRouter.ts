@@ -5,6 +5,7 @@ import { AuthorizedDeviceType } from "./authorization.js";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { WorkspacesNotificationEventEmitterEvent, WorkspacesNotificationPriority, type WorkspacesNotification } from "./notifications.js";
 import { on } from "node:events";
+import type { CreateBunWSSContextFnOptions } from "./trpcWebsocketHandler.js";
 
 export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContextFnOptions) => {
     return {
@@ -12,6 +13,14 @@ export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContex
             req: opt.req,
             resHeaders: opt.resHeaders,
         },
+        instance: instance,
+    };
+};
+
+export const createWorkspacesTRPCWebsocketContext = (instance: Instance) => (opt: CreateBunWSSContextFnOptions) => {
+    return {
+        req: opt.req,
+        info: opt.info,
         instance: instance,
     };
 };
