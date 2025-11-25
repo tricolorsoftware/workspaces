@@ -41,6 +41,7 @@ import type { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-
 import type { MaybePromise } from "@trpc/server/unstable-core-do-not-import";
 import type { ServerWebSocket, WebSocketHandler } from "bun";
 import type { Instance } from "../index.js";
+import utils from "node:util"
 
 export type CreateBunWSSContextFnOptions = NodeHTTPCreateContextFnOptions<Request, ServerWebSocket<BunWSClientCtx<AnyRouter>>>;
 
@@ -407,6 +408,8 @@ function createURL(client: ServerWebSocket<BunWSClientCtx<AnyRouter>>): URL {
         const req = client.data.req;
 
         const protocol = client && "encrypted" in client && client.encrypted ? "https:" : "http:";
+
+        utils.inspect(req);
 
         const host = req.headers.get("host") ?? "localhost";
         return new URL(req.url, `${protocol}//${host}`);
