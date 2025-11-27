@@ -85,7 +85,7 @@ export default class TRPCSubsystem extends SubSystem {
             port: 3563,
             hostname: "0.0.0.0",
             // TODO: this needs to not be undefined!
-            websocket: createBunWSHandler(self.instance),
+            websocket: createBunWSHandler(self.instance, {}),
             async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
                 if (req.method === "OPTIONS") {
                     return new Response("TricolorSoftware", {
