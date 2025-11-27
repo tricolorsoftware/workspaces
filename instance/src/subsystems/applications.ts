@@ -55,7 +55,7 @@ export default class ApplicationsSubsystem extends SubSystem {
         }
 
         if (this.availableApplications.length === 0) {
-            applicationsInfill = `<Route path="*" component={() => <>How peculiar. You have no applications installed, please ask an administrator to install some via the command-line interface.</>}/>`;
+            applicationsInfill = `<Route path="*" component={() => <div style={{ "text-align": "center" }}>How peculiar. You have no applications installed, please ask an administrator to install some via the command-line interface.</div>}/>`;
         }
 
         let applicationsWebRouterTemplate = `import { Route } from "@solidjs/router";
@@ -322,7 +322,11 @@ export default ApplicationsRouter`;
                 administrator.userId,
                 "instance.subsystems.applications",
                 WorkspacesNotificationPriority.Important,
-                { title: "Restart Now", icon: "warn", body: "Please restart the instance to disable any previously-enabled applications." },
+                {
+                    title: "Restart Now?",
+                    icon: "warning",
+                    body: "Please restart the instance to disable any previously-enabled applications.",
+                },
             );
 
         return false;

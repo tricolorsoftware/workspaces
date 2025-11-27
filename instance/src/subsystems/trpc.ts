@@ -4,14 +4,12 @@ import SubSystem from "../subSystems.js";
 import { TRPCBuiltRouter } from "@trpc/server";
 import { createTRPCContext } from "./trpcRouter.js";
 import { FetchCreateContextFnOptions, fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { createBunWSHandler, type CreateBunWSSContextFnOptions } from "./trpcWebsocketHandler.js";
 
 export default class TRPCSubsystem extends SubSystem {
     registeredRouters: {
         basePath: string;
         router: TRPCBuiltRouter<any, any>;
         createContext: (opts: FetchCreateContextFnOptions) => object;
-        createWebsocketContext?: (opts: CreateBunWSSContextFnOptions) => object;
     }[];
 
     constructor(instance: Instance) {
@@ -32,25 +30,6 @@ export default class TRPCSubsystem extends SubSystem {
         for (const router of this.registeredRouters) {
             if (!url.pathname.startsWith(router.basePath)) {
                 continue;
-            }
-
-            if (
-                server.upgrade(req, {
-                    headers: {
-                        "Set-Cookie": "as",
-                    },
-                    data: (opt) => {
-                        return {
-                            instance: this.instance,
-                            rawRequest: {
-                                req: opt.req,
-                                resHeaders: opt.resHeaders,
-                            },
-                        };
-                    },
-                })
-            ) {
-                return new Response(null, { status: 101 });
             }
 
             return fetchRequestHandler({
@@ -84,8 +63,6 @@ export default class TRPCSubsystem extends SubSystem {
             ...options,
             port: 3563,
             hostname: "0.0.0.0",
-            // TODO: this needs to not be undefined!
-            websocket: createBunWSHandler(self.instance, {}),
             async fetch(req: BunRequest, server: Server<ReturnType<typeof createTRPCContext>>) {
                 if (req.method === "OPTIONS") {
                     return new Response("TricolorSoftware", {

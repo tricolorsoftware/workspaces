@@ -5,7 +5,7 @@ import { AuthorizedDeviceType } from "./authorization.js";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { WorkspacesNotificationEventEmitterEvent, WorkspacesNotificationPriority, type WorkspacesNotification } from "./notifications.js";
 import { on } from "node:events";
-import type { CreateBunWSSContextFnOptions } from "./trpcWebsocketHandler.js";
+import { $ZodTypeInternals } from "zod/v4/core";
 
 export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContextFnOptions) => {
     return {
@@ -17,15 +17,19 @@ export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContex
     };
 };
 
-export const createWorkspacesTRPCWebsocketContext = (instance: Instance) => (opt: CreateBunWSSContextFnOptions) => {
-    return {
-        req: opt.req,
-        info: opt.info,
-        instance: instance,
-    };
-};
-
-export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create();
+export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create({
+    sse: {
+        ping: {
+            // Enable periodic ping messages to keep connection alive
+            enabled: true,
+            // Send ping message every 2s
+            intervalMs: 2_000,
+        },
+        client: {
+            reconnectAfterInactivityMs: 3_000,
+        },
+    },
+});
 
 export const publicProcedure = t.procedure.use(async (opt) => {
     return opt.next({
@@ -277,17 +281,6 @@ export const workspacesRouter = t.router({
         },
         notifications: {
             listener: procedure
-                .output(
-                    z.object({
-                        notifications: z
-                            .object({
-                                sourceId: z.string(),
-                                priority: z.enum(WorkspacesNotificationPriority),
-                                content: z.object({ title: z.string(), icon: z.string().optional(), body: z.string() }),
-                            })
-                            .array(),
-                    }),
-                )
                 // @ts-ignore
                 .subscription(async function* (opt) {
                     for await (const [data] of on(
@@ -298,8 +291,7 @@ export const workspacesRouter = t.router({
                         },
                     )) {
                         const notification = data as WorkspacesNotification;
-
-                        yield notification;
+                        if (notification.recipient === opt.ctx.userId) yield notification;
                     }
                 }),
         },

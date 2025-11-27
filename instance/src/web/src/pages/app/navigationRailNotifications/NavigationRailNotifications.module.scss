@@ -1,0 +1,27 @@
+.root {
+    position: relative;
+    display: flex;
+    padding-bottom: 1rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.notifications {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    bottom: 1rem;
+    z-index: 10;
+
+    transition: left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+
+    &[data-expanded="true"] {
+        left: 22.5rem;
+    }
+
+    &[data-expanded="false"] {
+        left: 6rem;
+    }
+}
