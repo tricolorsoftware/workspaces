@@ -65,6 +65,7 @@ const router = t.router({
             };
         }),
     },
+    categories: {},
 });
 
 export type TRPCRouter = typeof router;

@@ -58,6 +58,13 @@ const NavigationRailNotifications: Component<{ expanded: boolean }> = (props) =>
                     {(notification) => (
                         <Notification
                             respond={async (type, value) => {
+                                if (type === "close") {
+                                    setFlyoutNotifications((notifications) => notifications.filter((n) => n.uuid !== notification.uuid));
+                                    setNotifications((notifications) => notifications.filter((n) => n.uuid !== notification.uuid));
+
+                                    return;
+                                }
+
                                 await trpc.app.notifications.respond.mutate({
                                     uuid: notification.uuid,
                                     responseType: type,
