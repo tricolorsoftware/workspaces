@@ -23,13 +23,22 @@ export enum WorkspacesNotificationEventEmitterEvent {
     SendNotification = "send_notification",
 }
 
+export interface WorkspacesNotificationOptions {
+    buttons: { id: string; label: string; type: "filled" | "tonal" }[];
+}
+
+export interface WorkspacesNotificationOptionsCallbacks {
+    onButton(optionId: string): void;
+}
+
 export interface WorkspacesNotification {
     recipient: number;
     sourceId: string;
     priority: WorkspacesNotificationPriority;
     content: WorkspacesNotificationContent;
     uuid: string;
-    options?: { id: string; type: "button"; label: string }[];
+    options?: WorkspacesNotificationOptions;
+    optionsCallbacks?: WorkspacesNotificationOptionsCallbacks;
 }
 
 export default class NotificationsSubsystem extends SubSystem {
@@ -49,15 +58,24 @@ export default class NotificationsSubsystem extends SubSystem {
         return this;
     }
 
-    send(recipient: number, sourceId: string, priority: WorkspacesNotificationPriority, content: WorkspacesNotificationContent) {
-        // TODO: send a notification
-
+    send(
+        recipient: number,
+        sourceId: string,
+        priority: WorkspacesNotificationPriority,
+        content: WorkspacesNotificationContent,
+        options?: WorkspacesNotificationOptions,
+        optionsCallbacks?: WorkspacesNotificationOptionsCallbacks,
+    ) {
         this.eventEmitter.emit(WorkspacesNotificationEventEmitterEvent.SendNotification, {
             recipient,
             sourceId,
             priority,
             content,
             uuid: Bun.randomUUIDv7(),
+            options: {
+                buttons: options?.buttons || [],
+            },
+            optionsCallbacks: optionsCallbacks,
         } satisfies WorkspacesNotification);
 
         return this;

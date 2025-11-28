@@ -68,6 +68,8 @@ export const procedure = t.procedure.use(async (opt) => {
     });
 });
 
+let notifications: WorkspacesNotification[] = [];
+
 export const workspacesRouter = t.router({
     authorization: {
         signupRequirements: publicProcedure
@@ -291,8 +293,29 @@ export const workspacesRouter = t.router({
                         },
                     )) {
                         const notification = data as WorkspacesNotification;
-                        if (notification.recipient === opt.ctx.userId) yield notification;
+                        if (notification.recipient === opt.ctx.userId) {
+                            notifications.push(notification);
+
+                            yield notification;
+                        }
                     }
+                }),
+            respond: procedure
+                .input(z.object({ uuid: z.string(), responseType: z.literal("button"), value: z.string() }))
+                .mutation(async (opt) => {
+                    const notification = notifications.find((n) => n.uuid === opt.input.uuid);
+
+                    if (notification) {
+                        if (opt.input.responseType === "button") {
+                            notification.optionsCallbacks?.onButton(opt.input.value);
+                        }
+
+                        notifications = notifications.filter((n) => n.uuid !== notification.uuid);
+
+                        return { ok: true };
+                    }
+
+                    return { ok: false };
                 }),
         },
     },

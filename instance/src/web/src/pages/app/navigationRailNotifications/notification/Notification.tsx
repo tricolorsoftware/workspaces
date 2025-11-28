@@ -1,5 +1,5 @@
 import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.jsx";
-import type { Component } from "solid-js";
+import { For, type Component } from "solid-js";
 import type { WorkspacesNotification } from "../../../../../../subsystems/notifications";
 import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
 import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.jsx";
@@ -8,7 +8,7 @@ import UKIcon from "@tcsw/uikit-solid/src/components/icon/UKIcon.jsx";
 import UKButton from "@tcsw/uikit-solid/src/components/button/UKButton.jsx";
 import styles from "./Notification.module.scss";
 
-const Nofification: Component<{ notification: WorkspacesNotification }> = (props) => {
+const Notification: Component<{ notification: WorkspacesNotification; respond: (type: "button", value: string) => void }> = (props) => {
     return (
         <UKCard class={styles.root}>
             <div class={styles.progressBar}></div>
@@ -23,10 +23,21 @@ const Nofification: Component<{ notification: WorkspacesNotification }> = (props
                 {props.notification.content.body}
             </UKText>
             <div class={styles.footer}>
-                <UKButton onClick={() => 0}>Ok</UKButton>
+                <For each={props.notification.options?.buttons}>
+                    {(btn) => (
+                        <UKButton
+                            color={btn.type}
+                            onClick={() => {
+                                props.respond("button", btn.id);
+                            }}
+                        >
+                            {btn.label}
+                        </UKButton>
+                    )}
+                </For>
             </div>
         </UKCard>
     );
 };
 
-export default Nofification;
+export default Notification;

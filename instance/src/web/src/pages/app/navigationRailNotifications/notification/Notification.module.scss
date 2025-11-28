@@ -20,10 +20,12 @@
     flex-direction: row;
     gap: 0.5rem;
     padding-bottom: 0.5rem;
+    color: rgb(var(--uk-sys-color-on-surface));
 }
 
 .body {
     padding-top: 0.5rem;
+    color: rgb(var(--uk-sys-color-on-surface-variant));
 }
 
 .footer {

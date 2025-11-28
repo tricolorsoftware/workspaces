@@ -9,6 +9,8 @@ import { WorkspacesNotificationPriority } from "./notifications.js";
 const APPLICATIONS_CONFIG_FILE_PATH = (subsystem: SubSystem) =>
     path.join(subsystem.instance.subSystems.filesystem.FS_ROOT, "applications.json");
 
+const DEFAULT_APPLICATIONS: string[] = ["uk.tcsw.store", "uk.tcsw.dashboard"];
+
 interface AvailableWorkspacesApplication {
     path: string;
     enabled: boolean;
@@ -87,6 +89,12 @@ export default ApplicationsRouter`;
             let applicationsConfig = JSON.parse((await fs.readFile(APPLICATIONS_CONFIG_FILE_PATH(this))).toString());
 
             this.availableApplications = applicationsConfig;
+
+            for (const defaultApp of DEFAULT_APPLICATIONS) {
+                if (!this.availableApplications.find((aa) => aa.path.endsWith(defaultApp))) {
+                    await this.installApplication(`local:${defaultApp}`);
+                }
+            }
 
             for (const app of this.availableApplications) {
                 await this.loadApplication(app.path);
@@ -298,6 +306,28 @@ export default ApplicationsRouter`;
             }
         }
 
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator())) {
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.enable",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Enabled Application",
+                    icon: "check",
+                    body: `The application ${app?.manifest?.displayName}(${app?.manifest?.id}) was enabled`,
+                },
+                {
+                    buttons: [
+                        {
+                            id: "dismiss",
+                            label: "Dismiss",
+                            type: "filled",
+                        },
+                    ],
+                },
+            );
+        }
+
         return true;
     }
 
@@ -317,15 +347,38 @@ export default ApplicationsRouter`;
         await this.saveApplicationsConfig();
         await this.updateWebRouter();
 
+        const self = this;
+
         for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator()))
             this.instance.subSystems.notifications.send(
                 administrator.userId,
-                "instance.subsystems.applications",
+                "instance.subsystems.application.disable",
                 WorkspacesNotificationPriority.Important,
                 {
                     title: "Restart Now?",
                     icon: "warning",
                     body: "Please restart the instance to disable any previously-enabled applications.",
+                },
+                {
+                    buttons: [
+                        {
+                            id: "restart",
+                            label: "Restart Now",
+                            type: "filled",
+                        },
+                        {
+                            id: "later",
+                            label: "Later",
+                            type: "tonal",
+                        },
+                    ],
+                },
+                {
+                    onButton(id) {
+                        if (id === "restart") {
+                            self.instance.shutdown();
+                        }
+                    },
                 },
             );
 
