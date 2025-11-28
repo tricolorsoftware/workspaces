@@ -16,6 +16,8 @@ export default class RestartCommand extends Command {
             });
         }
 
+        this.log.info("sent notifications");
+
         return this.finishRun();
     }
 }

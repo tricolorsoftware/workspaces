@@ -10,6 +10,9 @@
     outline-offset: 2px;
     outline-width: 0;
     outline-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     padding-left: var(--padding-left-override, var(--padding-left, 0px));
     padding-right: var(--padding-right-override, var(--padding-right, 0px));

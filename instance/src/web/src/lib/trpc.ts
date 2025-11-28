@@ -1,4 +1,4 @@
-import { createTRPCClient, httpBatchLink, httpSubscriptionLink, splitLink, wsLink } from "@trpc/client";
+import { createTRPCClient, httpBatchLink, httpSubscriptionLink, splitLink } from "@trpc/client";
 import type { WorkspacesTRPCRouter } from "../../../subsystems/trpcRouter";
 
 const trpc = createTRPCClient<WorkspacesTRPCRouter>({

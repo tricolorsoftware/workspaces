@@ -1,4 +1,3 @@
-import { randomUUIDv7 } from "bun";
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import EventEmitter from "node:events";
@@ -30,6 +29,7 @@ export interface WorkspacesNotification {
     priority: WorkspacesNotificationPriority;
     content: WorkspacesNotificationContent;
     uuid: string;
+    options?: { id: string; type: "button"; label: string }[];
 }
 
 export default class NotificationsSubsystem extends SubSystem {
@@ -57,7 +57,7 @@ export default class NotificationsSubsystem extends SubSystem {
             sourceId,
             priority,
             content,
-            uuid: randomUUIDv7(),
+            uuid: Bun.randomUUIDv7(),
         } satisfies WorkspacesNotification);
 
         return this;
