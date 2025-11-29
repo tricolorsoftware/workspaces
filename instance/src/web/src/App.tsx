@@ -13,6 +13,10 @@ const App: Component = () => {
                 <Route component={lazy(() => import("./pages/userSelect/Layout.tsx"))}>
                     <Route path={"/"} component={lazy(() => import("./pages/userSelect/login/Login.tsx"))} />
                     <Route path={"/signup"} component={lazy(() => import("./pages/userSelect/signup/Signup.tsx"))} />
+                    <Route
+                        path={"/forgot-password"}
+                        component={lazy(() => import("./pages/userSelect/forgotPassword/ForgotPassword.tsx"))}
+                    />
                 </Route>
                 <Route component={AuthCheck}>
                     <Route component={lazy(() => import("./pages/app/Layout.tsx"))}>

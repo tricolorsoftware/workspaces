@@ -254,7 +254,7 @@ export class WorkspacesUser {
         Get if the user is an administrator
         @returns `boolean` - is the user an administrator
     */
-    async isAdministrator(): Promise<string | undefined> {
+    async isAdministrator(): Promise<boolean | undefined> {
         const db = this.instance.subSystems.database.db();
 
         return (await db`SELECT is_administrator FROM Users WHERE id = ${this.userId}`)?.[0]?.is_administrator || false;
@@ -432,13 +432,10 @@ export default class UsersSubsystem extends SubSystem {
             if (!adminUser) {
                 this.log.error("Admin user didn't exist and couldn't be created!");
             } else {
-                adminUser.setFullName("Admin", "Istrator");
+                await adminUser.setFullName("Admin", "Istrator");
+                await adminUser.setIsAdministrator(true);
 
-                function generateRandomDefaultPassword(): string {
-                    return crypto.randomBytes(16 / 2).toString("hex");
-                }
-
-                const defaultPassword = generateRandomDefaultPassword();
+                const defaultPassword = "password";
 
                 await this.instance.subSystems.authorization.setPassword(adminUser.userId, defaultPassword);
                 this.log.info(`The default admin user has a password of '${defaultPassword}'`);

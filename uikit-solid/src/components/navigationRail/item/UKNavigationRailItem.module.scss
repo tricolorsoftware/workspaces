@@ -43,6 +43,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        width: 100%;
 
         transition:
             top var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate),
@@ -89,7 +90,6 @@
         }
 
         & .label {
-            width: max-content;
             max-width: 100%;
             left: 50%;
             text-align: center;

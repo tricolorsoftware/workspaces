@@ -21,8 +21,9 @@
 }
 
 .content {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: 16rem;
     height: 100%;
     gap: 1rem;
     padding: 1rem;

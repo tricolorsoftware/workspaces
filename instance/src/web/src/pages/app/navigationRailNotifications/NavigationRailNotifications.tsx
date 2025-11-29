@@ -7,10 +7,12 @@ import UKIconButton from "@tcsw/uikit-solid/src/components/iconButton/UKIconButt
 import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
 import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.jsx";
 import { DividerDirection } from "@tcsw/uikit-solid/src/components/divider/lib/direction.js";
+import { useNavigate } from "@solidjs/router";
 
 const FLYOUT_NOTIFICATION_TIMEOUT = 10_000;
 
 const NavigationRailNotifications: Component<{ expanded: boolean }> = (props) => {
+    const navigate = useNavigate();
     const [toggled, setToggled] = createSignal<boolean>(false);
     const [notifications, setNotifications] = createSignal<WorkspacesNotification[]>([]);
     const [flyoutNotifications, setFlyoutNotifications] = createSignal<WorkspacesNotification[]>([]);
@@ -65,11 +67,15 @@ const NavigationRailNotifications: Component<{ expanded: boolean }> = (props) =>
                                     return;
                                 }
 
-                                await trpc.app.notifications.respond.mutate({
+                                let responseAction = await trpc.app.notifications.respond.mutate({
                                     uuid: notification.uuid,
                                     responseType: type,
                                     value: value,
                                 });
+
+                                if (responseAction.action?.type === "navigate") {
+                                    navigate(responseAction.action.value);
+                                }
 
                                 setFlyoutNotifications((notifications) => notifications.filter((n) => n.uuid !== notification.uuid));
                                 setNotifications((notifications) => notifications.filter((n) => n.uuid !== notification.uuid));
@@ -87,11 +93,15 @@ const NavigationRailNotifications: Component<{ expanded: boolean }> = (props) =>
                                 {(notification) => (
                                     <Notification
                                         respond={async (type, value) => {
-                                            await trpc.app.notifications.respond.mutate({
+                                            let responseAction = await trpc.app.notifications.respond.mutate({
                                                 uuid: notification.uuid,
-                                                responseType: type,
+                                                responseType: type as "button",
                                                 value: value,
                                             });
+
+                                            if (responseAction.action?.type === "navigate") {
+                                                navigate(responseAction.action.value);
+                                            }
 
                                             setNotifications((notifications) => notifications.filter((n) => n.uuid !== notification.uuid));
                                             setFlyoutNotifications((notifications) =>

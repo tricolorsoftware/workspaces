@@ -64,6 +64,15 @@ const router = t.router({
                 success: true,
             };
         }),
+        uninstallApplications: procedure.input(z.object({ applications: z.string().array() })).mutation(async (opt) => {
+            for (const app of opt.input.applications) {
+                await opt.ctx.instance.subSystems.applications.uninstallApplication(app);
+            }
+
+            return {
+                success: true,
+            };
+        }),
     },
     categories: {},
 });

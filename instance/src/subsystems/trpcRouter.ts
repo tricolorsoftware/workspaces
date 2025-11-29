@@ -302,17 +302,23 @@ export const workspacesRouter = t.router({
                 }),
             respond: procedure
                 .input(z.object({ uuid: z.string(), responseType: z.literal("button"), value: z.string() }))
+                .output(z.object({ ok: z.boolean(), action: z.object({ type: z.literal("navigate"), value: z.string() }).optional() }))
                 .mutation(async (opt) => {
                     const notification = notifications.find((n) => n.uuid === opt.input.uuid);
 
                     if (notification) {
+                        let output;
                         if (opt.input.responseType === "button") {
-                            notification.optionsCallbacks?.onButton(opt.input.value);
+                            output = notification.optionsCallbacks?.onButton(opt.input.value);
                         }
 
                         notifications = notifications.filter((n) => n.uuid !== notification.uuid);
 
-                        return { ok: true };
+                        if (output !== undefined) {
+                            return { ok: true, action: output.action };
+                        } else {
+                            return { ok: true };
+                        }
                     }
 
                     return { ok: false };

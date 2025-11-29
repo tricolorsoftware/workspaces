@@ -9,7 +9,7 @@ import { WorkspacesNotificationPriority } from "./notifications.js";
 const APPLICATIONS_CONFIG_FILE_PATH = (subsystem: SubSystem) =>
     path.join(subsystem.instance.subSystems.filesystem.FS_ROOT, "applications.json");
 
-const DEFAULT_APPLICATIONS: string[] = ["uk.tcsw.store", "uk.tcsw.dashboard"];
+const DEFAULT_APPLICATIONS: string[] = ["uk.tcsw.store", "uk.tcsw.dashboard", "uk.tcsw.settings"];
 
 interface AvailableWorkspacesApplication {
     path: string;
@@ -92,6 +92,7 @@ export default ApplicationsRouter`;
 
             for (const defaultApp of DEFAULT_APPLICATIONS) {
                 if (!this.availableApplications.find((aa) => aa.path.endsWith(defaultApp))) {
+                    this.log.info(`The instance is missing default application '${defaultApp}', installing from local`);
                     await this.installApplication(`local:${defaultApp}`);
                 }
             }
@@ -212,6 +213,67 @@ export default ApplicationsRouter`;
         await this.loadApplication(applicationPath);
 
         await this.saveApplicationsConfig();
+
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator())) {
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.install",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Installed Application",
+                    icon: "check",
+                    body: `The application '${applicationURI}' was installed`,
+                },
+                {
+                    buttons: [
+                        {
+                            id: "dismiss",
+                            label: "Dismiss",
+                            type: "filled",
+                        },
+                    ],
+                },
+            );
+        }
+
+        return true;
+    }
+
+    // Uninstall an application by it's applicationId
+    async uninstallApplication(applicationId: string): Promise<boolean> {
+        const application = this.availableApplications.find((a) => a.manifest?.id === applicationId);
+
+        if (!application) {
+            this.log.error(`Cannot find application '${applicationId}' to uninstall.`);
+
+            return false;
+        }
+
+        this.availableApplications = this.availableApplications.filter((a) => a.manifest?.id !== applicationId);
+
+        await this.saveApplicationsConfig();
+
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator())) {
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.uninstall",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Uninstalled Application",
+                    icon: "check",
+                    body: `The application '${applicationId}' was uninstalled`,
+                },
+                {
+                    buttons: [
+                        {
+                            id: "dismiss",
+                            label: "Dismiss",
+                            type: "filled",
+                        },
+                    ],
+                },
+            );
+        }
 
         return true;
     }
