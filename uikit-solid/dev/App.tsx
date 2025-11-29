@@ -2364,7 +2364,30 @@ export default function App() {
                 {"Hello world"}
             </UKChip>
 
-            <UKExtendedFloatingActionButton size="large">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="primary" size="small">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="primary" size="medium">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="primary" size="large">Test</UKExtendedFloatingActionButton>
+
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="secondary" size="small">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="secondary" size="medium">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="secondary" size="large">Test</UKExtendedFloatingActionButton>
+
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tertiary" size="small">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tertiary" size="medium">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tertiary" size="large">Test</UKExtendedFloatingActionButton>
+
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-primary" size="small">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-primary" size="medium">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-primary" size="large">Test</UKExtendedFloatingActionButton>
+
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-secondary" size="small">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-secondary" size="medium">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-secondary" size="large">Test</UKExtendedFloatingActionButton>
+
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-tertiary" size="small">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-tertiary" size="medium">Test</UKExtendedFloatingActionButton>
+            <UKExtendedFloatingActionButton leadingIcon={"mail"} color="tonal-tertiary" size="large">Test</UKExtendedFloatingActionButton>
+
 
             <span>
                 UIKit Material Expressive for SolidJS | "@yourdash/uikit-solid" | Created by{" "}

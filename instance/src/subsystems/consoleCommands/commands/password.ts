@@ -12,7 +12,7 @@ export default class PasswordCommand extends Command {
         let password = "";
 
         let username = await this.promptUser("Username", () => true);
-        console.log(username)
+        console.log(username);
 
         // self.log._internal_promptMessage("Username -> ");
         // self.instance.subSystems.consoleCommands.currentCommandInterface.cb = async (data) => {
@@ -44,6 +44,7 @@ export default class PasswordCommand extends Command {
         //     }
         // };
 
+        return this.finishRun();
         return this.continueRun();
     }
 }

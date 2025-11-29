@@ -1,4 +1,4 @@
-import { type Component, createSignal } from "solid-js";
+import {type Component, createEffect, createSignal} from "solid-js";
 import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.tsx";
 import UKButton from "@tcsw/uikit-solid/src/components/button/UKButton.tsx";
 import UKDivider from "@tcsw/uikit-solid/src/components/divider/UKDivider.tsx";
@@ -13,7 +13,13 @@ const UserSelectPage: Component = () => {
     const navigate = useNavigate();
 
     const [username, setUsername] = createSignal("");
-    const [password, setPassword] = createSignal("");
+    const [ password, setPassword ] = createSignal("");
+
+    createEffect(async () => {
+        if ((await trpc.authorization.isAuthenticated.query()).authenticated) {
+            navigate("/app")
+        }
+    })
 
     return (
         <UKCard color={"filled"} class={styles.modal}>

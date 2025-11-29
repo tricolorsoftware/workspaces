@@ -1,5 +1,6 @@
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
+import { WorkspacesNotificationPriority } from "./notifications.js";
 
 export enum AuthorizedDeviceType {
     Desktop,
@@ -30,12 +31,40 @@ export default class AuthorizationSubsystem extends SubSystem {
 
             const sessionsDb = this.instance.subSystems.database.db();
 
-            this.log.info("Password entered matched the hashed password.");
-
             const sessionToken = crypto.getRandomValues(new Uint32Array(16)).join("");
 
             // valid for 7 days?
             await sessionsDb`INSERT INTO Sessions (user_id, session_token, device_id, valid_until) VALUES (${userId}, ${sessionToken}, ${deviceId}, ${Date.now() + 7 * 24 * 60 * 60 * 1000})`;
+
+            const user = await this.instance.subSystems.users.getUserById(userId);
+
+            if (await user?.isAdministrator()) {
+                if (password === "password") {
+                    this.log.warning(
+                        `User '${await user?.getUsername()}'(${userId}) has the default password! Please tell them to change it!`,
+                    );
+
+                    setTimeout(() => {
+                        this.instance.subSystems.notifications.send(
+                            userId,
+                            "authorization.createSession",
+                            WorkspacesNotificationPriority.Urgent,
+                            { title: "Change Your Password", icon: "key", body: "Please change your password from the default!" },
+                            { buttons: [{ id: "change-password", label: "Change Password", type: "filled" }] },
+                            {
+                                onButton(id) {
+                                    return {
+                                        action: {
+                                            type: "navigate",
+                                            value: "/app/uk.tcsw.settings/user/reset-password",
+                                        },
+                                    };
+                                },
+                            },
+                        );
+                    }, 5000);
+                }
+            }
 
             return `workspaces_session:${userId}:${sessionToken}`;
         } catch (err) {
@@ -75,9 +104,7 @@ export default class AuthorizationSubsystem extends SubSystem {
 
         const sessionsDb = this.instance.subSystems.database.db();
 
-        const session = (
-            await sessionsDb`DELETE FROM Sessions WHERE user_id = ${userId} AND session_token = ${token}`
-        )?.[0];
+        const session = (await sessionsDb`DELETE FROM Sessions WHERE user_id = ${userId} AND session_token = ${token}`)?.[0];
 
         return true;
     }

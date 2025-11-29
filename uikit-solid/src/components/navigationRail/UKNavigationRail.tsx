@@ -2,6 +2,7 @@ import { Index, type Component, type JSX, type ParentProps } from "solid-js";
 import styles from "./UKNavigationRail.module.scss";
 import UKNavigationRailItem from "./item/UKNavigationRailItem";
 import UKNavigationRailMenuButton from "./menuButton/UKNavigationRailMenuButton";
+import clsx from "clsx";
 
 const UKNavigationRail: Component<
     ParentProps<{
@@ -26,11 +27,12 @@ const UKNavigationRail: Component<
         expanded?: boolean;
         setExpanded?: (expanded: boolean) => void;
         type?: "modal" | "surface";
+        class?: string;
     }>
 > = (props) => {
     return (
         <div class={styles.layout}>
-            <div class={styles.root} data-type={props.type || "modal"} data-expanded={props.expanded || false}>
+            <div class={clsx(styles.root, props.class)} data-type={props.type || "modal"} data-expanded={props.expanded || false}>
                 {props.anchorPoints?.topMost}
                 {props.setExpanded && <UKNavigationRailMenuButton setExpanded={props.setExpanded} expanded={props.expanded || false} />}
                 {props.anchorPoints?.top}

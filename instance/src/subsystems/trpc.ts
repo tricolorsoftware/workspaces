@@ -2,7 +2,7 @@ import { BunRequest, Server } from "bun";
 import { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import { TRPCBuiltRouter } from "@trpc/server";
-import { createTRPCContext } from "./trpc/trpc.js";
+import { createTRPCContext } from "./trpcRouter.js";
 import { FetchCreateContextFnOptions, fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 export default class TRPCSubsystem extends SubSystem {
@@ -31,11 +31,6 @@ export default class TRPCSubsystem extends SubSystem {
             if (!url.pathname.startsWith(router.basePath)) {
                 continue;
             }
-
-            // TODO: uncomment for Websocket stuff
-            // if (server.upgrade(req, { data: { instance: this.instance, rawRequest: { req: req, resHeaders: new Headers() } } })) {
-            //     return new Response(null, { status: 101 });
-            // }
 
             return fetchRequestHandler({
                 createContext: router.createContext,
@@ -106,7 +101,6 @@ export default class TRPCSubsystem extends SubSystem {
                 console.error(p[0].error);
                 this.log.error("^");
             },
-            // websocket: createBunWSHandler(opts),
         };
     }
 }

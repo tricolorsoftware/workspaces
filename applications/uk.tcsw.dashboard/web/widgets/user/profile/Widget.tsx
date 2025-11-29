@@ -6,7 +6,7 @@ import styles from "./Widget.module.scss";
 import trpc from "../../../lib/trpc";
 
 const Widget: Component = () => {
-    const [userData] = createResource(() => trpc.widgets.user.profile.query());
+    const [userData] = createResource(() => trpc.dashboard.widgets.user.profile.query());
 
     return (
         <UKCard class={styles.root}>

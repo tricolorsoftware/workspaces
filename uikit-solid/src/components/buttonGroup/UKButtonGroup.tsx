@@ -8,12 +8,14 @@ const UKButtonGroup: Component<{
     children: JSX.Element;
     size: ButtonSize;
     connected?: boolean;
+    align?: "start" | "end"
 }> = (props) => {
     return (
         <div
             data-size={props.size}
             data-connected={props.connected}
             class={styles.root}
+            data-align={props.align}
         >
             {props.children}
         </div>

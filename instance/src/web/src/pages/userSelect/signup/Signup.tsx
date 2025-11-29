@@ -54,8 +54,7 @@ const UserSelectPage: Component = () => {
                     </UKText>
                     <UKDivider direction={DividerDirection.horizontal} />
                     <UKTextField
-                        leadingIcon={"user"}
-                        trailingIcon={""}
+                        leadingIcon={{icon: "person"}}
                         color={"outlined"}
                         label={"Username*"}
                         supportingText={"*required"}

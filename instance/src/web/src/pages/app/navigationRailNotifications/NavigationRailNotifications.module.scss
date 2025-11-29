@@ -1,0 +1,88 @@
+.root {
+    position: relative;
+    display: flex;
+    padding-bottom: 1rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    &[data-expanded="true"] {
+        > .notifications,
+        > .flyoutNotifications {
+            left: 22.5rem;
+        }
+    }
+
+    &[data-expanded="false"] {
+        > .notifications,
+        > .flyoutNotifications {
+            left: 6rem;
+        }
+    }
+}
+
+.notifications {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    bottom: 1rem;
+    padding: 1rem;
+    z-index: 10;
+    height: calc(100vh - 2rem);
+    width: calc(20rem + 2rem);
+
+    background-color: rgb(var(--uk-sys-color-surface-container));
+    border: 1px solid rgb(var(--uk-sys-color-outline-variant));
+    border-radius: calc(var(--uk-sys-shape-corner-medium) + 1rem);
+
+    transition: left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+
+    animation: fadeIn var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-1rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+}
+
+.flyoutNotifications {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    bottom: 1rem;
+    z-index: 10;
+
+    transition: left var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+
+    > * {
+        animation: fadeIn var(--uk-sys-motion-duration-250) var(--uk-sys-motion-easing-emphasized-decelerate);
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-1rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    }
+}
+
+.noNotificationsMessage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+}

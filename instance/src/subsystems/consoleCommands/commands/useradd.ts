@@ -59,6 +59,8 @@ export default class ExitCommand extends Command {
                                                     await user.setFullName(fullNameSplit.shift() || "Unknown", fullNameSplit.join(" "));
                                                     await user.setEmail(email);
                                                     await self.instance.subSystems.authorization.setPassword(user.userId, password);
+
+                                                    return this.finishRun();
                                                 } else {
                                                     log._internal_promptMessage("Gender -> ");
                                                 }

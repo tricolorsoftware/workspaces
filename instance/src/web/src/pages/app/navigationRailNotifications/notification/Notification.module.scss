@@ -1,0 +1,38 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    width: 20rem;
+    overflow: hidden;
+}
+
+.progressBar {
+    width: calc(100% + 2rem);
+    height: 0.25rem;
+    background: rgb(var(--uk-sys-color-primary));
+    margin-top: -1rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: 0.75rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    color: rgb(var(--uk-sys-color-on-surface));
+}
+
+.body {
+    padding-top: 0.5rem;
+    color: rgb(var(--uk-sys-color-on-surface-variant));
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+    padding-top: 0.5rem;
+    gap: 0.5rem;
+}

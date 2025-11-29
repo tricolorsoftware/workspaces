@@ -1,8 +1,11 @@
-import { initTRPC, TRPCError } from "@trpc/server";
+import { initTRPC, tracked, TRPCError } from "@trpc/server";
 import z from "zod";
-import { Instance } from "../../index.js";
-import { AuthorizedDeviceType } from "../authorization.js";
+import { Instance } from "../index.js";
+import { AuthorizedDeviceType } from "./authorization.js";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import { WorkspacesNotificationEventEmitterEvent, WorkspacesNotificationPriority, type WorkspacesNotification } from "./notifications.js";
+import { on } from "node:events";
+import { $ZodTypeInternals } from "zod/v4/core";
 
 export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContextFnOptions) => {
     return {
@@ -14,7 +17,19 @@ export const createTRPCContext = (instance: Instance) => (opt: FetchCreateContex
     };
 };
 
-export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create();
+export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create({
+    sse: {
+        ping: {
+            // Enable periodic ping messages to keep connection alive
+            enabled: true,
+            // Send ping message every 2s
+            intervalMs: 2_000,
+        },
+        client: {
+            reconnectAfterInactivityMs: 3_000,
+        },
+    },
+});
 
 export const publicProcedure = t.procedure.use(async (opt) => {
     return opt.next({
@@ -53,6 +68,8 @@ export const procedure = t.procedure.use(async (opt) => {
     });
 });
 
+let notifications: WorkspacesNotification[] = [];
+
 export const workspacesRouter = t.router({
     authorization: {
         signupRequirements: publicProcedure
@@ -63,7 +80,7 @@ export const workspacesRouter = t.router({
             )
             .query(async (opt) => {
                 return {
-                    // change to true when an email server exists
+                    // TODO: change to true when an email server exists (links to emailServerStuff)
                     email: false,
                 };
             }),
@@ -86,7 +103,7 @@ export const workspacesRouter = t.router({
                 ]),
             )
             .mutation(async (opt) => {
-                // TODO: implement this
+                // TODO: implement this (links to emailServerStuff)
 
                 if (opt.input.emailCode !== "a")
                     return {
@@ -189,15 +206,15 @@ export const workspacesRouter = t.router({
 
             if (userId === undefined) {
                 return {
-                    authenticated: false
-                }
+                    authenticated: false,
+                };
             }
 
             return {
                 authenticated: true,
             };
         }),
-        logout: procedure.output(z.object({ success: z.literal(true) })).mutation(async opt => {
+        logout: procedure.output(z.object({ success: z.literal(true) })).mutation(async (opt) => {
             const cookieString = opt.ctx.rawRequest.req.headers?.get("cookie");
 
             if (cookieString === null) {
@@ -213,7 +230,7 @@ export const workspacesRouter = t.router({
             return {
                 success: true,
             };
-        })
+        }),
     },
     app: {
         navigation: {
@@ -248,11 +265,13 @@ export const workspacesRouter = t.router({
                     let quickShortcuts = opt.ctx.instance.subSystems.applications.getEnabledApplications();
 
                     return quickShortcuts.map((app) => {
+                        let icon: { type: "icon"; value: string } = { type: "icon", value: "indeterminate_question_box" };
+
+                        // @ts-ignore
+                        if (app.manifest?.icon) icon = app.manifest.icon;
+
                         return {
-                            icon: {
-                                type: "icon",
-                                value: "person",
-                            },
+                            icon: icon,
                             label: app.manifest?.displayName || "Unknown",
                             location: {
                                 type: "local",
@@ -260,6 +279,49 @@ export const workspacesRouter = t.router({
                             },
                         };
                     });
+                }),
+        },
+        notifications: {
+            listener: procedure
+                // @ts-ignore
+                .subscription(async function* (opt) {
+                    for await (const [data] of on(
+                        opt.ctx.instance.subSystems.notifications.eventEmitter,
+                        WorkspacesNotificationEventEmitterEvent.SendNotification,
+                        {
+                            signal: opt.signal,
+                        },
+                    )) {
+                        const notification = data as WorkspacesNotification;
+                        if (notification.recipient === opt.ctx.userId) {
+                            notifications.push(notification);
+
+                            yield notification;
+                        }
+                    }
+                }),
+            respond: procedure
+                .input(z.object({ uuid: z.string(), responseType: z.literal("button"), value: z.string() }))
+                .output(z.object({ ok: z.boolean(), action: z.object({ type: z.literal("navigate"), value: z.string() }).optional() }))
+                .mutation(async (opt) => {
+                    const notification = notifications.find((n) => n.uuid === opt.input.uuid);
+
+                    if (notification) {
+                        let output;
+                        if (opt.input.responseType === "button") {
+                            output = notification.optionsCallbacks?.onButton(opt.input.value);
+                        }
+
+                        notifications = notifications.filter((n) => n.uuid !== notification.uuid);
+
+                        if (output !== undefined) {
+                            return { ok: true, action: output.action };
+                        } else {
+                            return { ok: true };
+                        }
+                    }
+
+                    return { ok: false };
                 }),
         },
     },

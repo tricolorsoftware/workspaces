@@ -1,0 +1,37 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    max-height: max-content;
+    gap: 1rem;
+    padding: 0;
+    user-select: none;
+    -webkit-user-drag: none;
+
+    > img {
+        border-radius: var(--uk-sys-shape-corner-medium);
+    }
+}
+
+.title {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    color: rgb(var(--uk-sys-color-on-surface));
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    padding-top: 0;
+    margin-top: -0.5rem;
+    color: rgb(var(--uk-sys-color-on-surface-variant));
+
+    > *:first-child {
+        padding-right: 0.5rem;
+    }
+}
+
+.footerIcon {
+    --icon-size: 1rem;
+}

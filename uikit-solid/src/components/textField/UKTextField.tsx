@@ -2,13 +2,14 @@ import { type Component, createEffect, createSignal } from "solid-js";
 import styles from "./UKTextField.module.scss";
 import type { DOMElement } from "solid-js/jsx-runtime";
 import clsx from "clsx";
+import UKIcon from "../icon/UKIcon";
 
 const UKTextField: Component<{
     color: "filled" | "outlined";
-    leadingIcon?: string;
+    leadingIcon?: {icon: string, onClick?: () => void};
     labelEmpty?: string;
     label: string;
-    trailingIcon?: string;
+    trailingIcon?: {icon: string, onClick?: () => void};
     supportingText?: string;
     getValue: (value: string) => void;
     onEscape?: () => void;
@@ -87,14 +88,18 @@ const UKTextField: Component<{
                 data-populated={characterLength() > 0}
                 data-force-focus={props.forceFocussed}
             >
-                {props.as === "textarea" ? (
-                    <textarea ref={textAreaRef} {...elementProperties} />
-                ) : (
-                    <input ref={inputRef} {...elementProperties} />
-                )}
-                <span class={styles.labelText}>
-                    {props.labelEmpty !== undefined ? (characterLength() > 0 ? props.label : props.labelEmpty) : props.label}
-                </span>
+                {props.leadingIcon && <UKIcon onClick={props.leadingIcon.onClick} class={styles.leadingIcon}>{props.leadingIcon.icon}</UKIcon>}
+                <div class={styles.inputContainer}>
+                    {props.as === "textarea" ? (
+                        <textarea ref={textAreaRef} {...elementProperties} />
+                    ) : (
+                        <input ref={inputRef} {...elementProperties} />
+                    )}
+                    <span class={styles.labelText}>
+                        {props.labelEmpty !== undefined ? (characterLength() > 0 ? props.label : props.labelEmpty) : props.label}
+                    </span>
+                </div>
+                {props.trailingIcon && <UKIcon onClick={props.trailingIcon.onClick} class={styles.trailingIcon}>{props.trailingIcon.icon}</UKIcon>}
             </div>
             {(props.supportingText || props.maximumCharacterCount) && (
                 <span data-error={props.error} class={styles.supportingText}>

@@ -26,6 +26,8 @@ export default class ExitCommand extends Command {
 
                 await user.delete();
 
+                log.success(`User '${username}' was deleted successfully!`);
+
                 return this.finishRun();
             } else {
                 log._internal_promptMessage("Username -> ");

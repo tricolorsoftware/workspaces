@@ -2,11 +2,14 @@ import path from "path";
 import type { Instance } from "../index.js";
 import SubSystem from "../subSystems.js";
 import { promises as fs } from "fs";
-import { WorkspacesApplication } from "./applications/application.js";
-import { WorkspacesApplicationServiceStatus } from "./applications/serviceStatus.js";
+import type { WorkspacesApplication } from "./applications/application.js";
+import type { WorkspacesApplicationServiceStatus } from "./applications/serviceStatus.js";
+import { WorkspacesNotificationPriority } from "./notifications.js";
 
 const APPLICATIONS_CONFIG_FILE_PATH = (subsystem: SubSystem) =>
     path.join(subsystem.instance.subSystems.filesystem.FS_ROOT, "applications.json");
+
+const DEFAULT_APPLICATIONS: string[] = ["uk.tcsw.store", "uk.tcsw.dashboard", "uk.tcsw.settings"];
 
 interface AvailableWorkspacesApplication {
     path: string;
@@ -54,7 +57,7 @@ export default class ApplicationsSubsystem extends SubSystem {
         }
 
         if (this.availableApplications.length === 0) {
-            applicationsInfill = `<Route path="*" component={() => <>How peculiar. You have no applications installed, please ask an administrator to install some via the command-line interface.</>}/>`;
+            applicationsInfill = `<Route path="*" component={() => <div style={{ "text-align": "center" }}>How peculiar. You have no applications installed, please ask an administrator to install some via the command-line interface.</div>}/>`;
         }
 
         let applicationsWebRouterTemplate = `import { Route } from "@solidjs/router";
@@ -73,7 +76,7 @@ export default ApplicationsRouter`;
 
         await fs.writeFile(path.join(this.instance.subSystems.filesystem.FS_ROOT, "Applications.tsx"), applicationsWebRouterTemplate);
 
-        return true
+        return true;
     }
 
     async startup(): Promise<boolean> {
@@ -87,6 +90,13 @@ export default ApplicationsRouter`;
 
             this.availableApplications = applicationsConfig;
 
+            for (const defaultApp of DEFAULT_APPLICATIONS) {
+                if (!this.availableApplications.find((aa) => aa.path.endsWith(defaultApp))) {
+                    this.log.info(`The instance is missing default application '${defaultApp}', installing from local`);
+                    await this.installApplication(`local:${defaultApp}`);
+                }
+            }
+
             for (const app of this.availableApplications) {
                 await this.loadApplication(app.path);
 
@@ -99,7 +109,7 @@ export default ApplicationsRouter`;
                 this.log.info(`application '${app.manifest?.id}' is ${app.enabled ? "enabled" : "disabled"}`);
             }
 
-            await this.updateWebRouter()
+            await this.updateWebRouter();
 
             if (!(await fs.exists(path.join(this.instance.subSystems.filesystem.FS_ROOT, "package.json")))) {
                 await fs.writeFile(
@@ -171,6 +181,14 @@ export default ApplicationsRouter`;
     async installApplication(applicationURI: string): Promise<boolean> {
         let applicationPath: string = path.join(this.instance.subSystems.filesystem.FS_ROOT, "application-failed-to-install");
 
+        if (applicationURI.startsWith("local:")) {
+            applicationPath = path.join(
+                this.instance.subSystems.filesystem.SRC_ROOT,
+                "../../applications/",
+                applicationURI.slice("local:".length),
+            );
+        }
+
         if (applicationURI.startsWith("file:")) {
             applicationPath = applicationURI.slice("file:".length);
         }
@@ -196,6 +214,67 @@ export default ApplicationsRouter`;
 
         await this.saveApplicationsConfig();
 
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator())) {
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.install",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Installed Application",
+                    icon: "check",
+                    body: `The application '${applicationURI}' was installed`,
+                },
+                {
+                    buttons: [
+                        {
+                            id: "dismiss",
+                            label: "Dismiss",
+                            type: "filled",
+                        },
+                    ],
+                },
+            );
+        }
+
+        return true;
+    }
+
+    // Uninstall an application by it's applicationId
+    async uninstallApplication(applicationId: string): Promise<boolean> {
+        const application = this.availableApplications.find((a) => a.manifest?.id === applicationId);
+
+        if (!application) {
+            this.log.error(`Cannot find application '${applicationId}' to uninstall.`);
+
+            return false;
+        }
+
+        this.availableApplications = this.availableApplications.filter((a) => a.manifest?.id !== applicationId);
+
+        await this.saveApplicationsConfig();
+
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator())) {
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.uninstall",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Uninstalled Application",
+                    icon: "check",
+                    body: `The application '${applicationId}' was uninstalled`,
+                },
+                {
+                    buttons: [
+                        {
+                            id: "dismiss",
+                            label: "Dismiss",
+                            type: "filled",
+                        },
+                    ],
+                },
+            );
+        }
+
         return true;
     }
 
@@ -206,12 +285,12 @@ export default ApplicationsRouter`;
 
         let applicationManifest = JSON.parse((await fs.readFile(APPLICATION_MANIFEST_PATH)).toString());
 
-        let alreadyRegisteredAppliction = this.availableApplications.find((a) => a.path === applicationPath);
+        let alreadyRegisteredApplication = this.availableApplications.find((a) => a.path === applicationPath);
 
-        if (alreadyRegisteredAppliction) {
-            alreadyRegisteredAppliction.manifest = applicationManifest;
-            alreadyRegisteredAppliction.path = applicationPath;
-            alreadyRegisteredAppliction.status = [];
+        if (alreadyRegisteredApplication) {
+            alreadyRegisteredApplication.manifest = applicationManifest;
+            alreadyRegisteredApplication.path = applicationPath;
+            alreadyRegisteredApplication.status = [];
 
             return true;
         }
@@ -244,7 +323,7 @@ export default ApplicationsRouter`;
         }
 
         await this.saveApplicationsConfig();
-        await this.updateWebRouter()
+        await this.updateWebRouter();
 
         if (app?.manifest?.modules.bun) {
             try {
@@ -289,6 +368,28 @@ export default ApplicationsRouter`;
             }
         }
 
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator())) {
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.enable",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Enabled Application",
+                    icon: "check",
+                    body: `The application ${app?.manifest?.displayName}(${app?.manifest?.id}) was enabled`,
+                },
+                {
+                    buttons: [
+                        {
+                            id: "dismiss",
+                            label: "Dismiss",
+                            type: "filled",
+                        },
+                    ],
+                },
+            );
+        }
+
         return true;
     }
 
@@ -306,7 +407,42 @@ export default ApplicationsRouter`;
         }
 
         await this.saveApplicationsConfig();
-        await this.updateWebRouter()
+        await this.updateWebRouter();
+
+        const self = this;
+
+        for (const administrator of (await this.instance.subSystems.users.getAllUsers()).filter((u) => u.isAdministrator()))
+            this.instance.subSystems.notifications.send(
+                administrator.userId,
+                "instance.subsystems.application.disable",
+                WorkspacesNotificationPriority.Important,
+                {
+                    title: "Restart Now?",
+                    icon: "warning",
+                    body: "Please restart the instance to disable any previously-enabled applications.",
+                },
+                {
+                    buttons: [
+                        {
+                            id: "restart",
+                            label: "Restart Now",
+                            type: "filled",
+                        },
+                        {
+                            id: "later",
+                            label: "Later",
+                            type: "tonal",
+                        },
+                    ],
+                },
+                {
+                    onButton(id) {
+                        if (id === "restart") {
+                            self.instance.shutdown();
+                        }
+                    },
+                },
+            );
 
         return false;
     }
