@@ -7,9 +7,11 @@ const UKAvatar: Component<{
     username: string;
     avatar: string;
     class?: string;
+    onClick?: () => void;
 }> = (props) => {
     return (
         <img
+            onClick={props.onClick}
             draggable={false}
             src={props.avatar}
             class={clsx(styles.root, props.class)}

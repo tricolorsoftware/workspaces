@@ -94,6 +94,7 @@ export default ApplicationsRouter`;
                 if (!this.availableApplications.find((aa) => aa.path.endsWith(defaultApp))) {
                     this.log.info(`The instance is missing default application '${defaultApp}', installing from local`);
                     await this.installApplication(`local:${defaultApp}`);
+                    await this.enableApplication(defaultApp);
                 }
             }
 

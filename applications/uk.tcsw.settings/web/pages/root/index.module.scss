@@ -1,2 +1,40 @@
 .root {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    min-height: 100%;
+    overflow-y: auto;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    max-width: 64rem;
+    width: 100%;
+    height: max-content;
+    gap: 1rem;
+    margin: auto;
+}
+
+.divider {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 1rem;
+    gap: 1rem;
+    margin-top: 2rem;
+
+    .fullName {
+        color: rgb(var(--uk-sys-color-on-surface));
+    }
+
+    .permissionLevel {
+        margin-top: -0.25rem;
+        color: rgb(var(--uk-sys-color-on-surface-variant));
+    }
 }

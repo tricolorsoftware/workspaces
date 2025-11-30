@@ -6,7 +6,22 @@ const log = instance.log.createLogger("uk.tcsw.settings");
 
 export const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create();
 
-const router = t.router({});
+const router = t.router({
+    overview: {
+        user: {
+            fullName: procedure.output(z.string()).query(async (opt) => {
+                const fullName = await (await opt.ctx.instance.subSystems.users.getUserById(opt.ctx.userId))?.getFullName();
+
+                return fullName?.forename + " " + fullName?.surname || "Unknown User";
+            }),
+            role: procedure.output(z.string()).query(async (opt) => {
+                const isAdministrator = await (await opt.ctx.instance.subSystems.users.getUserById(opt.ctx.userId))?.isAdministrator();
+
+                return isAdministrator ? "Administrator" : "User";
+            }),
+        },
+    },
+});
 
 export type TRPCRouter = typeof router;
 

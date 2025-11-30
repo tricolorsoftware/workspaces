@@ -8,12 +8,20 @@ import UKIconButton from "@tcsw/uikit-solid/src/components/iconButton/UKIconButt
 import { useNavigate } from "@solidjs/router";
 
 const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [user] = createResource(() => trpc.app.navigation.user.name.query());
 
     return (
         <div class={styles.root} data-expanded={props.expanded}>
-            <UKAvatar class={styles.avatar} avatar={backend("/api/user/me/avatar/s")} size="s" username="[PUT SIDEBAR HERE]" />
+            <UKAvatar
+                onClick={() => {
+                    navigate("/app/uk.tcsw.settings/profile");
+                }}
+                class={styles.avatar}
+                avatar={backend("/api/user/me/avatar/s")}
+                size="s"
+                username="[PUT SIDEBAR HERE]"
+            />
             <div class={styles.nameContainer}>
                 <UKText size="m" role="title" class={styles.displayName}>
                     {`${user()?.forename} ${user()?.surname}`}
@@ -22,11 +30,18 @@ const NavigationRailAvatar: Component<{ expanded: boolean }> = (props) => {
                     {`@${user()?.username}`}
                 </UKText>
             </div>
-            <UKIconButton class={styles.logout} icon={"logout"} alt={"Logout"} size={"s"} width={"default"} onClick={async () => {
-                await trpc.authorization.logout.mutate()
+            <UKIconButton
+                class={styles.logout}
+                icon={"logout"}
+                alt={"Logout"}
+                size={"s"}
+                width={"default"}
+                onClick={async () => {
+                    await trpc.authorization.logout.mutate();
 
-                navigate("/")
-            }}></UKIconButton>
+                    navigate("/");
+                }}
+            ></UKIconButton>
         </div>
     );
 };

@@ -14,9 +14,9 @@ const Layout: Component<ParentProps> = (props) => {
                     icon: "home",
                     label: "Overview",
                     onClick() {
-                        navigate("/app/uk.tcsw.settings/");
+                        navigate("/app/uk.tcsw.settings");
                     },
-                    active: location.pathname === "/app/uk.tcsw.settings/",
+                    active: location.pathname === "/app/uk.tcsw.settings",
                 },
                 {
                     icon: "person",

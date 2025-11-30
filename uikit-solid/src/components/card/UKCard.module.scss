@@ -2,6 +2,10 @@
     --card-padding: 16px;
     padding: var(--card-padding);
 
+    &[data-clickable="true"] {
+        cursor: pointer;
+    }
+
     &[data-color="filled"] {
         background-color: rgb(var(--uk-sys-color-surface-container-highest));
         color: rgb(var(--uk-sys-color-primary));

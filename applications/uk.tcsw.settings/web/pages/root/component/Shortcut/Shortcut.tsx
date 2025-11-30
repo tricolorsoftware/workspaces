@@ -1,0 +1,36 @@
+import UKCard from "@tcsw/uikit-solid/src/components/card/UKCard.jsx";
+import type { Component } from "solid-js";
+import styles from "./Shortcut.module.scss";
+import UKIcon from "@tcsw/uikit-solid/src/components/icon/UKIcon.jsx";
+import UKText from "@tcsw/uikit-solid/src/components/text/UKText.jsx";
+
+const Shortcut: Component<{
+    title: string;
+    description: string;
+    icon: string;
+    path: string;
+}> = (props) => {
+    return (
+        <>
+            <UKCard
+                class={styles.root}
+                onClick={() => {
+                    return 0;
+                }}
+            >
+                <UKIcon class={styles.icon}>{props.icon}</UKIcon>
+                <div>
+                    <UKText class={styles.title} role="display" size="s">
+                        {props.title}
+                    </UKText>
+                    <UKText class={styles.description} role="body" size="m">
+                        {props.description}
+                    </UKText>
+                </div>
+                <UKIcon class={styles.iconButton}>arrow_right</UKIcon>
+            </UKCard>
+        </>
+    );
+};
+
+export default Shortcut;

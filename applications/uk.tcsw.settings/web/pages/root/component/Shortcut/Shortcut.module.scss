@@ -1,0 +1,28 @@
+.root {
+    height: 10rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon {
+    --icon-size: 4rem;
+
+    color: rgb(var(--uk-sys-color-on-surface));
+}
+
+.title {
+    color: rgb(var(--uk-sys-color-on-surface));
+}
+
+.description {
+    color: rgb(var(--uk-sys-color-on-surface-variant));
+}
+
+.iconButton {
+    --icon-size: 2rem;
+    color: rgb(var(--uk-sys-color-on-surface-variant));
+    margin-left: auto;
+    margin-right: 1rem;
+}
